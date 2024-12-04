@@ -1,0 +1,39 @@
+{
+  "name": "backend-conversational-survey",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node dist/app.js",
+    "dev": "nodemon src/app.ts",
+    "build": "tsc",
+    "lint": "eslint . --ext .ts",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/morgan": "^1.9.9",
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@langchain/core": "^0.3.19",
+    "@langchain/google-genai": "^0.1.4",
+    "@langchain/openai": "^0.3.14",
+    "@types/express": "^5.0.0",
+    "@types/mongoose": "^5.11.96",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "helmet": "^8.0.0",
+    "langchain": "^0.3.6",
+    "mongoose": "^8.8.2",
+    "morgan": "^1.10.0",
+    "p-limit": "^6.1.0",
+    "zod": "^3.23.8"
+  }
+}

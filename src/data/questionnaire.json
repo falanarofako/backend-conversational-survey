@@ -1,0 +1,739 @@
+{
+    "survey": {
+        "title": "Survei Wisatawan Nusantara 2024",
+        "description": "Survei yang mengumpulkan informasi tentang proﬁl wisatawan nusantara, maksud perjalanan, akomodasi yang digunakan, lama perjalanan, dan rata-rata pengeluaran terkait perjalanan yang dilakukan oleh penduduk Indonesia di dalam wilayah teritorial Indonesia.",
+        "categories": [
+            {
+                "name": "Karakteristik Responden",
+                "questions": [
+                    {
+                        "text": "Jenis kelamin",
+                        "type": "select",
+                        "multiple": false,
+                        "options": [
+                            "Laki-laki",
+                            "Perempuan"
+                        ],
+                        "validation": {
+                            "required": true
+                        }
+                    },
+                    {
+                        "text": "Usia",
+                        "type": "text",
+                        "unit": "tahun",
+                        "additional_info": "Berdasarkan ulang tahun terakhir",
+                        "validation": {
+                            "required": true,
+                            "input_type": "number",
+                            "min": 0,
+                            "max": 120
+                        }
+                    },
+                    {
+                        "text": "Jenjang pendidikan tertinggi yang ditamatkan",
+                        "type": "select",
+                        "multiple": false,
+                        "options": [
+                            "Tidak/Belum Sekolah/Tidak Tamat SD/MI",
+                            "SD/MI",
+                            "SMP/MTs",
+                            "SMA/MA/SMK",
+                            "D1/D2/D3",
+                            "D4/S1",
+                            "S2/S3"
+                        ],
+                        "validation": {
+                            "required": true
+                        }
+                    },
+                    {
+                        "text": "Apa pekerjaan utama atau aktivitas utama Anda?",
+                        "type": "select",
+                        "multiple": false,
+                        "options": [
+                            "Manajer/Pimpinan Organisasi",
+                            "Profesional",
+                            "Teknisi dan Asisten Profesional",
+                            "Tenaga Tata Usaha",
+                            "Tenaga Usaha Jasa dan Tenaga Penjualan",
+                            "Pekerja Terampil Pertanian, Kehutanan, dan Perikanan",
+                            "Operator dan Perakit Mesin",
+                            "Pekerja Kasar",
+                            "TNI dan Polri",
+                            "Mengurus Rumah Tangga",
+                            "Pensiunan",
+                            "Tidak Bekerja"
+                        ],
+                        "additional_info": "Contoh kasus untuk ASN: - Manajer, yaitu Deputi, Direktur, Gubernur, Walikota, Bupati, Menteri. - Profesional, yaitu Dosen, Guru, Statistisi. - Teknisi, yaitu Pengawas perbatasan, Petugas imigrasi, Petugas bea cukai.",
+                        "validation": {
+                            "required": true
+                        }
+                    },
+                    {
+                        "text": "Deskripsikan pekerjaan Anda",
+                        "type": "text",
+                        "additional_info": "Contoh: - Mengajar anak SD. - Sekretaris di Kantor kecamatan.",
+                        "validation": {
+                            "required": true
+                        }
+                    },
+                    {
+                        "text": "Apakah Anda menerapkan prinsip eco-friendly saat melakukan perjalanan?",
+                        "type": "select",
+                        "multiple": false,
+                        "options": [
+                            "Ya",
+                            "Tidak",
+                            "Kadang-kadang",
+                            "Tidak bersedia menjawab"
+                        ],
+                        "additional_info": "Misalnya: Mengurangi penggunaan plastik, bijak menggunakan energi, membuang sampah pada tempatnya, dll.",
+                        "validation": {
+                            "required": true
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "Survei",
+                "questions": [
+                    {
+                        "text": "Nomor handphone",
+                        "type": "text",
+                        "validation": {
+                            "required": true,
+                            "pattern": "^[0-9]{7,15}$"
+                        },
+                        "modified_question": "Tuliskan nomor handphone Anda (misalnya: 08123456789)"
+                    },
+                    {
+                        "text": "Di provinsi manakah Anda tinggal?",
+                        "type": "select",
+                        "multiple": false,
+                        "options": [],
+                        "validation": {
+                            "required": true
+                        }
+                    },
+                    {
+                        "text": "Di Kabupaten/Kota manakah Anda tinggal?",
+                        "type": "select",
+                        "multiple": false,
+                        "options": [],
+                        "validation": {
+                            "required": true
+                        }
+                    },
+                    {
+                        "text": "Provinsi manakah yang Anda kunjungi pada periode Januari 2024-Desember 2024?",
+                        "type": "select",
+                        "multiple": false,
+                        "options": [],
+                        "validation": {
+                            "required": true
+                        }
+                    },
+                    {
+                        "text": "Kabupaten/Kota mana yang Anda kunjungi pada perjalanan tersebut?",
+                        "type": "select",
+                        "multiple": false,
+                        "options": [],
+                        "validation": {
+                            "required": true
+                        }
+                    },
+                    {
+                        "text": "Bulan apa saja Anda melakukan perjalanan ke {$kabkot}?",
+                        "type": "select",
+                        "multiple": true,
+                        "instruction": "Isian boleh lebih dari satu",
+                        "options": [
+                            "Januari 2024",
+                            "Februari 2024",
+                            "Maret 2024",
+                            "April 2024",
+                            "Mei 2024",
+                            "Juni 2024",
+                            "Juli 2024",
+                            "Agustus 2024",
+                            "September 2024",
+                            "Oktober 2024",
+                            "November 2024",
+                            "Desember 2024"
+                        ],
+                        "validation": {
+                            "required": true
+                        }
+                    },
+                    {
+                        "text": "Untuk menjawab pertanyaan berikutnya, pilihlah salah satu bulan perjalanan yang paling Anda ingat",
+                        "type": "select",
+                        "multiple": false,
+                        "options": [],
+                        "validation": {
+                            "required": true
+                        }
+                    },
+                    {
+                        "text": "Pada perjalanan ke {$kabkot} pada Bulan {$bulan}, apakah Anda melakukan perjalanan Pulang-Pergi di hari yang sama?",
+                        "type": "select",
+                        "multiple": false,
+                        "options": [
+                            "Ya",
+                            "Tidak"
+                        ],
+                        "validation": {
+                            "required": true
+                        }
+                    },
+                    {
+                        "text": "Berapa malam Anda melakukan perjalanan tersebut?",
+                        "type": "text",
+                        "unit": "malam",
+                        "additional_info": "Ket: Dihitung sejak Anda meninggalkan rumah sampai kembali lagi ke rumah. Pertambahan malam ditandai dengan pergantian tanggal.",
+                        "validation": {
+                            "required": true,
+                            "input_type": "number",
+                            "min": 0
+                        }
+                    },
+                    {
+                        "text": "Motivasi utama melakukan perjalanan ke {$kabkot} pada Bulan {$bulan}:",
+                        "type": "select",
+                        "multiple": false,
+                        "options": [
+                            {
+                                "text": "1. Untuk keperluan sendiri"
+                            },
+                            {
+                                "text": "2. Mengikuti perjalanan orang lain",
+                                "additional_info": "Misalnya: menemani orang tua berobat, mengantar anak kejuaraan, dll."
+                            }
+                        ],
+                        "validation": {
+                            "required": true
+                        }
+                    },
+                    {
+                        "text": "Maksud utama melakukan perjalanan ke {$kabkot} pada Bulan {$bulan} adalah:",
+                        "type": "select",
+                        "multiple": false,
+                        "options": [
+                            "Profesi/Bisnis",
+                            "Pertemuan/Kongres/Seminar",
+                            "Training/Pelatihan/Diklat",
+                            "Berlibur/Rekreasi",
+                            "Kursus",
+                            "Kesehatan/Berobat",
+                            "Kecantikan/Estetika",
+                            "Keagamaan (Termasuk Berziarah)",
+                            "Mengunjungi Teman/Famili",
+                            "Mudik/Pulkan Hari Raya",
+                            "Olahraga",
+                            "Kesenian",
+                            "Belanja/Shopping"
+                        ],
+                        "allow_other": true,
+                        "validation": {
+                            "required": true
+                        },
+                        "modified_question": "Apa maksud utama Anda melakukan perjalanan ke {$kabkot} pada Bulan {$bulan}?"
+                    },
+                    {
+                        "text": "Apakah dalam perjalanan ke {$kabkot} pada Bulan {$bulan} membeli paket perjalanan/liburan/tour?",
+                        "type": "select",
+                        "multiple": false,
+                        "options": [
+                            "Ya",
+                            "Tidak"
+                        ],
+                        "validation": {
+                            "required": true
+                        }
+                    },
+                    {
+                        "text": "Paket perjalanan/liburan/tour yang digunakan saat melakukan perjalanan:",
+                        "type": "select",
+                        "multiple": true,
+                        "instruction": "Paling sedikit dua pilihan",
+                        "options": [
+                            "(1) Transportasi",
+                            "(2) Akomodasi/Penginapan",
+                            "(3) Makan & Minum",
+                            "(4) Pemandu Wisata/Tour Guide",
+                            "(5) Objek Wisata",
+                            "(6) Lainnya"
+                        ],
+                        "validation": {
+                            "required": true
+                        },
+                        "layered_question": [
+                            {
+                                "text": "Apakah Anda menggunakan layanan transportasi dalam paket perjalanan/liburan/tour Anda?",
+                                "type": "select",
+                                "multiple": false,
+                                "instruction": "Pilih Ya atau Tidak.",
+                                "options": [
+                                    "Ya",
+                                    "Tidak"
+                                ],
+                                "validation": {
+                                    "required": true
+                                }
+                            },
+                            {
+                                "text": "Apakah Anda menggunakan layanan akomodasi/penginapan dalam paket perjalanan/liburan/tour Anda?",
+                                "type": "select",
+                                "multiple": false,
+                                "instruction": "Pilih Ya atau Tidak.",
+                                "options": [
+                                    "Ya",
+                                    "Tidak"
+                                ],
+                                "validation": {
+                                    "required": true
+                                }
+                            },
+                            {
+                                "text": "Apakah Anda menggunakan layanan makan & minum dalam paket perjalanan/liburan/tour Anda?",
+                                "type": "select",
+                                "multiple": false,
+                                "instruction": "Pilih Ya atau Tidak.",
+                                "options": [
+                                    "Ya",
+                                    "Tidak"
+                                ],
+                                "validation": {
+                                    "required": true
+                                }
+                            },
+                            {
+                                "text": "Apakah Anda menggunakan layanan pemandu wisata/tour guide dalam paket perjalanan/liburan/tour Anda?",
+                                "type": "select",
+                                "multiple": false,
+                                "instruction": "Pilih Ya atau Tidak.",
+                                "options": [
+                                    "Ya",
+                                    "Tidak"
+                                ],
+                                "validation": {
+                                    "required": true
+                                }
+                            },
+                            {
+                                "text": "Apakah Anda menggunakan layanan objek wisata dalam paket perjalanan/liburan/tour Anda?",
+                                "type": "select",
+                                "multiple": false,
+                                "instruction": "Pilih Ya atau Tidak.",
+                                "options": [
+                                    "Ya",
+                                    "Tidak"
+                                ],
+                                "validation": {
+                                    "required": true
+                                }
+                            },
+                            {
+                                "text": "Apakah Anda menggunakan layanan lainnya dalam paket perjalanan/liburan/tour Anda?",
+                                "type": "select",
+                                "multiple": false,
+                                "instruction": "Pilih Ya atau Tidak.",
+                                "options": [
+                                    "Ya",
+                                    "Tidak"
+                                ],
+                                "validation": {
+                                    "required": true
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "text": "Berapa harga paket perjalanan/liburan/tour yang Anda beli per orang?",
+                        "type": "text",
+                        "unit": "Rupiah",
+                        "validation": {
+                            "required": true,
+                            "input_type": "number",
+                            "min": 0
+                        }
+                    },
+                    {
+                        "text": "Selama melakukan perjalanan ke {$kabkot} pada Bulan {$bulan}, apa akomodasi utama (paling lama) yang Anda gunakan?",
+                        "type": "select",
+                        "multiple": false,
+                        "options": [
+                            "Hotel Bintang 4 atau 5",
+                            "Hotel Bintang 3",
+                            "Penginapan lainnya",
+                            "Rumah teman/keluarga"
+                        ],
+                        "additional_info": "Ket: Bermalam di kendaraan selama dalam perjalanan seperti di mobil, kapal, kereta api, dan sejenisnya, tidak dianggap menggunakan akomodasi.",
+                        "validation": {
+                            "required": true
+                        },
+                        "modified_question": "Selama melakukan perjalanan ke {$kabkot} pada Bulan {$bulan}, apa akomodasi utama (paling lama) yang Anda gunakan? Contoh: Hotel Bintang 4 atau 5, Hotel Bintang 3, Penginapan lainnya, atau Rumah teman/keluarga."
+                    },
+                    {
+                        "text": "Angkutan utama (paling jauh) apa yang Anda gunakan selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
+                        "type": "select",
+                        "multiple": false,
+                        "options": [
+                            {
+                                "text": "1. Angkutan udara",
+                                "additional_info": "Misalnya pesawat"
+                            },
+                            {
+                                "text": "2. Angkutan laut",
+                                "additional_info": "Misalnya Kapal laut dengan rute jauh"
+                            },
+                            {
+                                "text": "3. Angkutan sungai, danau, dan penyebrangan",
+                                "additional_info": "Misalnya perahu kecil yang melayani rute di perairan sungai, danau, atau kapal feri penyebrangan selat"
+                            },
+                            {
+                                "text": "4. Angkutan darat - kereta api/listrik",
+                                "additional_info": "Misalnya kereta api jarak jauh, KRL, LRT, dan MRT"
+                            },
+                            {
+                                "text": "5. Angkutan darat - umum",
+                                "additional_info": "Misalnya angkot, bus, ojek online, taksi online, dll"
+                            },
+                            {
+                                "text": "6. Angkutan darat - pribadi",
+                                "additional_info": "Yaitu kendaraan milik pribadi yang dipakai sendiri atau bersama rombongan"
+                            },
+                            {
+                                "text": "7. Angkutan darat - sewa tanpa sopir",
+                                "additional_info": "Misalnya sewa motor atau sewa mobil tidak termasuk sopir"
+                            }
+                        ],
+                        "validation": {
+                            "required": true
+                        },
+                        "modified_question": "Angkutan utama (paling jauh) apa yang Anda gunakan selama perjalanan ke {$kabkot} pada Bulan {$bulan}? Contoh: pesawat, kapal laut, perahu kecil, kereta api, angkot, taksi online, mobil pribadi, dll."
+                    },
+                    {
+                        "text": "Kegiatan apa saja yang Anda lakukan pada perjalanan ke {$kabkot} pada Bulan {$bulan}? (Dapat dipilih lebih dari satu)",
+                        "type": "select",
+                        "multiple": true,
+                        "options": [
+                            "Wisata bahari",
+                            "Wisata petualangan",
+                            "Wisata kesenian",
+                            "Wisata kota dan pedesaan",
+                            "Wisata olahraga",
+                            "Wisata terintegrasi",
+                            "Wisata belanja",
+                            "Ekowisata",
+                            "Wisata sejarah/religi",
+                            "Wisata kuliner",
+                            "MICE(Meeting, Incentive, Conference, Exhibition)",
+                            "Wisata kesehatan",
+                            "Tidak melakukan satu pun kegiatan di atas"
+                        ],
+                        "validation": {
+                            "required": true
+                        },
+                        "layered_question": [
+                            {
+                                "text": "Apakah Anda melakukan wisata bahari selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
+                                "type": "select",
+                                "multiple": false,
+                                "instruction": "Pilih Ya atau Tidak.",
+                                "options": [
+                                    "Ya",
+                                    "Tidak"
+                                ],
+                                "validation": {
+                                    "required": true
+                                }
+                            },
+                            {
+                                "text": "Apakah Anda melakukan wisata petualangan selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
+                                "type": "select",
+                                "multiple": false,
+                                "instruction": "Pilih Ya atau Tidak.",
+                                "options": [
+                                    "Ya",
+                                    "Tidak"
+                                ],
+                                "validation": {
+                                    "required": true
+                                }
+                            },
+                            {
+                                "text": "Apakah Anda melakukan wisata kesenian selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
+                                "type": "select",
+                                "multiple": false,
+                                "instruction": "Pilih Ya atau Tidak.",
+                                "options": [
+                                    "Ya",
+                                    "Tidak"
+                                ],
+                                "validation": {
+                                    "required": true
+                                }
+                            },
+                            {
+                                "text": "Apakah Anda melakukan wisata kota dan pedesaan selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
+                                "type": "select",
+                                "multiple": false,
+                                "instruction": "Pilih Ya atau Tidak.",
+                                "options": [
+                                    "Ya",
+                                    "Tidak"
+                                ],
+                                "validation": {
+                                    "required": true
+                                }
+                            },
+                            {
+                                "text": "Apakah Anda melakukan wisata olahraga selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
+                                "type": "select",
+                                "multiple": false,
+                                "instruction": "Pilih Ya atau Tidak.",
+                                "options": [
+                                    "Ya",
+                                    "Tidak"
+                                ],
+                                "validation": {
+                                    "required": true
+                                }
+                            },
+                            {
+                                "text": "Apakah Anda melakukan ekowisata selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
+                                "type": "select",
+                                "multiple": false,
+                                "instruction": "Pilih Ya atau Tidak.",
+                                "options": [
+                                    "Ya",
+                                    "Tidak"
+                                ],
+                                "validation": {
+                                    "required": true
+                                }
+                            },
+                            {
+                                "text": "Apakah Anda melakukan wisata sejarah/religi selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
+                                "type": "select",
+                                "multiple": false,
+                                "instruction": "Pilih Ya atau Tidak.",
+                                "options": [
+                                    "Ya",
+                                    "Tidak"
+                                ],
+                                "validation": {
+                                    "required": true
+                                }
+                            },
+                            {
+                                "text": "Apakah Anda melakukan wisata kuliner selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
+                                "type": "select",
+                                "multiple": false,
+                                "instruction": "Pilih Ya atau Tidak.",
+                                "options": [
+                                    "Ya",
+                                    "Tidak"
+                                ],
+                                "validation": {
+                                    "required": true
+                                }
+                            },
+                            {
+                                "text": "Apakah Anda melakukan MICE (Meeting, Incentive, Conference, Exhibition) selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
+                                "type": "select",
+                                "multiple": false,
+                                "instruction": "Pilih Ya atau Tidak.",
+                                "options": [
+                                    "Ya",
+                                    "Tidak"
+                                ],
+                                "validation": {
+                                    "required": true
+                                }
+                            },
+                            {
+                                "text": "Apakah Anda melakukan wisata kesehatan selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
+                                "type": "select",
+                                "multiple": false,
+                                "instruction": "Pilih Ya atau Tidak.",
+                                "options": [
+                                    "Ya",
+                                    "Tidak"
+                                ],
+                                "validation": {
+                                    "required": true
+                                }
+                            },
+                            {
+                                "text": "Apakah Anda tidak melakukan kegiatan satu pun kegiatan di atas selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
+                                "type": "select",
+                                "multiple": false,
+                                "instruction": "Pilih Ya atau Tidak.",
+                                "options": [
+                                    "Ya",
+                                    "Tidak"
+                                ],
+                                "validation": {
+                                    "required": true
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "text": "Apakah Anda berniat untuk mengulangi kembali perjalanan ke {$kabkot} di masa yang akan datang dengan alasan memiliki pengalaman yang positif selama berkunjung?",
+                        "type": "select",
+                        "multiple": false,
+                        "options": [
+                            "Ya",
+                            "Tidak",
+                            "Belum Tahu"
+                        ],
+                        "validation": {
+                            "required": true
+                        }
+                    },
+                    {
+                        "text": "Akomodasi/Penginapan",
+                        "type": "text",
+                        "unit": "Rp",
+                        "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0. Jika tidak tahu, mohon perkirakan.",
+                        "validation": {
+                            "required": true,
+                            "input_type": "number",
+                            "min": 0
+                        },
+                        "modified_question": "Berapa total pengeluaran Anda untuk akomodasi atau penginapan selama perjalanan ini?"
+                    },
+                    {
+                        "text": "Makanan/Minuman",
+                        "type": "text",
+                        "unit": "Rp",
+                        "instruction": "Wajib diisi.",
+                        "validation": {
+                            "required": true,
+                            "input_type": "number",
+                            "min": 0
+                        },
+                        "modified_question": "Berapa total pengeluaran Anda untuk makanan dan minuman selama perjalanan ini?"
+                    },
+                    {
+                        "text": "Transportasi/Angkutan",
+                        "type": "text",
+                        "unit": "Rp",
+                        "additional_info": "Total pengeluaran untuk transportasi selama perjalanan. Jika menggunakan angkutan pribadi, isikan pengeluaran pembelian BBM dan biaya tol.",
+                        "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                        "validation": {
+                            "required": true,
+                            "input_type": "number",
+                            "min": 0
+                        },
+                        "modified_question": "Berapa total pengeluaran Anda untuk transportasi selama perjalanan ini? Termasuk biaya BBM dan tol jika menggunakan kendaraan pribadi."
+                    },
+                    {
+                        "text": "Cinderamata/Oleh-oleh/Buah Tangan",
+                        "type": "text",
+                        "unit": "Rp",
+                        "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                        "validation": {
+                            "required": true,
+                            "input_type": "number",
+                            "min": 0
+                        },
+                        "modified_question": "Berapa total pengeluaran Anda untuk membeli cinderamata, oleh-oleh, atau buah tangan selama perjalanan ini?"
+                    },
+                    {
+                        "text": "Belanja (Tidak untuk Dijual Kembali)",
+                        "type": "text",
+                        "unit": "Rp",
+                        "additional_info": "Termasuk belanja untuk keperluan pribadi selama perjalanan, seperti sabun, pasta gigi, sikat gigi, tisu, dsb",
+                        "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                        "validation": {
+                            "required": true,
+                            "input_type": "number",
+                            "min": 0
+                        },
+                        "modified_question": "Berapa total pengeluaran Anda untuk belanja kebutuhan pribadi selama perjalanan ini? Contohnya seperti sabun, pasta gigi, atau tisu."
+                    },
+                    {
+                        "text": "Hiburan/Rekreasi",
+                        "type": "text",
+                        "unit": "Rp",
+                        "additional_info": "Tiket masuk objek wisata atau atraksi, seperti museum, taman, kebun binatang, candi, pendakian gunung, tari-tarian, konser, pertunjukkan, diving, dll",
+                        "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                        "validation": {
+                            "required": true,
+                            "input_type": "number",
+                            "min": 0
+                        },
+                        "modified_question": "Berapa total pengeluaran Anda untuk hiburan atau rekreasi selama perjalanan ini? Termasuk tiket masuk ke objek wisata atau atraksi."
+                    },
+                    {
+                        "text": "Kesehatan/Kecantikan/Olahraga",
+                        "type": "text",
+                        "unit": "Rp",
+                        "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                        "validation": {
+                            "required": true,
+                            "input_type": "number",
+                            "min": 0
+                        },
+                        "modified_question": "Berapa total pengeluaran Anda untuk kesehatan, kecantikan, atau olahraga selama perjalanan ini?"
+                    },
+                    {
+                        "text": "Pemandu Wisata/Tour Guide",
+                        "type": "text",
+                        "unit": "Rp",
+                        "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                        "validation": {
+                            "required": true,
+                            "input_type": "number",
+                            "min": 0
+                        },
+                        "modified_question": "Berapa total pengeluaran Anda untuk menggunakan jasa pemandu wisata atau tour guide selama perjalanan ini?"
+                    },
+                    {
+                        "text": "Biaya Lainnya",
+                        "type": "text",
+                        "unit": "Rp",
+                        "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                        "validation": {
+                            "required": true,
+                            "input_type": "number",
+                            "min": 0
+                        },
+                        "modified_question": "Apakah ada biaya lain yang Anda keluarkan selama perjalanan ini? Jika ya, berapa totalnya?"
+                    },
+                    {
+                        "text": "Pengeluaran sebelum perjalanan",
+                        "type": "text",
+                        "unit": "Rp",
+                        "additional_info": "Misalnya: pembelian pakaian dan makanan untuk keberangkatan wisata, buah tangan untuk teman/keluarga di daerah tujuan, stok obat, perawatan kendaraan sebelum perjalanan, dll.",
+                        "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                        "validation": {
+                            "required": true,
+                            "input_type": "number",
+                            "min": 0
+                        },
+                        "modified_question": "Berapa total pengeluaran Anda sebelum perjalanan ini? Misalnya, pembelian pakaian, makanan, atau perawatan kendaraan."
+                    },
+                    {
+                        "text": "Pengeluaran setelah perjalanan",
+                        "type": "text",
+                        "unit": "Rp",
+                        "additional_info": "Misalnya: laundry pakaian pada saat pulang, perawatan kendaraan setelah perjalanan, dll.",
+                        "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                        "validation": {
+                            "required": true,
+                            "input_type": "number",
+                            "min": 0
+                        },
+                        "modified_question": "Berapa total pengeluaran Anda setelah perjalanan ini? Contohnya, biaya laundry pakaian atau perawatan kendaraan."
+                    }
+                ]
+            }
+        ]
+    }
+}

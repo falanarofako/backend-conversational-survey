@@ -1,0 +1,774 @@
+{
+    "dataset": [
+        {
+            "question": {
+                "text": "Apakah Anda menggunakan layanan objek wisata dalam paket perjalanan/liburan/tour Anda?",
+                "type": "select",
+                "multiple": false,
+                "instruction": "Pilih Ya atau Tidak.",
+                "options": [
+                    "Ya",
+                    "Tidak"
+                ],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Ya, saya menggunakan layanan objek wisata yang termasuk dalam paket.",
+            "intent": "expected_answer",
+            "explanation": "Jawaban formal yang langsung menyatakan penggunaan layanan objek wisata.",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "text": "Berapa total pengeluaran Anda untuk belanja kebutuhan pribadi selama perjalanan ini? Contohnya seperti sabun, pasta gigi, atau tisu.",
+                "type": "text",
+                "unit": "Rp",
+                "additional_info": "Termasuk belanja untuk keperluan pribadi selama perjalanan, seperti sabun, pasta gigi, sikat gigi, tisu, dsb",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Eh, saya malah baru inget beli jaket waktu itu, nggak nyangka jadi lupa sama sabun dan pasta gigi.",
+            "intent": "other",
+            "explanation": "Respons ini tidak menjawab pertanyaan tentang pengeluaran untuk kebutuhan pribadi, malah beralih ke pembelian jaket.",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "text": "Apakah Anda menggunakan layanan objek wisata dalam paket perjalanan/liburan/tour Anda?",
+                "type": "select",
+                "multiple": false,
+                "instruction": "Pilih Ya atau Tidak.",
+                "options": [
+                    "Ya",
+                    "Tidak"
+                ],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Objek wisata itu maksudnya yang kayak gimana ya?",
+            "intent": "question",
+            "explanation": "Pertanyaan informal yang meminta penjelasan tentang konsep layanan objek wisata.",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "text": "Berapa total pengeluaran Anda untuk kesehatan, kecantikan, atau olahraga selama perjalanan ini?",
+                "type": "text",
+                "unit": "Rp",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Selama perjalanan, saya menghabiskan sekitar Rp 400.000 untuk perawatan wajah dan olahraga di pusat kebugaran.",
+            "intent": "expected_answer",
+            "explanation": "Respons ini memberikan angka yang jelas untuk total pengeluaran yang terkait dengan kesehatan, kecantikan, dan olahraga.",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "text": "Berapa total pengeluaran Anda untuk membeli cinderamata, oleh-oleh, atau buah tangan selama perjalanan ini?",
+                "type": "text",
+                "unit": "Rp",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Apakah pengeluaran untuk oleh-oleh ini juga termasuk biaya pengemasan atau hanya barangnya saja?",
+            "intent": "question",
+            "explanation": "Respons ini bertanya untuk klarifikasi apakah biaya pengemasan masuk dalam pengeluaran oleh-oleh.",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "text": "Tuliskan nomor handphone Anda (misalnya: 08123456789)",
+                "type": "text",
+                "validation": {
+                    "required": true,
+                    "pattern": "^[0-9]{7,15}$"
+                }
+            },
+            "response": "Apakah nomor handphone ini akan dijaga kerahasiaannya dan tidak disebarkan ke pihak lain?",
+            "intent": "question",
+            "explanation": "Respons berupa pertanyaan untuk memastikan kerahasiaan data nomor handphone yang diberikan",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "text": "Apakah Anda melakukan wisata bahari selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+                "type": "select",
+                "multiple": false,
+                "instruction": "Pilih Ya atau Tidak.",
+                "options": [
+                    "Ya",
+                    "Tidak"
+                ],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Saya rasa Manado adalah kota yang indah, tapi saya lebih suka mendaki gunung daripada ke pantai.",
+            "intent": "other",
+            "explanation": "Respons ini tidak menjawab pertanyaan dan malah membahas preferensi pribadi yang tidak relevan dengan wisata bahari.",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "text": "Apa maksud utama Anda melakukan perjalanan ke Kota Yogyakarta pada Bulan Mei 2024?",
+                "type": "select",
+                "multiple": false,
+                "options": [
+                    "Profesi/Bisnis",
+                    "Pertemuan/Kongres/Seminar",
+                    "Training/Pelatihan/Diklat",
+                    "Berlibur/Rekreasi",
+                    "Kursus",
+                    "Kesehatan/Berobat",
+                    "Kecantikan/Estetika",
+                    "Keagamaan (Termasuk Berziarah)",
+                    "Mengunjungi Teman/Famili",
+                    "Mudik/Pulkan Hari Raya",
+                    "Olahraga",
+                    "Kesenian",
+                    "Belanja/Shopping"
+                ],
+                "allow_other": true,
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Saya ingin pergi ke Yogyakarta bulan Mei untuk liburan sambil mengeksplorasi tempat-tempat wisata.",
+            "intent": "expected_answer",
+            "explanation": "Jawaban ini menjelaskan bahwa alasan perjalanan adalah untuk liburan dan menjelajahi tempat wisata di Yogyakarta.",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "text": "Kabupaten/Kota mana yang Anda kunjungi pada perjalanan tersebut?",
+                "type": "select",
+                "multiple": false,
+                "options": [],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Maaf, saya merasa kurang nyaman untuk menyebutkan kabupaten/kota mana saja yang saya kunjungi.",
+            "intent": "other",
+            "explanation": "Respons menyatakan ketidaknyamanan untuk memberikan informasi kabupaten/kota yang dikunjungi dengan kalimat formal.",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "text": "Apakah Anda melakukan MICE (Meeting, Incentive, Conference, Exhibition) selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+                "type": "select",
+                "multiple": false,
+                "instruction": "Pilih Ya atau Tidak.",
+                "options": [
+                    "Ya",
+                    "Tidak"
+                ],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "MICE itu maksudnya cuma acara resmi atau termasuk trip bareng tim kantor juga, ya?",
+            "intent": "question",
+            "explanation": "Respons ini berupa pertanyaan santai yang meminta penjelasan lebih lanjut terkait MICE.",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "text": "Pada perjalanan ke Kota Batu pada Bulan Desember 2024, apakah Anda melakukan perjalanan Pulang-Pergi di hari yang sama?",
+                "type": "select",
+                "multiple": false,
+                "options": [
+                    "Ya",
+                    "Tidak"
+                ],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Apa yang dimaksud dengan perjalanan pulang-pergi?",
+            "intent": "question",
+            "explanation": "Respons berupa pertanyaan untuk menanyakan makna perjalanan pulang-pergi dengan gaya formal.",
+            "style": "formal"
+        },
+        {
+            "question":  {
+                "text": "Apakah Anda melakukan wisata petualangan selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+                "type": "select",
+                "multiple": false,
+                "instruction": "Pilih Ya atau Tidak.",
+                "options": [
+                    "Ya",
+                    "Tidak"
+                ],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Wisata petualangan tuh maksudnya apa ya? Kayak rafting atau mendaki gunung?",
+            "intent": "question",
+            "explanation": "Respons ini menanyakan definisi wisata petualangan dengan gaya bahasa santai.",
+            "style": "informal"
+        },
+        {
+            "question": "Motivasi utama melakukan perjalanan ke Kota Semarang pada Bulan Juni 2024?",
+            "response": "Motivasi utama saya adalah untuk menghadiri acara konferensi yang akan diadakan di Semarang pada bulan Juni 2024.",
+            "intent": "answer",
+            "explanation": "Jawaban ini menunjukkan bahwa alasan perjalanan adalah untuk menghadiri acara tertentu, yaitu konferensi.",
+            "style": "formal"
+        },
+        {
+            "question": "Di provinsi manakah Anda tinggal?",
+            "response": "Apakah informasi provinsi tempat tinggal ini akan digunakan untuk tujuan statistik saja atau ada keperluan lain?",
+            "intent": "question",
+            "explanation": "Respons berupa pertanyaan untuk mengklarifikasi tujuan penggunaan data provinsi tempat tinggal",
+            "style": "formal"
+        },
+        {
+            "question": "Deskripsikan pekerjaan Anda",
+            "response": "Males ah ceritain kerjaan, nanti jadi kepikiran kerjaan terus. Gak usah lah ya, gak penting juga buat survei ini.",
+            "intent": "other",
+            "explanation": "Respons menolak menjawab karena malas memikirkan pekerjaan dan menganggapnya tidak penting bagi survei dengan gaya informal",
+            "style": "informal"
+        },
+        {
+            "question": "Berapa total pengeluaran Anda untuk hiburan atau rekreasi selama perjalanan ini? Termasuk tiket masuk ke objek wisata atau atraksi.",
+            "response": "Saya lebih banyak fokus pada pengalaman kuliner, jadi pengeluaran untuk hiburan cukup sedikit.",
+            "intent": "other",
+            "explanation": "Respons ini tidak langsung menjawab pertanyaan tentang pengeluaran hiburan, tetapi lebih mengarah ke pengalaman kuliner.",
+            "style": "formal"
+        },
+        {
+            "question": "Motivasi utama melakukan perjalanan ke Kota Semarang pada Bulan Juni 2024?",
+            "response": "Saya berencana ke Semarang bulan Juni untuk liburan bareng teman-teman.",
+            "intent": "answer",
+            "explanation": "Jawaban ini menjelaskan bahwa alasan perjalanan adalah untuk liburan bersama teman-teman, dengan gaya bahasa yang lebih santai.",
+            "style": "informal"
+        },
+        {
+            "question": "Apakah Anda menggunakan layanan objek wisata dalam paket perjalanan/liburan/tour Anda?",
+            "response": "Apa yang dimaksud dengan layanan objek wisata?",
+            "intent": "question",
+            "explanation": "Pertanyaan formal yang meminta penjelasan lebih lanjut tentang layanan objek wisata.",
+            "style": "formal"
+        },
+        {
+            "question": "Apakah Anda melakukan wisata petualangan selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+            "response": "Kota Manado memang terkenal dengan banyak pilihan wisatanya.",
+            "intent": "other",
+            "explanation": "Respons ini merupakan pernyataan umum yang tidak relevan dengan pertanyaan yang ditanyakan.",
+            "style": "formal"
+        },
+        {
+            "question": "Apakah Anda melakukan wisata kesehatan selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+            "response": "Iya, aku sempat coba spa tradisional di salah satu resort di Manado!",
+            "intent": "answer",
+            "explanation": "Respons ini memberikan jawaban tentang wisata kesehatan dengan gaya bahasa santai.",
+            "style": "informal"
+        },
+        {
+            "question": "Deskripsikan pekerjaan Anda",
+            "response": "Emang kalo gw ceritain kerjaan gw nanti bakal dipake buat apa sih infonya?",
+            "intent": "question",
+            "explanation": "Respons menanyakan tujuan penggunaan informasi deskripsi pekerjaan yang diberikan dengan gaya informal",
+            "style": "informal"
+        },
+        {
+            "question": "Di Kabupaten/Kota manakah Anda tinggal?",
+            "response": "Nanya alamat lengkap segala, bikin gak nyaman aja deh. Udahan ya pertanyaannya.",
+            "intent": "other",
+            "explanation": "Respons mengekspresikan ketidaknyamanan dengan pertanyaan yang dirasa terlalu mendetail tentang alamat dan ingin mengakhiri pertanyaan tersebut, dengan gaya informal",
+            "style": "informal"
+        },
+        {
+            "question": "Jenis kelamin",
+            "response": "Laki-laki",
+            "intent": "answer",
+            "explanation": "Respons memberikan informasi jenis kelamin secara langsung sesuai pilihan yang tersedia",
+            "style": "formal"
+        },
+        {
+            "question": "Bulan apa saja Anda melakukan perjalanan ke Kota Denpasar?",
+            "response": "Saya melakukan perjalanan ke Kota Denpasar pada bulan Juli 2024 dan November 2024.",
+            "intent": "answer",
+            "explanation": "Respons menyebutkan bulan-bulan saat melakukan perjalanan ke Denpasar dengan kalimat formal.",
+            "style": "formal"
+        },
+        {
+            "question": "Jenjang pendidikan tertinggi yang ditamatkan",
+            "response": "Saya lulusan dari program Sarjana (S1)",
+            "intent": "answer",
+            "explanation": "Respons menyatakan jenjang pendidikan tertinggi yang ditamatkan adalah Sarjana (S1) dengan kalimat lengkap",
+            "style": "formal"
+        },
+        {
+            "question": "Berapa total pengeluaran Anda untuk transportasi selama perjalanan ini? Termasuk biaya BBM dan tol jika menggunakan kendaraan pribadi.",
+            "response": "Saya lebih suka makan malam enak di restoran, pengeluaran transportasi saya tidak terlalu banyak.",
+            "intent": "other",
+            "explanation": "Respons ini tidak menjawab pertanyaan tentang pengeluaran transportasi, tetapi berfokus pada topik makanan.",
+            "style": "formal"
+        },
+        {
+            "question": "Provinsi manakah yang Anda kunjungi pada periode Januari 2024-Desember 2024?",
+            "response": "Saya mengunjungi Provinsi Jawa Tengah selama periode Januari 2024 hingga Desember 2024.",
+            "intent": "answer",
+            "explanation": "Respons menyatakan provinsi yang dikunjungi selama periode waktu tertentu dengan kalimat formal.",
+            "style": "formal"
+        },
+        {
+            "question": "Apakah Anda menerapkan prinsip eco-friendly saat melakukan perjalanan?",
+            "response": "Ya, saya selalu berusaha menerapkan prinsip ramah lingkungan dalam setiap perjalanan yang saya lakukan, seperti mengurangi penggunaan plastik sekali pakai, memilih transportasi umum atau bersepeda, dan menginap di eco-lodge yang menerapkan praktik berkelanjutan.",
+            "intent": "answer",
+            "explanation": "Respons menyatakan penerapan prinsip eco-friendly saat melakukan perjalanan dengan memberikan contoh tindakan spesifik yang dilakukan",
+            "style": "formal"
+        },
+        {
+            "question": "Berapa total pengeluaran Anda untuk transportasi selama perjalanan ini? Termasuk biaya BBM dan tol jika menggunakan kendaraan pribadi.",
+            "response": "Saya kira sekitar Rp 600.000, karena sering lewat tol dan pengisian BBM cukup sering.",
+            "intent": "answer",
+            "explanation": "Respons ini memberikan estimasi pengeluaran dengan gaya informal.",
+            "style": "informal"
+        },
+        {
+            "question": "Selama melakukan perjalanan ke Kota Semarang pada Bulan Agustus 2024, apa akomodasi utama (paling lama) yang Anda gunakan? Pilihan yang tersedia: Hotel Bintang 4 atau 5, Hotel Bintang 3, Penginapan lainnya, atau Rumah teman/keluarga.",
+            "response": "Apa sih yang dimaksud dengan penginapan lainnya? Bisa jelasin lebih lanjut?",
+            "intent": "question",
+            "explanation": "Pertanyaan formal yang meminta penjelasan lebih lanjut mengenai penginapan lainnya.",
+            "style": "formal"
+        },
+        {
+            "question": "Apakah Anda menggunakan layanan pemandu wisata/tour guide dalam paket perjalanan/liburan/tour Anda?",
+            "response": "Apakah Anda dapat menjelaskan lebih lanjut mengenai manfaat menggunakan layanan pemandu wisata dalam paket perjalanan?",
+            "intent": "question",
+            "explanation": "Pertanyaan ini digunakan untuk meminta informasi lebih lanjut mengenai manfaat layanan pemandu wisata.",
+            "style": "formal"
+        },
+        {
+            "question": "Di provinsi manakah Anda tinggal?",
+            "response": "Gw tinggal di DKI Jakarta.",
+            "intent": "answer",
+            "explanation": "Respons menyatakan provinsi tempat tinggal dengan gaya bahasa informal",
+            "style": "informal"
+        },
+        {
+            "question": "Apakah ada biaya lain yang Anda keluarkan selama perjalanan ini? Jika ya, berapa totalnya?",
+            "response": "Apakah biaya untuk transportasi dari bandara ke hotel dihitung dalam biaya lain ini?",
+            "intent": "question",
+            "explanation": "Respons ini bertanya apakah biaya transportasi dihitung sebagai biaya tambahan yang dimaksud dalam pertanyaan.",
+            "style": "formal"
+        },
+        {
+            "question": "Apakah Anda melakukan wisata kota dan pedesaan selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+            "response": "Wisata kota dan pedesaan itu gimana sih? Kayak jalan-jalan di desa atau keliling kota ya?",
+            "intent": "question",
+            "explanation": "Respons ini meminta klarifikasi definisi wisata kota dan pedesaan dalam gaya santai.",
+            "style": "informal"
+        },
+        {
+            "question": "Angkutan utama (paling jauh) apa yang Anda gunakan selama perjalanan ke Kabupaten Magelang pada Bulan Desember 2024? Contoh: pesawat, kapal laut, perahu kecil, kereta api, angkot, taksi online, mobil pribadi, dll.",
+            "response": "Kapal laut",
+            "intent": "answer",
+            "explanation": "Pengguna memilih kapal laut sebagai angkutan utama yang digunakan untuk perjalanan ke Kabupaten Magelang.",
+            "style": "informal"
+        },
+        {
+            "question": "Apakah Anda menggunakan layanan akomodasi/penginapan dalam paket perjalanan/liburan/tour Anda?",
+            "response": "Kayaknya pertanyaan ini nggak nyambung deh buat saya.",
+            "intent": "other",
+            "explanation": "Respon informal yang menyatakan pengguna merasa pertanyaan tidak relevan.",
+            "style": "informal"
+        },
+        {
+            "question": "Usia",
+            "response": "Emangnya kalo gw kasih tau umur, datanya bakal dipake buat apa aja nih?",
+            "intent": "question",
+            "explanation": "Respons menanyakan penggunaan data usia yang diberikan dengan gaya bahasa informal",
+            "style": "informal"
+        },
+        {
+            "question": "Apakah Anda melakukan wisata kota dan pedesaan selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+            "response": "Apa saja yang termasuk dalam wisata kota dan pedesaan? Apakah mencakup kunjungan ke desa adat?",
+            "intent": "question",
+            "explanation": "Respons ini berupa pertanyaan untuk meminta penjelasan tentang cakupan wisata kota dan pedesaan, menggunakan gaya formal.",
+            "style": "formal"
+        },
+        {
+            "question": "Provinsi manakah yang Anda kunjungi pada periode Januari 2024-Desember 2024?",
+            "response": "Maaf, saya tidak ingin menyebutkan provinsi mana saja yang saya kunjungi dalam periode tersebut.",
+            "intent": "other",
+            "explanation": "Respons menyatakan ketidakinginan untuk memberikan informasi provinsi yang dikunjungi dengan kalimat formal.",
+            "style": "formal"
+        },
+        {
+            "question": "Apakah Anda melakukan wisata bahari selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+            "response": "Enggak tahu, saya lebih suka nongkrong di kafe daripada ke laut.",
+            "intent": "other",
+            "explanation": "Respons ini tidak relevan dengan pertanyaan dan malah membahas preferensi lain dengan gaya santai.",
+            "style": "informal"
+        },
+        {
+            "question": "Angkutan utama (paling jauh) apa yang Anda gunakan selama perjalanan ke Kabupaten Magelang pada Bulan Desember 2024? Contoh: pesawat, kapal laut, perahu kecil, kereta api, angkot, taksi online, mobil pribadi, dll.",
+            "response": "Saya lebih suka minum kopi dulu sebelum menjawab.",
+            "intent": "other",
+            "explanation": "Pengguna memberikan respons yang tidak relevan dengan pertanyaan yang diajukan, yang tidak mengarah pada jawaban terkait angkutan utama.",
+            "style": "informal"
+        },
+        {
+            "question": "Berapa total pengeluaran Anda untuk menggunakan jasa pemandu wisata atau tour guide selama perjalanan ini?",
+            "response": "Eh, saya malah lebih sering main ke pantai daripada pake tour guide, jadi nggak ngeluarin banyak uang buat pemandu.",
+            "intent": "other",
+            "explanation": "Respons ini tidak relevan dengan pertanyaan pengeluaran untuk pemandu wisata dan malah beralih ke topik liburan ke pantai.",
+            "style": "informal"
+        },
+        {
+            "question": "Apakah Anda melakukan wisata kuliner selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+            "response": "Iya, makanan Manado enak banget! Aku suka coba Tinutuan sama ikan Cakalang bakar.",
+            "intent": "answer",
+            "explanation": "Respons ini memberikan jawaban mengenai pengalaman wisata kuliner dengan gaya bahasa santai.",
+            "style": "informal"
+        },
+        {
+            "question": "Apakah Anda berniat untuk mengulangi kembali perjalanan ke Kota Manado di masa yang akan datang dengan alasan memiliki pengalaman yang positif selama berkunjung?",
+            "response": "Iya banget! Manado itu seru banget, makanannya enak, orang-orangnya ramah. Pasti pengen balik lagi!",
+            "intent": "answer",
+            "explanation": "Jawaban ini menyatakan keinginan untuk kembali dengan gaya santai dan menyoroti pengalaman positif.",
+            "style": "informal"
+        },
+        {
+            "question": "Apakah Anda melakukan MICE (Meeting, Incentive, Conference, Exhibition) selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+            "response": "Ya, saya menghadiri sebuah konferensi bisnis dan pameran produk lokal selama perjalanan tersebut.",
+            "intent": "answer",
+            "explanation": "Jawaban ini secara langsung memberikan informasi terkait aktivitas MICE yang dilakukan.",
+            "style": "formal"
+        },
+        {
+            "question": "Berapa harga paket perjalanan/liburan/tour yang Anda beli per orang?",
+            "response": "Gue lebih suka mikirin kegiatan di tempat liburannya daripada harga paketnya.",
+            "intent": "other",
+            "explanation": "Pernyataan informal yang tidak relevan dengan pertanyaan harga, lebih fokus pada kegiatan liburan.",
+            "style": "informal"
+        },
+        {
+            "question": "Pada perjalanan ke Kota Batu pada Bulan Desember 2024, apakah Anda melakukan perjalanan Pulang-Pergi di hari yang sama?",
+            "response": "Ya, pada perjalanan ke Kota Batu pada bulan Desember 2024, saya melakukan perjalanan pulang-pergi di hari yang sama.",
+            "intent": "answer",
+            "explanation": "Respons menyatakan bahwa perjalanan ke Kota Batu pada Desember 2024 dilakukan pulang-pergi di hari yang sama dengan kalimat formal.",
+            "style": "formal"
+        },
+        {
+            "question": "Apakah Anda menggunakan layanan transportasi dalam paket perjalanan/liburan/tour Anda?",
+            "response": "Eh, ini kayaknya nggak ada hubungannya sama aku deh.",
+            "intent": "other",
+            "explanation": "Pernyataan informal yang menunjukkan pengguna merasa pertanyaan tidak relevan.",
+            "style": "informal"
+        },
+        {
+            "question": "Nomor handphone",
+            "response": "Emangnya nomor HP gw bakal dipake buat apa aja sih sama survei ini?",
+            "intent": "question",
+            "explanation": "Respons menanyakan tujuan penggunaan data nomor handphone yang diminta dengan gaya informal",
+            "style": "informal"
+        },
+        {
+            "question": "Apakah Anda melakukan ekowisata selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+            "response": "Saya duduk di hotel dan pergi ke tempat-tempat alam.",
+            "intent": "other",
+            "explanation": "Respons ini tidak menjawab pertanyaan secara relevan dan lebih fokus pada kegiatan yang tidak terkait dengan ekowisata.",
+            "style": "informal"
+        },
+        {
+            "question": "Berapa total pengeluaran Anda untuk hiburan atau rekreasi selama perjalanan ini? Termasuk tiket masuk ke objek wisata atau atraksi.",
+            "response": "Eh, saya malah mikirin pengeluaran buat oleh-oleh, bukan untuk tiket atraksi.",
+            "intent": "other",
+            "explanation": "Respons ini tidak menjawab pertanyaan tentang hiburan atau rekreasi, malah beralih ke topik pengeluaran untuk oleh-oleh.",
+            "style": "informal"
+        },
+        {
+            "question": "Berapa total pengeluaran Anda untuk akomodasi atau penginapan selama perjalanan ini?",
+            "response": "Oh, ngomongin pengeluaran bikin saya lapar. Mau pesan makan dulu.",
+            "intent": "other",
+            "explanation": "Respons ini sama sekali tidak relevan dengan pertanyaan dan tidak memberikan jawaban.",
+            "style": "informal"
+        },
+        {
+            "question": "Berapa malam Anda melakukan perjalanan tersebut?",
+            "response": "Apakah jumlah malam perjalanan ini akan dianalisis untuk mengetahui pola lama tinggal wisatawan di daerah tujuan?",
+            "intent": "question",
+            "explanation": "Respons berupa pertanyaan untuk mengklarifikasi tujuan pengumpulan data lama perjalanan dengan gaya formal.",
+            "style": "formal"
+        },
+        {
+            "question": "Berapa total pengeluaran Anda untuk membeli cinderamata, oleh-oleh, atau buah tangan selama perjalanan ini?",
+            "response": "Jadi, apakah hanya oleh-oleh yang dimaksud, atau termasuk juga souvenir untuk teman-teman?",
+            "intent": "question",
+            "explanation": "Respons ini bertanya untuk klarifikasi apakah hanya oleh-oleh untuk keluarga yang dimaksud.",
+            "style": "informal"
+        },
+        {
+            "question": "Kabupaten/Kota mana yang Anda kunjungi pada perjalanan tersebut?",
+            "response": "Emang kenapa sih harus tau gue kemana aja selama perjalanan? Itu kan privasi gue.",
+            "intent": "question",
+            "explanation": "Respons mempertanyakan relevansi data kabupaten/kota yang dikunjungi untuk keperluan survei dengan gaya informal.",
+            "style": "informal"
+        },
+        {
+            "question": "Kabupaten/Kota mana yang Anda kunjungi pada perjalanan tersebut?",
+            "response": "Apakah informasi kabupaten/kota yang dikunjungi akan digunakan untuk analisis persebaran wisatawan di daerah tertentu?",
+            "intent": "question",
+            "explanation": "Respons berupa pertanyaan untuk mengklarifikasi tujuan pengumpulan data kabupaten/kota yang dikunjungi dengan gaya formal.",
+            "style": "formal"
+        },
+        {
+            "question": "Apakah Anda menggunakan layanan pemandu wisata/tour guide dalam paket perjalanan/liburan/tour Anda?",
+            "response": "Ya, saya menggunakan layanan pemandu wisata untuk mendapatkan informasi lebih detail dan mendalam mengenai destinasi yang dikunjungi.",
+            "intent": "answer",
+            "explanation": "Jawaban ini memberikan informasi spesifik mengenai penggunaan layanan pemandu wisata.",
+            "style": "formal"
+        },
+        {
+            "question": "Berapa total pengeluaran Anda setelah perjalanan ini? Contohnya, biaya laundry pakaian atau perawatan kendaraan.",
+            "response": "Mau tahu juga, tapi mobil saya udah dicuci sebelum berangkat, jadi nggak ada biaya tambahan.",
+            "intent": "other",
+            "explanation": "Respons ini tidak menjawab pertanyaan yang dimaksud dan lebih berbicara tentang kondisi mobil yang sudah dicuci sebelumnya.",
+            "style": "informal"
+        },
+        {
+            "question": "Apakah Anda melakukan wisata kesenian selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+            "response": "Wah, saya lebih banyak makan-makan enak daripada jalan-jalan ke tempat seni.",
+            "intent": "other",
+            "explanation": "Respons ini tidak menjawab pertanyaan secara langsung dan mengalihkan fokus ke aktivitas lain yang tidak relevan.",
+            "style": "informal"
+        },
+        {
+            "question": "Berapa total pengeluaran Anda untuk menggunakan jasa pemandu wisata atau tour guide selama perjalanan ini?",
+            "response": "Jadi, yang dimaksud pemandu wisata itu hanya orang yang menjelaskan tempat wisata, atau termasuk juga transportasi mereka?",
+            "intent": "question",
+            "explanation": "Respons ini menanyakan klarifikasi mengenai apa saja yang dihitung dalam biaya pemandu wisata.",
+            "style": "informal"
+        },
+        {
+            "question": "Apakah Anda menggunakan layanan akomodasi/penginapan dalam paket perjalanan/liburan/tour Anda?",
+            "response": "Iya, nginep sih, soalnya enggak mungkin bolak-balik.",
+            "intent": "answer",
+            "explanation": "Jawaban informal yang menegaskan penggunaan layanan penginapan.",
+            "style": "informal"
+        },
+        {
+            "question": "Berapa total pengeluaran Anda untuk transportasi selama perjalanan ini? Termasuk biaya BBM dan tol jika menggunakan kendaraan pribadi.",
+            "response": "Oh ya, saya beli tiket konser nih, lebih seru daripada mikirin pengeluaran transportasi.",
+            "intent": "other",
+            "explanation": "Respons ini tidak menjawab pertanyaan dan malah beralih ke topik hiburan.",
+            "style": "informal"
+        },
+        {
+            "question": "Apakah Anda melakukan wisata kesehatan selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+            "response": "Aku malah asyik main game di hotel sepanjang hari.",
+            "intent": "other",
+            "explanation": "Respons ini sangat tidak nyambung dengan pertanyaan karena membahas kegiatan yang tidak berkaitan sama sekali.",
+            "style": "informal"
+        },
+        {
+            "question": "Deskripsikan pekerjaan Anda",
+            "response": "Gw kerja di bagian customer service, jadi ya tugasnya handle komplain, jawab pertanyaan pelanggan, sama kasih informasi soal produk atau layanan gitu deh.",
+            "intent": "answer",
+            "explanation": "Respons menjelaskan pekerjaan di bagian customer service beserta tugas-tugasnya dengan gaya bahasa informal",
+            "style": "informal"
+        },
+        {
+            "question": "Apakah Anda menggunakan layanan makan & minum dalam paket perjalanan/liburan/tour Anda?",
+            "response": "Apa yang dimaksud dengan layanan makan & minum?",
+            "intent": "question",
+            "explanation": "Pertanyaan formal untuk meminta informasi lebih detail mengenai layanan makan dan minum.",
+            "style": "formal"
+        },
+        {
+            "question": "Apakah Anda melakukan wisata sejarah/religi selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+            "response": "Saya sedang mencoba berbagai resep kue cokelat baru di rumah.",
+            "intent": "other",
+            "explanation": "Respons ini sangat tidak relevan dengan pertanyaan karena membahas aktivitas memasak yang sama sekali tidak terkait dengan wisata sejarah/religi.",
+            "style": "formal"
+        },
+        {
+            "question": "Apakah Anda berniat untuk mengulangi kembali perjalanan ke Kota Manado di masa yang akan datang dengan alasan memiliki pengalaman yang positif selama berkunjung?",
+            "response": "Ya, saya sangat tertarik untuk kembali ke sana karena Kota Manado memberikan pengalaman yang menyenangkan dan berkesan.",
+            "intent": "answer",
+            "explanation": "Jawaban ini memberikan konfirmasi dengan alasan pengalaman positif, sesuai dengan pertanyaan.",
+            "style": "formal"
+        },
+        {
+            "question": "Di Kabupaten/Kota manakah Anda tinggal?",
+            "response": "Mohon maaf, saya kurang nyaman memberikan informasi spesifik mengenai kabupaten/kota tempat tinggal saya.",
+            "intent": "other",
+            "explanation": "Respons menyatakan ketidaknyamanan dalam memberikan informasi detail kabupaten/kota tempat tinggal",
+            "style": "formal"
+        },
+        {
+            "question": "Apakah Anda berniat untuk mengulangi kembali perjalanan ke Kota Manado di masa yang akan datang dengan alasan memiliki pengalaman yang positif selama berkunjung?",
+            "response": "Pengalaman positif itu maksudnya apa aja ya? Apakah cuma soal tempat wisata atau yang lainnya juga?",
+            "intent": "question",
+            "explanation": "Pertanyaan ini meminta penjelasan lebih lanjut dengan gaya santai.",
+            "style": "informal"
+        },
+        {
+            "question": "Di provinsi manakah Anda tinggal?",
+            "response": "Kepo banget sih nanya-nanya tempat tinggal orang. Gak usah dijawab lah ya.",
+            "intent": "other",
+            "explanation": "Respons menolak menjawab pertanyaan dan menganggapnya terlalu memaksa dengan nada informal",
+            "style": "informal"
+        },
+        {
+            "question": "Apakah Anda menggunakan layanan objek wisata dalam paket perjalanan/liburan/tour Anda?",
+            "response": "Iya, objek wisatanya udah masuk di paket.",
+            "intent": "answer",
+            "explanation": "Jawaban informal yang menunjukkan bahwa objek wisata termasuk dalam paket.",
+            "style": "informal"
+        },
+        {
+            "question": "Nomor handphone",
+            "response": "081234567890",
+            "intent": "answer",
+            "explanation": "Respons memberikan nomor handphone yang valid sesuai format umum di Indonesia",
+            "style": "formal"
+        },
+        {
+            "question": "Motivasi utama melakukan perjalanan ke Kota Semarang pada Bulan Juni 2024?",
+            "response": "Bulan Juni 2024, Kota Semarang menjadi lokasi acara penting yang banyak dihadiri oleh profesional dari berbagai bidang.",
+            "intent": "other",
+            "explanation": "Pernyataan ini memberikan informasi mengenai Kota Semarang sebagai lokasi acara penting, yang tidak relevan dengan motivasi utama perjalanan.",
+            "style": "formal"
+        },
+        {
+            "question": "Berapa harga paket perjalanan/liburan/tour yang Anda beli per orang?",
+            "response": "Apa saja yang termasuk dalam paket perjalanan tersebut?",
+            "intent": "question",
+            "explanation": "Pertanyaan formal yang meminta penjelasan lebih lanjut tentang rincian paket.",
+            "style": "formal"
+        },
+        {
+            "question": "Apakah Anda tidak melakukan kegiatan satu pun kegiatan di atas selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+            "response": "Yang dimaksud 'kegiatan di atas' itu gimana ya? Apakah termasuk jalan-jalan santai juga?",
+            "intent": "question",
+            "explanation": "Respons ini berupa pertanyaan santai untuk meminta penjelasan lebih lanjut tentang kegiatan yang dimaksud.",
+            "style": "informal"
+        },
+        {
+            "question": "Berapa total pengeluaran Anda untuk transportasi selama perjalanan ini? Termasuk biaya BBM dan tol jika menggunakan kendaraan pribadi.",
+            "response": "Jadi transportasi yang dimaksud cuma yang pakai mobil pribadi saja, ya?",
+            "intent": "question",
+            "explanation": "Respons ini bertanya untuk klarifikasi apakah hanya pengeluaran transportasi pribadi yang dimaksud.",
+            "style": "informal"
+        },
+        {
+            "question": "Berapa total pengeluaran Anda sebelum perjalanan ini? Misalnya, pembelian pakaian, makanan, atau perawatan kendaraan.",
+            "response": "Total pengeluaran saya sebelum perjalanan ini sekitar Rp 2.500.000 untuk pembelian pakaian dan persiapan kendaraan.",
+            "intent": "answer",
+            "explanation": "Respons ini memberikan informasi tentang total pengeluaran yang dikeluarkan sebelum perjalanan, dengan angka yang jelas dan rinci.",
+            "style": "formal"
+        },
+        {
+            "question": "Apa pekerjaan utama atau aktivitas utama Anda?",
+            "response": "Kalo lagi gak kerja tapi aktif nyari kerja tuh jawabnya gimana ya?",
+            "intent": "question",
+            "explanation": "Respons menanyakan cara menjawab jika sedang tidak bekerja namun aktif mencari pekerjaan dengan gaya informal",
+            "style": "informal"
+        },
+        {
+            "question": "Apakah Anda melakukan wisata bahari selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+            "response": "Iya dong, sempat snorkeling di Bunaken sama nikmatin sunset di pantai.",
+            "intent": "answer",
+            "explanation": "Jawaban ini menjelaskan aktivitas wisata bahari yang dilakukan, namun menggunakan gaya bahasa santai.",
+            "style": "informal"
+        },
+        {
+            "question": "Angkutan utama (paling jauh) apa yang Anda gunakan selama perjalanan ke Kabupaten Magelang pada Bulan Desember 2024? Contoh: pesawat, kapal laut, perahu kecil, kereta api, angkot, taksi online, mobil pribadi, dll.",
+            "response": "Maksudnya angkutan utama itu apa ya?",
+            "intent": "question",
+            "explanation": "Pengguna bertanya untuk klarifikasi lebih lanjut mengenai pengertian 'angkutan utama' dengan gaya bahasa santai.",
+            "style": "informal"
+        },
+        {
+            "question": "Apakah Anda menggunakan layanan makan & minum dalam paket perjalanan/liburan/tour Anda?",
+            "response": "Ya, saya menggunakan layanan makan dan minum yang disediakan dalam paket.",
+            "intent": "answer",
+            "explanation": "Respon formal yang menjawab langsung terkait penggunaan layanan makan dan minum.",
+            "style": "formal"
+        },
+        {
+            "question": "Berapa total pengeluaran Anda untuk makanan dan minuman selama perjalanan ini?",
+            "response": "Pengeluaran saya untuk makanan dan minuman sekitar Rp 1.200.000 selama perjalanan.",
+            "intent": "answer",
+            "explanation": "Respons ini memberikan jawaban langsung tentang total pengeluaran untuk makanan dan minuman.",
+            "style": "formal"
+        },
+        {
+            "question": "Bulan apa saja Anda melakukan perjalanan ke Kota Denpasar?",
+            "response": "Duh, kapan-kapan gue ke Denpasar itu bukan urusan lo. Males ah, gak usah dijawab.",
+            "intent": "other",
+            "explanation": "Respons menolak menjawab pertanyaan dan menganggapnya terlalu memaksa dengan gaya informal.",
+            "style": "informal"
+        },
+        {
+            "question": "Apakah Anda melakukan wisata kota dan pedesaan selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+            "response": "Saya baru saja mengganti oli mobil minggu lalu.",
+            "intent": "other",
+            "explanation": "Respons ini sangat tidak relevan karena membahas topik yang sama sekali berbeda dari pertanyaan.",
+            "style": "formal"
+        },
+        {
+            "question": "Untuk menjawab pertanyaan berikutnya, pilihlah salah satu bulan perjalanan yang paling Anda ingat",
+            "response": "Aduh, gak usah ditanya-tanya bulan mana yang paling gue inget ya. Itu kan privasi gue.",
+            "intent": "other",
+            "explanation": "Respons menolak memilih bulan perjalanan yang paling diingat dan menganggapnya terlalu memaksa dengan gaya informal.",
+            "style": "informal"
+        },
+        {
+            "question": "Apakah Anda melakukan wisata kesehatan selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+            "response": "Ya, saya mengikuti program terapi kesehatan di salah satu pusat kesehatan di Kota Manado.",
+            "intent": "answer",
+            "explanation": "Jawaban ini secara langsung memberikan informasi tentang aktivitas wisata kesehatan yang dilakukan.",
+            "style": "formal"
+        },
+        {
+            "question": "Berapa total pengeluaran Anda untuk hiburan atau rekreasi selama perjalanan ini? Termasuk tiket masuk ke objek wisata atau atraksi.",
+            "response": "Saya menghabiskan sekitar Rp 500.000 untuk tiket masuk ke beberapa tempat wisata dan atraksi selama perjalanan.",
+            "intent": "answer",
+            "explanation": "Respons ini memberikan angka yang jelas untuk total pengeluaran untuk hiburan dan rekreasi selama perjalanan.",
+            "style": "formal"
+        },
+        {
+            "question": "Jenjang pendidikan tertinggi yang ditamatkan",
+            "response": "Kalo lagi kuliah S2 tapi belom lulus gimana tuh jawabnya?",
+            "intent": "question",
+            "explanation": "Respons menanyakan cara menjawab jika sedang menempuh pendidikan S2 tapi belum lulus dengan gaya informal",
+            "style": "informal"
+        },
+        {
+            "question": "Apakah Anda tidak melakukan kegiatan satu pun kegiatan di atas selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+            "response": "Saya malah sibuk merakit model pesawat di rumah.",
+            "intent": "other",
+            "explanation": "Respons ini sangat tidak relevan karena membahas aktivitas yang sama sekali tidak berkaitan dengan perjalanan atau pertanyaan.",
+            "style": "formal"
+        },
+        {
+            "question": "Apakah Anda menggunakan layanan lainnya dalam paket perjalanan/liburan/tour Anda?",
+            "response": "Apa saja yang termasuk dalam layanan lainnya?",
+            "intent": "question",
+            "explanation": "Pertanyaan formal yang meminta penjelasan lebih lanjut tentang layanan lainnya.",
+            "style": "formal"
+        }
+    ]
+}
