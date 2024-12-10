@@ -153,8 +153,8 @@ import {
         success: true,
         data: [newState.apiKeys[newState.currentIndex], newState],
         metadata: {
-          processingTime: Date.now() - state.lastRotation,
-          apiKeyUsed: newState.currentIndex,
+          processing_time: Date.now() - state.lastRotation,
+          api_key_used: newState.currentIndex,
           timestamp: new Date().toISOString()
         }
       };
@@ -187,8 +187,8 @@ import {
         success: true,
         data: [currentKey, newState],
         metadata: {
-          processingTime: 0,
-          apiKeyUsed: state.currentIndex,
+          processing_time: 0,
+          api_key_used: state.currentIndex,
           timestamp: new Date().toISOString()
         }
       };
@@ -240,8 +240,8 @@ import {
           success: true,
           data: [currentKey, newState],
           metadata: {
-            processingTime: 0,
-            apiKeyUsed: state.currentIndex,
+            processing_time: 0,
+            api_key_used: state.currentIndex,
             timestamp: new Date().toISOString()
           }
         };
@@ -251,8 +251,8 @@ import {
         success: true,
         data: [currentKey, state],
         metadata: {
-          processingTime: 0,
-          apiKeyUsed: state.currentIndex,
+          processing_time: 0,
+          api_key_used: state.currentIndex,
           timestamp: new Date().toISOString()
         }
       };
@@ -297,8 +297,8 @@ import {
         success: true,
         data: newState,
         metadata: {
-          processingTime: 0,
-          apiKeyUsed: state.currentIndex,
+          processing_time: 0,
+          api_key_used: state.currentIndex,
           timestamp: new Date().toISOString()
         }
       };

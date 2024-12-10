@@ -37,15 +37,26 @@ const BATCH_SIZE = 5;
 
 // Helper function to format question for prompt
 const formatQuestionContext = (question: Question): string => {
-  let context = `${question.text}\n`;
+  let context = `${question.code ? `[${question.code}] ` : ''}${question.text}\n`;
 
   if (question.type === "select") {
     context += `Tipe: Pilihan\n`;
     if (question.options && question.options.length > 0) {
-      context += `Pilihan jawaban yang valid:\n${question.options
-        .map((opt) => `- ${opt}`)
-        .join("\n")}\n`;
+      context += `Pilihan jawaban yang valid:\n`;
+      
+      question.options.forEach((opt) => {
+        if (typeof opt === 'string') {
+          context += `- ${opt}\n`;
+        } else {
+          context += `- ${opt.text}`;
+          if (opt.additional_info) {
+            context += ` (${opt.additional_info})`;
+          }
+          context += '\n';
+        }
+      });
     }
+    
     if (question.multiple) {
       context += `(Boleh memilih lebih dari satu)\n`;
     }
@@ -58,6 +69,7 @@ const formatQuestionContext = (question: Question): string => {
       context += `Satuan: ${question.unit}\n`;
     }
     if (question.validation) {
+      // Handle number input type
       if (question.validation.input_type === "number") {
         context += `Format: Angka`;
         if (question.validation.min !== undefined) {
@@ -67,6 +79,26 @@ const formatQuestionContext = (question: Question): string => {
           context += ` (maksimum: ${question.validation.max})`;
         }
         context += "\n";
+      }
+      
+      // Handle pattern validation
+      if (question.validation.pattern) {
+        let patternDesc = "";
+        
+        // Common pattern interpretations
+        if (question.validation.pattern === "^[0-9]{7,15}$") {
+          patternDesc = "Hanya angka, panjang 7-15 digit";
+        } else if (question.validation.pattern === "^[0-9]+$") {
+          patternDesc = "Hanya angka";
+        } else if (question.validation.pattern === "^[A-Za-z]+$") {
+          patternDesc = "Hanya huruf";
+        } else if (question.validation.pattern === "^[A-Za-z0-9]+$") {
+          patternDesc = "Huruf dan angka";
+        } else {
+          patternDesc = "Format khusus diperlukan";
+        }
+        
+        context += `Format: ${patternDesc}\n`;
       }
     }
   }
@@ -89,18 +121,19 @@ const classificationPrompt = ChatPromptTemplate.fromTemplate(`
   RESPONS PENGGUNA:
   {response}
   
-  Jika respons diklasifikasikan sebagai "unexpected_answer", berikan pertanyaan klarifikasi yang
-  memandu pengguna untuk memberikan jawaban sesuai format yang diharapkan.
-  
+  Hal yang perlu diperhatikan:
+  - Jika pertanyaan memiliki format jawaban berupa angka tetapi pengguna menjawab dengan teks dan relevan dengan pertanyaan, maka klasifikasi sebagai "expected_answer".
+  - Jika respons diklasifikasikan sebagai "unexpected_answer" atau "other", maka berikan alasan pada properti 'clarification_reason' tetapi jangan lupa untuk memberikan penjelasan Anda dalam melakukan klasifikasi pada properti 'explanation'.
+  - Jika respons diklasifikasikan sebagai "unexpected_answer", berikan kalimat singkat yang menjelaskan mengapa jawaban pengguna harus diklarifikasi kemudian dilanjutkan dengan pertanyaan klarifikasi yang memandu pengguna untuk memberikan jawaban sesuai format yang diharapkan.
+  - Jika respons diklasifikasikan sebagai "other", berikan kalimat singkat yang menjelaskan mengapa pengguna harus menjawab ulang pertanyaan karena jawaban tidak relevan dengan pertanyaan.
+  - Jika pertanyaan memiliki opsi jawaban dan respons diklasifikasikan sebagai "expected_answer", maka sebutkan juga opsi jawaban mana yang paling mendekati dengan maksud pengguna pada properti 'explanation'.
+  - Jika pertanyaan tidak mempersilahkan pengguna menuliskan sendiri secara terbuka, maka Anda jangan meminta pengguna menulis jawaban secara terbuka.
+
   Berikan penjelasan detail mengapa respons diklasifikasikan demikian dengan mempertimbangkan:
   - Kesesuaian dengan tipe pertanyaan (text/select)
-  - Kesesuaian dengan format yang diminta (angka/teks/pilihan)
   - Kelengkapan informasi dalam jawaban
   - Relevansi dengan konteks pertanyaan
-
-  Hal yang perlu diperhatikan:
-  - Jika pertanyaan memiliki opsi jawaban, opsi jawaban tersebut tidak diperlihatkan kepada pengguna sehingga Anda harus menganalisis maksud respons pengguna dapat dipetakan dengan opsi jawaban yang ada.
-  - Jika pertanyaan tidak mempersilahkan pengguna menuliskan sendiri secara terbuka, maka Anda jangan meminta pengguna menulis jawaban secara terbuka.
+  - Validasi jawaban seperti nilai minimum dan maksimum yang valid
   `);
 
 // Create classification chain
@@ -123,7 +156,7 @@ const createClassificationChain = (llm: any) => {
 export const classifyIntent = async (
   params: ClassificationContext,
   attempt = 0
-): Promise<ServiceResponse<ClassificationResult>> => {
+): Promise<ServiceResponse<ClassificationOutput>> => {
   try {
     const startTime = Date.now();
 
@@ -136,7 +169,10 @@ export const classifyIntent = async (
 
     try {
       // Format question context
-      const questionContext = formatQuestionContext(params.question);
+      // const questionContext = formatQuestionContext(params.question);
+      const questionContext = params.question;
+
+      console.log(`Classifying intent for question: ${JSON.stringify(questionContext)}`);
 
       // Create and invoke classification chain
       const chain = createClassificationChain(llm);
@@ -150,13 +186,10 @@ export const classifyIntent = async (
 
       return {
         success: true,
-        data: {
-          success: true,
-          data: validatedResult,
-        },
+        data: validatedResult,
         metadata: {
-          processingTime: Date.now() - startTime,
-          apiKeyUsed: llmResponse.metadata?.apiKeyUsed ?? -1,
+          processing_time: Date.now() - startTime,
+          api_key_used: llmResponse.metadata?.api_key_used ?? -1,
           timestamp: new Date().toISOString(),
         },
       };
@@ -181,8 +214,8 @@ export const classifyIntent = async (
         error instanceof Error ? error.message : "Unknown error"
       }`,
       metadata: {
-        processingTime: 0,
-        apiKeyUsed: -1,
+        processing_time: 0,
+        api_key_used: -1,
         timestamp: new Date().toISOString(),
       },
     };
@@ -344,17 +377,17 @@ export const evaluateIntentClassification = async (
             response: sample.response,
           });
 
-          if (result.success && result.data?.success && result.data.data) {
-            const { intent, confidence, explanation, followUpQuestion } =
-              result.data.data;
+          if (result.success) {
+            const { intent, confidence, explanation, follow_up_question } =
+              result.data || {};
             classificationProgress.predictedIntent = intent;
             classificationProgress.confidence = confidence;
             classificationProgress.explanation = explanation;
-            classificationProgress.followUpQuestion = followUpQuestion;
+            classificationProgress.follow_up_question = follow_up_question;
             classificationProgress.processed = true;
-            classificationProgress.apiKeyUsed = result.metadata?.apiKeyUsed;
-            classificationProgress.processingTime =
-              result.metadata?.processingTime;
+            classificationProgress.api_key_used = result.metadata?.api_key_used;
+            classificationProgress.processing_time =
+              result.metadata?.processing_time;
             success = true;
           } else {
             throw new Error(result.error || "Unknown API error");
@@ -387,12 +420,12 @@ export const evaluateIntentClassification = async (
           1;
       }
 
-      if (classificationProgress.processingTime) {
-        progress.averageProcessingTime = progress.averageProcessingTime
-          ? (progress.averageProcessingTime +
-              classificationProgress.processingTime) /
+      if (classificationProgress.processing_time) {
+        progress.averageprocessing_time = progress.averageprocessing_time
+          ? (progress.averageprocessing_time +
+              classificationProgress.processing_time) /
             2
-          : classificationProgress.processingTime;
+          : classificationProgress.processing_time;
       }
 
       await saveProgress(progress);
@@ -444,8 +477,8 @@ export const evaluateIntentClassification = async (
       success: true,
       data: results,
       metadata: {
-        processingTime: Date.now() - startTime,
-        apiKeyUsed: -1,
+        processing_time: Date.now() - startTime,
+        api_key_used: -1,
         timestamp: new Date().toISOString(),
       },
     };
@@ -456,8 +489,8 @@ export const evaluateIntentClassification = async (
         error instanceof Error ? error.message : "Unknown error"
       }`,
       metadata: {
-        processingTime: Date.now() - startTime,
-        apiKeyUsed: -1,
+        processing_time: Date.now() - startTime,
+        api_key_used: -1,
         timestamp: new Date().toISOString(),
       },
     };
@@ -476,8 +509,8 @@ export const getEvaluationProgress = async (): Promise<
         success: true,
         data: null,
         metadata: {
-          processingTime: 0,
-          apiKeyUsed: -1,
+          processing_time: 0,
+          api_key_used: -1,
           timestamp: new Date().toISOString(),
         },
       };
@@ -529,7 +562,7 @@ export const getEvaluationProgress = async (): Promise<
         intentDistribution,
         averageConfidenceByIntent,
         timeElapsed: Date.now() - new Date(progress.startTime).getTime(),
-        averageProcessingTimePerSample: progress.averageProcessingTime || 0,
+        averageprocessing_timePerSample: progress.averageprocessing_time || 0,
       },
     };
 
@@ -537,8 +570,8 @@ export const getEvaluationProgress = async (): Promise<
       success: true,
       data: enrichedProgress,
       metadata: {
-        processingTime: 0,
-        apiKeyUsed: -1,
+        processing_time: 0,
+        api_key_used: -1,
         timestamp: new Date().toISOString(),
       },
     };
@@ -549,8 +582,8 @@ export const getEvaluationProgress = async (): Promise<
         error instanceof Error ? error.message : "Unknown error"
       }`,
       metadata: {
-        processingTime: 0,
-        apiKeyUsed: -1,
+        processing_time: 0,
+        api_key_used: -1,
         timestamp: new Date().toISOString(),
       },
     };
@@ -589,8 +622,8 @@ export const resetEvaluationProgress = async (): Promise<
     return {
       success: true,
       metadata: {
-        processingTime: 0,
-        apiKeyUsed: -1,
+        processing_time: 0,
+        api_key_used: -1,
         timestamp: new Date().toISOString(),
       },
     };
@@ -601,8 +634,8 @@ export const resetEvaluationProgress = async (): Promise<
         error instanceof Error ? error.message : "Unknown error"
       }`,
       metadata: {
-        processingTime: 0,
-        apiKeyUsed: -1,
+        processing_time: 0,
+        api_key_used: -1,
         timestamp: new Date().toISOString(),
       },
     };
@@ -754,8 +787,8 @@ export default {
 //           }
 //         },
 //         metadata: {
-//           processingTime: Date.now() - startTime,
-//           apiKeyUsed: llmResponse.metadata?.apiKeyUsed ?? -1,
+//           processing_time: Date.now() - startTime,
+//           api_key_used: llmResponse.metadata?.api_key_used ?? -1,
 //           timestamp: new Date().toISOString()
 //         }
 //       };
@@ -779,8 +812,8 @@ export default {
 //         error instanceof Error ? error.message : "Unknown error"
 //       }`,
 //       metadata: {
-//         processingTime: 0,
-//         apiKeyUsed: -1,
+//         processing_time: 0,
+//         api_key_used: -1,
 //         timestamp: new Date().toISOString()
 //       }
 //     };
@@ -888,8 +921,8 @@ export default {
 // //           classificationProgress.confidence = result.data.data.confidence;
 // //           classificationProgress.explanation = result.data.data.explanation;
 // //           classificationProgress.processed = true;
-// //           classificationProgress.apiKeyUsed = result.metadata?.apiKeyUsed;
-// //           classificationProgress.processingTime = result.metadata?.processingTime;
+// //           classificationProgress.api_key_used = result.metadata?.api_key_used;
+// //           classificationProgress.processing_time = result.metadata?.processing_time;
 // //         } else {
 // //           classificationProgress.error = result.error;
 // //           errors.push(`Error processing sample ${i}: ${result.error}`);
@@ -908,10 +941,10 @@ export default {
 // //         }
 
 // //         // Update averages
-// //         if (classificationProgress.processingTime) {
-// //           progress.averageProcessingTime = progress.averageProcessingTime
-// //             ? (progress.averageProcessingTime + classificationProgress.processingTime) / 2
-// //             : classificationProgress.processingTime;
+// //         if (classificationProgress.processing_time) {
+// //           progress.averageprocessing_time = progress.averageprocessing_time
+// //             ? (progress.averageprocessing_time + classificationProgress.processing_time) / 2
+// //             : classificationProgress.processing_time;
 // //         }
 
 // //         await saveProgress(progress);
@@ -950,8 +983,8 @@ export default {
 // //       success: true,
 // //       data: results,
 // //       metadata: {
-// //         processingTime: Date.now() - startTime,
-// //         apiKeyUsed: -1,
+// //         processing_time: Date.now() - startTime,
+// //         api_key_used: -1,
 // //         timestamp: new Date().toISOString()
 // //       }
 // //     };
@@ -961,8 +994,8 @@ export default {
 // //       success: false,
 // //       error: `Evaluation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
 // //       metadata: {
-// //         processingTime: Date.now() - startTime,
-// //         apiKeyUsed: -1,
+// //         processing_time: Date.now() - startTime,
+// //         api_key_used: -1,
 // //         timestamp: new Date().toISOString()
 // //       }
 // //     };
@@ -1012,8 +1045,8 @@ export default {
 //             classificationProgress.confidence = result.data.data.confidence;
 //             classificationProgress.explanation = result.data.data.explanation;
 //             classificationProgress.processed = true;
-//             classificationProgress.apiKeyUsed = result.metadata?.apiKeyUsed;
-//             classificationProgress.processingTime = result.metadata?.processingTime;
+//             classificationProgress.api_key_used = result.metadata?.api_key_used;
+//             classificationProgress.processing_time = result.metadata?.processing_time;
 //           } else {
 //             throw new Error(result.error || 'Unknown API error');
 //           }
@@ -1043,10 +1076,10 @@ export default {
 //         progress.errorRates.byErrorType[classificationProgress.error] =
 //           (progress.errorRates.byErrorType[classificationProgress.error] || 0) + 1;
 //       }
-//       if (classificationProgress.processingTime) {
-//         progress.averageProcessingTime = progress.averageProcessingTime
-//           ? (progress.averageProcessingTime + classificationProgress.processingTime) / 2
-//           : classificationProgress.processingTime;
+//       if (classificationProgress.processing_time) {
+//         progress.averageprocessing_time = progress.averageprocessing_time
+//           ? (progress.averageprocessing_time + classificationProgress.processing_time) / 2
+//           : classificationProgress.processing_time;
 //       }
 //     };
 
@@ -1097,8 +1130,8 @@ export default {
 //       success: true,
 //       data: results,
 //       metadata: {
-//         processingTime: Date.now() - startTime,
-//         apiKeyUsed: -1,
+//         processing_time: Date.now() - startTime,
+//         api_key_used: -1,
 //         timestamp: new Date().toISOString(),
 //       },
 //     };
@@ -1107,8 +1140,8 @@ export default {
 //       success: false,
 //       error: `Evaluation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
 //       metadata: {
-//         processingTime: Date.now() - startTime,
-//         apiKeyUsed: -1,
+//         processing_time: Date.now() - startTime,
+//         api_key_used: -1,
 //         timestamp: new Date().toISOString(),
 //       },
 //     };
@@ -1123,8 +1156,8 @@ export default {
 //       success: true,
 //       data: progress,
 //       metadata: {
-//         processingTime: 0,
-//         apiKeyUsed: -1,
+//         processing_time: 0,
+//         api_key_used: -1,
 //         timestamp: new Date().toISOString()
 //       }
 //     };
@@ -1133,8 +1166,8 @@ export default {
 //       success: false,
 //       error: `Failed to get evaluation progress: ${error instanceof Error ? error.message : "Unknown error"}`,
 //       metadata: {
-//         processingTime: 0,
-//         apiKeyUsed: -1,
+//         processing_time: 0,
+//         api_key_used: -1,
 //         timestamp: new Date().toISOString()
 //       }
 //     };

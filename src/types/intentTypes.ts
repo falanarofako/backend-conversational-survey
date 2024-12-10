@@ -9,13 +9,19 @@ export interface QuestionValidation {
   pattern?: string;
 }
 
-// Question type definition
-export interface Question {
+export interface QuestionOption {
   text: string;
-  type: "text" | "select" | "date";
+  additional_info?: string;
+}
+
+export interface Question {
+  code?: string;
+  text: string;
+  type: 'text' | 'select' | 'date';
   unit?: string;
   multiple?: boolean;
-  options?: string[];
+  options?: (string | QuestionOption)[];
+  system_guidelines?: string[];
   allow_other?: boolean;
   additional_info?: string;
   instruction?: string;
@@ -35,7 +41,8 @@ export interface ClassificationOutput {
   intent: "expected_answer" | "unexpected_answer" | "question" | "other";
   confidence: number;
   explanation: string;
-  followUpQuestion?: string;
+  clarification_reason?: string;
+  follow_up_question?: string;
 }
 
 export interface ClassificationResult {
@@ -106,11 +113,11 @@ export interface ClassificationProgress {
   predictedIntent?: string;
   confidence?: number;
   explanation?: string;
-  followUpQuestion?: string; // Added this property
+  follow_up_question?: string; // Added this property
   processed: boolean;
   timestamp: string;
-  processingTime?: number;
-  apiKeyUsed?: number;
+  processing_time?: number;
+  api_key_used?: number;
   error?: string;
 }
 
@@ -122,7 +129,7 @@ export interface EvaluationProgress {
   lastUpdateTime: string;
   results: ClassificationProgress[];
   successRate?: number;
-  averageProcessingTime?: number;
+  averageprocessing_time?: number;
   errorRates: {
     total: number;
     byErrorType: { [key: string]: number };
@@ -151,8 +158,8 @@ export interface ServiceResponse<T> {
   data?: T;
   error?: string;
   metadata?: {
-    processingTime: number;
-    apiKeyUsed: number;
+    processing_time: number;
+    api_key_used: number;
     timestamp: string;
   };
 }

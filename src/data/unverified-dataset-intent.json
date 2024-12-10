@@ -1,0 +1,709 @@
+{
+    "dataset": [
+        {
+            "question": {
+                "code": "S020",
+                "text": "Berapa total pengeluaran Anda untuk makanan dan minuman selama perjalanan ini?",
+                "type": "text",
+                "unit": "Rp",
+                "instruction": "Wajib diisi.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Lumayan banyak sih, soalnya suka coba makanan lokal",
+            "intent": "unexpected_answer",
+            "explanation": "Respons ini tidak memberikan jumlah spesifik dan hanya menjelaskan alasan pengeluaran makan minum yang banyak.",
+            "clarification_reason": "Jawaban yang Anda berikan tidak menyebutkan total biaya makan minum dengan nilai yang pasti atau spesifik.",
+            "follow_up_question": "Bisa tolong sebutkan total pengeluaran untuk makanan dan minuman dalam bentuk angka (Rupiah)?",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "code": "S019",
+                "text": "Berapa total pengeluaran Anda untuk akomodasi atau penginapan selama perjalanan ini?",
+                "type": "text",
+                "unit": "Rp",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0. Jika tidak tahu, mohon perkirakan.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Mungkin ada beberapa ratus ribu untuk menginap di hotel",
+            "intent": "unexpected_answer",
+            "explanation": "Respons menyebutkan kisaran pengeluaran akomodasi yang masih cukup general.",
+            "clarification_reason": "Jawaban yang Anda berikan tidak menyebutkan total biaya akomodasi dengan nilai yang pasti atau spesifik.",
+            "follow_up_question": "Mohon sebutkan total biaya yang Anda keluarkan untuk menginap di hotel tersebut dalam Rupiah.",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "KR004",
+                "text": "Apa pekerjaan utama atau aktivitas utama Anda?",
+                "type": "select",
+                "multiple": false,
+                "options": [
+                    "Manajer/Pimpinan Organisasi",
+                    "Profesional",
+                    "Teknisi dan Asisten Profesional",
+                    "Tenaga Tata Usaha",
+                    "Tenaga Usaha Jasa dan Tenaga Penjualan",
+                    "Pekerja Terampil Pertanian, Kehutanan, dan Perikanan",
+                    "Operator dan Perakit Mesin",
+                    "Pekerja Kasar",
+                    "TNI dan Polri",
+                    "Mengurus Rumah Tangga",
+                    "Pensiunan",
+                    "Tidak Bekerja"
+                ],
+                "additional_info": "Contoh kasus untuk ASN: - Manajer, yaitu Deputi, Direktur, Gubernur, Walikota, Bupati, Menteri. - Profesional, yaitu Dosen, Guru, Statistisi. - Teknisi, yaitu Pengawas perbatasan, Petugas imigrasi, Petugas bea cukai.",
+                "system_guidelines": [
+                    "Jika respons diklasifikasikan sebagai 'unexpected_answer' atau 'other', maka pastikan Anda jangan sekali-kali meminta pengguna memilih opsi jawaban pekerjaan utama pada properti 'clarification_reason' dan 'follow_up_question' karena opsi jawaban pertanyaan tidak untuk ditunjukkan dan dipilih oleh pengguna"
+                ],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Saya bekerja di kantor bank",
+            "intent": "unexpected_answer",
+            "explanation": "Respons menyebutkan tempat kerja tetapi tidak menjelaskan posisi pekerjaan di bank tersebut.",
+            "clarification_reason": "Jawaban yang Anda berikan bukanlah pekerjaan yang spesifik.",
+            "follow_up_question": "Mohon sebutkan jabatan atau posisi pekerjaan Anda secara spesifik di bank tersebut.",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "S015",
+                "text": "Selama melakukan perjalanan ke Kota Manado pada Bulan Mei 2024, apa akomodasi utama (paling lama) yang Anda gunakan?",
+                "type": "select",
+                "multiple": false,
+                "options": [
+                    "Hotel Bintang 4 atau 5",
+                    "Hotel Bintang 3",
+                    "Penginapan lainnya",
+                    "Rumah teman/keluarga"
+                ],
+                "additional_info": "Ket: Bermalam di kendaraan selama dalam perjalanan seperti di mobil, kapal, kereta api, dan sejenisnya, tidak dianggap menggunakan akomodasi.",
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Saya menginap di villa dekat pantai",
+            "intent": "unexpected_answer",
+            "explanation": "Respons menyebutkan jenis akomodasi yang tidak ada dalam pilihan yang tersedia.",
+            "clarification_reason": "Jawaban yang Anda berikan bukanlah jenis akomodasi yang spesifik.",
+            "follow_up_question": "Dari pilihan yang tersedia (Hotel Bintang 4/5, Hotel Bintang 3, Penginapan lainnya, atau Rumah teman/keluarga), manakah yang paling sesuai dengan villa tempat Anda menginap?",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "S025",
+                "text": "Berapa total pengeluaran Anda untuk kesehatan, kecantikan, atau olahraga selama perjalanan ini?",
+                "type": "text",
+                "unit": "Rp",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Saya hanya membeli sunblock dan facial wash",
+            "intent": "unexpected_answer",
+            "explanation": "Respons hanya menyebutkan item yang dibeli tanpa menyebutkan total pengeluaran.",
+            "clarification_reason": "Jawaban yang Anda berikan tidak menyebutkan total pengeluaran.",
+            "follow_up_question": "Bisa tolong sebutkan total biaya pembelian sunblock dan facial wash tersebut dalam Rupiah?",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "S028",
+                "text": "Berapa total pengeluaran Anda sebelum perjalanan ini? Misalnya, pembelian pakaian, makanan, atau perawatan kendaraan.",
+                "type": "text",
+                "unit": "Rp",
+                "additional_info": "Misalnya: pembelian pakaian dan makanan untuk keberangkatan wisata, buah tangan untuk teman/keluarga di daerah tujuan, stok obat, perawatan kendaraan sebelum perjalanan, dll.",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Beli baju baru sama koper",
+            "intent": "unexpected_answer",
+            "explanation": "Respons hanya menyebutkan barang yang dibeli tanpa menyebutkan total pengeluaran.",
+            "clarification_reason": "Jawaban yang Anda berikan tidak menyebutkan total pengeluaran.",
+            "follow_up_question": "Mohon sebutkan total biaya pembelian baju dan koper tersebut dalam Rupiah.",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "code": "S011",
+                "text": "Apa maksud utama Anda melakukan perjalanan ke Kota Semarang pada Bulan Juni 2024?",
+                "type": "select",
+                "multiple": false,
+                "options": [
+                    "Profesi/Bisnis",
+                    "Pertemuan/Kongres/Seminar",
+                    "Training/Pelatihan/Diklat",
+                    "Berlibur/Rekreasi",
+                    "Kursus",
+                    "Kesehatan/Berobat",
+                    "Kecantikan/Estetika",
+                    "Keagamaan (Termasuk Berziarah)",
+                    "Mengunjungi Teman/Famili",
+                    "Mudik/Pulkan Hari Raya",
+                    "Olahraga",
+                    "Kesenian",
+                    "Belanja/Shopping"
+                ],
+                "allow_other": true,
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Saya berencana pergi ke Solo, namun akan singgah terlebih dahulu di Semarang.",
+            "intent": "unexpected_answer",
+            "explanation": "Respons tidak menyebutkan tujuan utama perjalanan sesuai pilihan yang tersedia.",
+            "clarification_reason": "Jawaban yang Anda berikan bukanlah tujuan utama perjalanan yang spesifik.",
+            "follow_up_question": "Mohon berikan tujuan utama perjalanan Anda. Seperti: untuk Profesi/Bisnis, untuk Pertemuan/Kongres/Seminar, untuk Training/Pelatihan/Diklat, dll.",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "KR003",
+                "text": "Apa jenjang pendidikan tertinggi yang Anda tamatkan?",
+                "type": "select",
+                "multiple": false,
+                "options": [
+                    "Tidak/Belum Sekolah/Tidak Tamat SD/MI",
+                    "SD/MI",
+                    "SMP/MTs",
+                    "SMA/MA/SMK",
+                    "D1/D2/D3",
+                    "D4/S1",
+                    "S2/S3"
+                ],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Saya lulusan jurusan Teknik Informatika",
+            "intent": "unexpected_answer",
+            "explanation": "Respons hanya menyebutkan jurusan tanpa menyebutkan jenjang pendidikan secara spesifik.",
+            "clarification_reason": "Jawaban yang Anda berikan tidak menyebutkan jenjang pendidikan secara spesifik.",
+            "follow_up_question": "Apa jenjang pendidikan tertinggi yang Anda tamatkan di jurusan Teknik Informatika? apakah S1/D4, S2, atau S3?",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "S022",
+                "text": "Berapa total pengeluaran Anda untuk membeli cinderamata, oleh-oleh, atau buah tangan selama perjalanan ini?",
+                "type": "text",
+                "unit": "Rp",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Beli beberapa kaos dan gantungan kunci untuk teman kantor",
+            "intent": "unexpected_answer",
+            "explanation": "Respons hanya menyebutkan jenis oleh-oleh tanpa menyebutkan total pengeluaran.",
+            "clarification_reason": "Jawaban yang Anda berikan tidak menyebutkan total pengeluaran.",
+            "follow_up_question": "Mohon sebutkan total biaya pembelian kaos dan gantungan kunci tersebut dalam Rupiah.",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "code": "S021",
+                "text": "Berapa total pengeluaran Anda untuk transportasi selama perjalanan ini? Termasuk biaya BBM dan tol jika menggunakan kendaraan pribadi.",
+                "type": "text",
+                "unit": "Rp",
+                "additional_info": "Total pengeluaran untuk transportasi selama perjalanan. Jika menggunakan angkutan pribadi, isikan pengeluaran pembelian BBM dan biaya tol.",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Perjalanan dilakukan menggunakan mobil pribadi dengan pengisian bahan bakar sebanyak dua kali.",
+            "intent": "unexpected_answer",
+            "explanation": "Respons hanya menyebutkan jenis transportasi dan frekuensi pengisian BBM tanpa total pengeluaran.",
+            "clarification_reason": "Jawaban yang Anda berikan tidak menyebutkan total pengeluaran.",
+            "follow_up_question": "Mohon sebutkan total biaya bensin yang Anda keluarkan dalam Rupiah.",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "S014",
+                "text": "Berapa harga paket perjalanan/liburan/tour yang Anda beli per orang?",
+                "type": "text",
+                "unit": "Rupiah",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Paket 3 hari 2 malam termasuk hotel dan transportasi",
+            "intent": "unexpected_answer",
+            "explanation": "Respons hanya menyebutkan durasi dan komponen paket tanpa menyebutkan harga.",
+            "clarification_reason": "Jawaban yang Anda berikan tidak menyebutkan harga.",
+            "follow_up_question": "Bisa tolong sebutkan harga paket tersebut per orang dalam Rupiah?",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "S029",
+                "text": "Berapa total pengeluaran Anda setelah perjalanan ini?",
+                "type": "text",
+                "unit": "Rp",
+                "additional_info": "Misalnya: laundry pakaian pada saat pulang, perawatan kendaraan setelah perjalanan, dll.",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Laundry semua baju yang dibawa",
+            "intent": "unexpected_answer",
+            "explanation": "Respons hanya menyebutkan aktivitas tanpa menyebutkan total pengeluaran.",
+            "clarification_reason": "Jawaban yang Anda berikan tidak menyebutkan total pengeluaran.",
+            "follow_up_question": "Mohon sebutkan total biaya laundry yang Anda keluarkan dalam Rupiah.",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "code": "S026",
+                "text": "Berapa total pengeluaran Anda untuk menggunakan jasa pemandu wisata atau tour guide selama perjalanan ini?",
+                "type": "text",
+                "unit": "Rp",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Pemandu wisatanya mendampingi selama dua hari penuh.",
+            "intent": "unexpected_answer",
+            "explanation": "Respons hanya menyebutkan durasi penggunaan jasa pemandu tanpa menyebutkan biaya.",
+            "clarification_reason": "Jawaban yang Anda berikan tidak menyebutkan biaya.",
+            "follow_up_question": "Bisa tolong sebutkan total biaya untuk jasa pemandu wisata tersebut dalam Rupiah?",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "S024",
+                "text": "Berapa total pengeluaran Anda untuk hiburan atau rekreasi selama perjalanan ini?",
+                "type": "text",
+                "unit": "Rp",
+                "additional_info": "Tiket masuk objek wisata atau atraksi, seperti museum, taman, kebun binatang, candi, pendakian gunung, tari-tarian, konser, pertunjukkan, diving, dll",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Masuk ke tiga tempat wisata berbeda",
+            "intent": "unexpected_answer",
+            "explanation": "Respons hanya menyebutkan jumlah tempat wisata tanpa menyebutkan total biaya masuk.",
+            "clarification_reason": "Jawaban yang Anda berikan tidak menyebutkan total biaya.",
+            "follow_up_question": "Mohon sebutkan total biaya tiket masuk ke ketiga tempat wisata tersebut dalam Rupiah.",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "S016",
+                "text": "Angkutan utama (paling jauh) apa yang Anda gunakan selama perjalanan ke Kabupaten Magelang pada Bulan Desember 2024?",
+                "type": "select",
+                "multiple": false,
+                "options": [
+                    {
+                        "text": "1. Angkutan udara",
+                        "additional_info": "Misalnya pesawat"
+                    },
+                    {
+                        "text": "2. Angkutan laut",
+                        "additional_info": "Misalnya Kapal laut dengan rute jauh"
+                    },
+                    {
+                        "text": "3. Angkutan sungai, danau, dan penyebrangan",
+                        "additional_info": "Misalnya perahu kecil yang melayani rute di perairan sungai, danau, atau kapal feri penyebrangan selat"
+                    },
+                    {
+                        "text": "4. Angkutan darat - kereta api/listrik",
+                        "additional_info": "Misalnya kereta api jarak jauh, KRL, LRT, dan MRT"
+                    },
+                    {
+                        "text": "5. Angkutan darat - umum",
+                        "additional_info": "Misalnya angkot, bus, ojek online, taksi online, dll"
+                    },
+                    {
+                        "text": "6. Angkutan darat - pribadi",
+                        "additional_info": "Yaitu kendaraan milik pribadi yang dipakai sendiri atau bersama rombongan"
+                    },
+                    {
+                        "text": "7. Angkutan darat - sewa tanpa sopir",
+                        "additional_info": "Misalnya sewa motor atau sewa mobil tidak termasuk sopir"
+                    }
+                ],
+                "system_guidelines": [
+                    "Klasifikasikan sebagai 'unexpected_answer' jika pengguna menjawab angkutan darat tetapi tidak jelas atau tidak secara langsung menjelaskan kepemilikan angkutan darat tersebut",
+                    "Klasifikasikan sebagai 'unexpected_answer' jika belum jelas apakah termasuk angkutan darat milik pribadi atau sewa",
+                    "Klasifikasikan sebagai 'unexpected_answer' jika termasuk angkutan darat sewa tetapi belum jelas apakah termasuk sewa dengan sopir atau tanpa sopir"
+                ],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Naik mobil bareng temen",
+            "intent": "unexpected_answer",
+            "explanation": "Respons tidak spesifik memilih kategori angkutan yang sesuai pilihan.",
+            "clarification_reason": "Jawaban yang Anda berikan tidak memilih kategori angkutan yang sesuai pilihan.",
+            "follow_up_question": "Apa kategori angkutan yang digunakan paling jauh selama perjalanan Anda? Misalnya: pesawat, kapal laut, perahu kecil, kereta api, angkot, taksi online, mobil pribadi, dll.",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "code": "S023",
+                "text": "Berapa total pengeluaran Anda untuk belanja kebutuhan pribadi selama perjalanan ini? Contohnya seperti sabun, pasta gigi, atau tisu.",
+                "type": "text",
+                "unit": "Rp",
+                "additional_info": "Termasuk belanja untuk keperluan pribadi selama perjalanan, seperti sabun, pasta gigi, sikat gigi, tisu, dsb",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Sedikit saja untuk keperluan mandi",
+            "intent": "unexpected_answer",
+            "explanation": "Respons tidak menyebutkan jumlah spesifik pengeluaran.",
+            "clarification_reason": "Jawaban yang Anda berikan tidak menyebutkan jumlah spesifik pengeluaran.",
+            "follow_up_question": "Bisa tolong sebutkan total pengeluaran untuk keperluan mandi tersebut dalam Rupiah?",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "S027",
+                "text": "Apakah ada biaya lain yang Anda keluarkan selama perjalanan ini? Jika ya, berapa totalnya?",
+                "type": "text",
+                "unit": "Rp",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Ada beberapa tips untuk pelayan hotel",
+            "intent": "unexpected_answer",
+            "explanation": "Respons hanya menyebutkan jenis pengeluaran tanpa nominal spesifik.",
+            "clarification_reason": "Jawaban yang Anda berikan tidak menyebutkan total pengeluaran.",
+            "follow_up_question": "Bisa tolong sebutkan total tips yang Anda berikan dalam Rupiah?",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "KR004",
+                "text": "Apa pekerjaan utama atau aktivitas utama Anda?",
+                "type": "select",
+                "multiple": false,
+                "options": [
+                    "Manajer/Pimpinan Organisasi",
+                    "Profesional",
+                    "Teknisi dan Asisten Profesional",
+                    "Tenaga Tata Usaha",
+                    "Tenaga Usaha Jasa dan Tenaga Penjualan",
+                    "Pekerja Terampil Pertanian, Kehutanan, dan Perikanan",
+                    "Operator dan Perakit Mesin",
+                    "Pekerja Kasar",
+                    "TNI dan Polri",
+                    "Mengurus Rumah Tangga",
+                    "Pensiunan",
+                    "Tidak Bekerja"
+                ],
+                "additional_info": "Contoh kasus untuk ASN: - Manajer, yaitu Deputi, Direktur, Gubernur, Walikota, Bupati, Menteri. - Profesional, yaitu Dosen, Guru, Statistisi. - Teknisi, yaitu Pengawas perbatasan, Petugas imigrasi, Petugas bea cukai.",
+                "system_guidelines": [
+                    "Jika respons diklasifikasikan sebagai 'unexpected_answer' atau 'other', maka pastikan Anda jangan sekali-kali meminta pengguna memilih opsi jawaban pekerjaan utama pada properti 'clarification_reason' dan 'follow_up_question' karena opsi jawaban pertanyaan tidak untuk ditunjukkan dan dipilih oleh pengguna"
+                ],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Saya kerja di dunia IT",
+            "intent": "unexpected_answer",
+            "explanation": "Respons menyebutkan pekerjaan spesifik tanpa memilih kategori yang sesuai dari opsi.",
+            "follow_up_question": "Dari pilihan yang tersedia, kategori pekerjaan manakah yang paling sesuai dengan pekerjaan Anda sebagai konsultan IT freelance?",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "S010",
+                "text": "Apa motivasi utama Anda melakukan perjalanan ke Kota Semarang pada Bulan Juni 2024?",
+                "type": "select",
+                "multiple": false,
+                "options": [
+                    {
+                        "text": "1. Untuk keperluan sendiri"
+                    },
+                    {
+                        "text": "2. Mengikuti perjalanan orang lain",
+                        "additional_info": "Misalnya: menemani orang tua berobat, mengantar anak kejuaraan, dll."
+                    }
+                ],
+                "system_guidelines": [
+                    "Jika jawaban motivasi perjalanan pengguna dapat dipetakan ke salah satu opsi jawaban dengan jelas maka klasifikasikan sebagai 'expected_answer'",
+                    "klasifikasikan sebagai 'unexpected_answer' jika jawaban motivasi perjalanan pengguna ada ambiguitas untuk dipetakan ke dalam lebih dari satu opsi jawaban"
+                ],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Gue ke Semarang tuh ada acara konferensi gitu, eh pas kebetulan diajak temen jalan-jalan sekalian, ya udah deh ikutan aja",
+            "intent": "unexpected_answer",
+            "explanation": "Respons tidak jelas memilih antara keperluan sendiri atau mengikuti orang lain.",
+            "follow_up_question": "Dari dua pilihan yang tersedia, apakah perjalanan gathering ini termasuk keperluan sendiri atau mengikuti perjalanan orang lain?",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "code": "S009",
+                "text": "Berapa malam Anda melakukan perjalanan tersebut?",
+                "type": "text",
+                "unit": "malam",
+                "additional_info": "Ket: Dihitung sejak Anda meninggalkan rumah sampai kembali lagi ke rumah. Pertambahan malam ditandai dengan pergantian tanggal.",
+                "system_guidelines": [
+                    "Kategorikan sebagai 'expected_answer' jika informasi dari pengguna relevan dan dapat dikonversi menjadi jumlah malam meskipun tidak dalam bentuk angka sehingga Anda harus menghitung total pergantian malam dalam waktu perjalanan secara tepat dan akurat"
+                ],
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Keberangkatan dilakukan pada hari Kamis karena saat itu menginap di rumah saudara.",
+            "intent": "unexpected_answer",
+            "explanation": "Respons menyebutkan hari keberangkatan saja dan tidak menyebutkan hari kepulangan sehingga tidak bisa dihitung jumlah malamnya.",
+            "clarification_reason": "Jawaban yang Anda berikan tidak menyebutkan hari kepulangan.",
+            "follow_up_question": "Mohon sebutkan hari keberangkatan dan hari kepulangan Anda secara spesifik.",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "KR006",
+                "text": "Apakah Anda menerapkan prinsip eco-friendly saat melakukan perjalanan?",
+                "type": "select",
+                "multiple": false,
+                "options": [
+                    "Ya",
+                    "Tidak",
+                    "Kadang-kadang",
+                    "Tidak bersedia menjawab"
+                ],
+                "additional_info": "Misalnya: Mengurangi penggunaan plastik, bijak menggunakan energi, membuang sampah pada tempatnya, dll.",
+                "system_guidelines": [
+                    "Pastikan bahwa jawaban pengguna benar-benar secara tegas mengarah ke salah satu opsi jawaban dan tidak ada ambiguitas sehingga dapat diklasifikasikan sebagai 'expected_answer' jika tidak klasifikasikan sebagai 'unexpected_answer'",
+                    "Jika jawaban pengguna dapat dikategorikan eco-friendly tetapi tidak jelas dilakukan secara sering atau kadang-kadang maka klasifikasikan sebagai 'unexpected_answer' dan minta klarifikasi"
+                ],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Gue bawa tumbler sendiri",
+            "intent": "unexpected_answer",
+            "explanation": "Respons memang termasuk menerapkan prinsip eco-friendly tetapi tidak jelas dilakukan secara sering atau kadang-kadang.",
+            "clarification_reason": "Jawaban Anda menunjukkan upaya ramah lingkungan, tetapi untuk memastikan klasifikasi yang tepat, mohon jelaskan seberapa sering Anda membawa tumbler sendiri saat bepergian.",
+            "follow_up_question": "Seberapa sering Anda melakukan hal tersebut saat melakukan perjalanan? (Ya, Tidak, Kadang-kadang)",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "code": "S019",
+                "text": "Berapa total pengeluaran Anda untuk akomodasi atau penginapan selama perjalanan ini?",
+                "type": "text",
+                "unit": "Rp",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0. Jika tidak tahu, mohon perkirakan.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Kurang lebih sekitar setengah jutaan",
+            "intent": "unexpected_answer",
+            "explanation": "Respons memberikan perkiraan kasar tanpa angka spesifik.",
+            "follow_up_question": "Mohon sebutkan total pengeluaran untuk penginapan dalam jumlah Rupiah yang spesifik.",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "code": "S024",
+                "text": "Berapa total pengeluaran Anda untuk hiburan atau rekreasi selama perjalanan ini?",
+                "type": "text",
+                "unit": "Rp",
+                "additional_info": "Tiket masuk objek wisata atau atraksi, seperti museum, taman, kebun binatang, candi, pendakian gunung, tari-tarian, konser, pertunjukkan, diving, dll",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Habis beberapa ratus ribu untuk tiket masuk",
+            "intent": "unexpected_answer",
+            "explanation": "Respons memberikan perkiraan kasar tanpa jumlah spesifik.",
+            "follow_up_question": "Bisa tolong sebutkan total biaya tiket masuk dalam jumlah Rupiah yang spesifik?",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "code": "S020",
+                "text": "Berapa total pengeluaran Anda untuk makanan dan minuman selama perjalanan ini?",
+                "type": "text",
+                "unit": "Rp",
+                "instruction": "Wajib diisi.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Sekitar satu juta lebih dikit",
+            "intent": "unexpected_answer",
+            "explanation": "Respons memberikan estimasi kasar tanpa jumlah pasti.",
+            "follow_up_question": "Mohon sebutkan total pengeluaran untuk makanan dan minuman dalam jumlah Rupiah yang spesifik.",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "code": "S028",
+                "text": "Berapa total pengeluaran Anda sebelum perjalanan ini? Misalnya, pembelian pakaian, makanan, atau perawatan kendaraan.",
+                "type": "text",
+                "unit": "Rp",
+                "additional_info": "Misalnya: pembelian pakaian dan makanan untuk keberangkatan wisata, buah tangan untuk teman/keluarga di daerah tujuan, stok obat, perawatan kendaraan sebelum perjalanan, dll.",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Persiapan seadanya saja",
+            "intent": "unexpected_answer",
+            "explanation": "Respons tidak memberikan informasi jumlah pengeluaran spesifik.",
+            "follow_up_question": "Mohon sebutkan total pengeluaran untuk persiapan tersebut dalam Rupiah.",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "code": "S025",
+                "text": "Berapa total pengeluaran Anda untuk kesehatan, kecantikan, atau olahraga selama perjalanan ini?",
+                "type": "text",
+                "unit": "Rp",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Cuma sedikit untuk beli obat-obatan",
+            "intent": "unexpected_answer",
+            "explanation": "Respons tidak menyebutkan jumlah spesifik pengeluaran.",
+            "follow_up_question": "Bisa tolong sebutkan total biaya pembelian obat-obatan tersebut dalam Rupiah?",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "code": "S021",
+                "text": "Berapa total pengeluaran Anda untuk transportasi selama perjalanan ini? Termasuk biaya BBM dan tol jika menggunakan kendaraan pribadi.",
+                "type": "text",
+                "unit": "Rp",
+                "additional_info": "Total pengeluaran untuk transportasi selama perjalanan. Jika menggunakan angkutan pribadi, isikan pengeluaran pembelian BBM dan biaya tol.",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Tergantung harga bensin waktu itu",
+            "intent": "unexpected_answer",
+            "explanation": "Respons tidak memberikan jumlah pengeluaran spesifik.",
+            "follow_up_question": "Mohon sebutkan total pengeluaran untuk bensin dalam jumlah Rupiah yang spesifik.",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "code": "S022",
+                "text": "Berapa total pengeluaran Anda untuk membeli cinderamata, oleh-oleh, atau buah tangan selama perjalanan ini?",
+                "type": "text",
+                "unit": "Rp",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Lumayan banyak karena beli untuk satu kantor",
+            "intent": "unexpected_answer",
+            "explanation": "Respons hanya menjelaskan alasan pengeluaran tanpa menyebutkan jumlah spesifik.",
+            "follow_up_question": "Bisa tolong sebutkan total pengeluaran untuk oleh-oleh kantor dalam Rupiah?",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "code": "S026",
+                "text": "Berapa total pengeluaran Anda untuk menggunakan jasa pemandu wisata atau tour guide selama perjalanan ini?",
+                "type": "text",
+                "unit": "Rp",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Sesuai dengan rate guide lokal",
+            "intent": "unexpected_answer",
+            "explanation": "Respons tidak menyebutkan jumlah pengeluaran spesifik.",
+            "follow_up_question": "Mohon sebutkan total biaya yang Anda bayarkan untuk pemandu wisata dalam Rupiah.",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "S018",
+                "text": "Apakah Anda berniat untuk mengulangi kembali perjalanan ke Kota Surabaya di masa yang akan datang dengan alasan memiliki pengalaman yang positif selama berkunjung?",
+                "type": "select",
+                "multiple": false,
+                "options": [
+                    "Ya",
+                    "Tidak",
+                    "Belum Tahu"
+                ],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "bisa ya bisa nggak sih",
+            "intent": "unexpected_answer",
+            "explanation": "Respons pengguna menunjukkan ketidakpastian dan keraguan dalam menjawab pertanyaan",
+            "clarification_reason": "Jawaban Anda masih belum jelas. Mohon pilih salah satu opsi yang tersedia.",
+            "follow_up_question": "Apakah Anda berniat untuk mengulangi kembali perjalanan ke Kota Surabaya di masa yang akan datang dengan alasan memiliki pengalaman yang positif selama berkunjung? Mohon pilih salah satu opsi: Ya, Tidak, atau Belum Tahu.",
+            "style": "informal"
+        }
+    ]
+}

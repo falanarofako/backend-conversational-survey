@@ -7,6 +7,7 @@
                 "name": "Karakteristik Responden",
                 "questions": [
                     {
+                        "code": "KR001",
                         "text": "Jenis kelamin",
                         "type": "select",
                         "multiple": false,
@@ -16,9 +17,11 @@
                         ],
                         "validation": {
                             "required": true
-                        }
+                        },
+                        "modified_question": "Apa jenis kelamin Anda?"
                     },
                     {
+                        "code": "KR002",
                         "text": "Usia",
                         "type": "text",
                         "unit": "tahun",
@@ -28,9 +31,11 @@
                             "input_type": "number",
                             "min": 0,
                             "max": 120
-                        }
+                        },
+                        "modified_question": "Berapa usia Anda?"
                     },
                     {
+                        "code": "KR003",
                         "text": "Jenjang pendidikan tertinggi yang ditamatkan",
                         "type": "select",
                         "multiple": false,
@@ -45,9 +50,11 @@
                         ],
                         "validation": {
                             "required": true
-                        }
+                        },
+                        "modified_question": "Apa jenjang pendidikan tertinggi yang Anda tamatkan?"
                     },
                     {
+                        "code": "KR004",
                         "text": "Apa pekerjaan utama atau aktivitas utama Anda?",
                         "type": "select",
                         "multiple": false,
@@ -66,11 +73,15 @@
                             "Tidak Bekerja"
                         ],
                         "additional_info": "Contoh kasus untuk ASN: - Manajer, yaitu Deputi, Direktur, Gubernur, Walikota, Bupati, Menteri. - Profesional, yaitu Dosen, Guru, Statistisi. - Teknisi, yaitu Pengawas perbatasan, Petugas imigrasi, Petugas bea cukai.",
+                        "system_guidelines": [
+                            "Jika respons diklasifikasikan sebagai 'unexpected_answer' atau 'other', maka pastikan Anda jangan sekali-kali meminta pengguna memilih opsi jawaban pekerjaan utama pada properti 'clarification_reason' dan 'follow_up_question' karena opsi jawaban pertanyaan tidak untuk ditunjukkan dan dipilih oleh pengguna"
+                        ],
                         "validation": {
                             "required": true
                         }
                     },
                     {
+                        "code": "KR005",
                         "text": "Deskripsikan pekerjaan Anda",
                         "type": "text",
                         "additional_info": "Contoh: - Mengajar anak SD. - Sekretaris di Kantor kecamatan.",
@@ -79,6 +90,7 @@
                         }
                     },
                     {
+                        "code": "KR006",
                         "text": "Apakah Anda menerapkan prinsip eco-friendly saat melakukan perjalanan?",
                         "type": "select",
                         "multiple": false,
@@ -89,9 +101,14 @@
                             "Tidak bersedia menjawab"
                         ],
                         "additional_info": "Misalnya: Mengurangi penggunaan plastik, bijak menggunakan energi, membuang sampah pada tempatnya, dll.",
+                        "system_guidelines": [
+                            "Pastikan bahwa jawaban pengguna benar-benar secara tegas mengarah ke salah satu opsi jawaban dan tidak ada ambiguitas sehingga dapat diklasifikasikan sebagai 'expected_answer' jika tidak klasifikasikan sebagai 'unexpected_answer'",
+                            "Jika jawaban pengguna dapat dikategorikan eco-friendly tetapi tidak jelas dilakukan secara sering atau kadang-kadang maka klasifikasikan sebagai 'unexpected_answer' dan minta klarifikasi"
+                        ],
                         "validation": {
                             "required": true
-                        }
+                        },
+                        "modified_question": "Apakah Anda menerapkan prinsip eco-friendly saat melakukan perjalanan? Misalnya: Mengurangi penggunaan plastik, bijak menggunakan energi, membuang sampah pada tempatnya, dll. Pilih salah satu: Ya, Tidak, Kadang-kadang, atau Tidak bersedia menjawab."
                     }
                 ]
             },
@@ -99,6 +116,7 @@
                 "name": "Survei",
                 "questions": [
                     {
+                        "code": "S001",
                         "text": "Nomor handphone",
                         "type": "text",
                         "validation": {
@@ -108,6 +126,7 @@
                         "modified_question": "Tuliskan nomor handphone Anda (misalnya: 08123456789)"
                     },
                     {
+                        "code": "S002",
                         "text": "Di provinsi manakah Anda tinggal?",
                         "type": "select",
                         "multiple": false,
@@ -117,6 +136,7 @@
                         }
                     },
                     {
+                        "code": "S003",
                         "text": "Di Kabupaten/Kota manakah Anda tinggal?",
                         "type": "select",
                         "multiple": false,
@@ -126,6 +146,7 @@
                         }
                     },
                     {
+                        "code": "S004",
                         "text": "Provinsi manakah yang Anda kunjungi pada periode Januari 2024-Desember 2024?",
                         "type": "select",
                         "multiple": false,
@@ -135,6 +156,7 @@
                         }
                     },
                     {
+                        "code": "S005",
                         "text": "Kabupaten/Kota mana yang Anda kunjungi pada perjalanan tersebut?",
                         "type": "select",
                         "multiple": false,
@@ -144,6 +166,7 @@
                         }
                     },
                     {
+                        "code": "S006",
                         "text": "Bulan apa saja Anda melakukan perjalanan ke {$kabkot}?",
                         "type": "select",
                         "multiple": true,
@@ -167,6 +190,7 @@
                         }
                     },
                     {
+                        "code": "S007",
                         "text": "Untuk menjawab pertanyaan berikutnya, pilihlah salah satu bulan perjalanan yang paling Anda ingat",
                         "type": "select",
                         "multiple": false,
@@ -176,6 +200,7 @@
                         }
                     },
                     {
+                        "code": "S008",
                         "text": "Pada perjalanan ke {$kabkot} pada Bulan {$bulan}, apakah Anda melakukan perjalanan Pulang-Pergi di hari yang sama?",
                         "type": "select",
                         "multiple": false,
@@ -188,10 +213,14 @@
                         }
                     },
                     {
+                        "code": "S009",
                         "text": "Berapa malam Anda melakukan perjalanan tersebut?",
                         "type": "text",
                         "unit": "malam",
                         "additional_info": "Ket: Dihitung sejak Anda meninggalkan rumah sampai kembali lagi ke rumah. Pertambahan malam ditandai dengan pergantian tanggal.",
+                        "system_guidelines": [
+                            "Kategorikan sebagai 'expected_answer' jika informasi dari pengguna relevan dan dapat dikonversi menjadi jumlah malam meskipun tidak dalam bentuk angka sehingga Anda harus menghitung total pergantian malam dalam waktu perjalanan secara tepat dan akurat"
+                        ],
                         "validation": {
                             "required": true,
                             "input_type": "number",
@@ -199,6 +228,7 @@
                         }
                     },
                     {
+                        "code": "S010",
                         "text": "Motivasi utama melakukan perjalanan ke {$kabkot} pada Bulan {$bulan}:",
                         "type": "select",
                         "multiple": false,
@@ -211,11 +241,17 @@
                                 "additional_info": "Misalnya: menemani orang tua berobat, mengantar anak kejuaraan, dll."
                             }
                         ],
+                        "system_guidelines": [
+                            "Jika jawaban motivasi perjalanan pengguna dapat dipetakan ke salah satu opsi jawaban dengan jelas maka klasifikasikan sebagai 'expected_answer'",
+                            "klasifikasikan sebagai 'unexpected_answer' jika jawaban motivasi perjalanan pengguna ada ambiguitas untuk dipetakan ke dalam lebih dari satu opsi jawaban"
+                        ],
                         "validation": {
                             "required": true
-                        }
+                        },
+                        "modified_question": "Apa motivasi utama Anda melakukan perjalanan ke {$kabkot} pada Bulan {$bulan}?"
                     },
                     {
+                        "code": "S011",
                         "text": "Maksud utama melakukan perjalanan ke {$kabkot} pada Bulan {$bulan} adalah:",
                         "type": "select",
                         "multiple": false,
@@ -241,6 +277,7 @@
                         "modified_question": "Apa maksud utama Anda melakukan perjalanan ke {$kabkot} pada Bulan {$bulan}?"
                     },
                     {
+                        "code": "S012",
                         "text": "Apakah dalam perjalanan ke {$kabkot} pada Bulan {$bulan} membeli paket perjalanan/liburan/tour?",
                         "type": "select",
                         "multiple": false,
@@ -253,6 +290,7 @@
                         }
                     },
                     {
+                        "code": "S013",
                         "text": "Paket perjalanan/liburan/tour yang digunakan saat melakukan perjalanan:",
                         "type": "select",
                         "multiple": true,
@@ -270,6 +308,7 @@
                         },
                         "layered_question": [
                             {
+                                "code": "S013A",
                                 "text": "Apakah Anda menggunakan layanan transportasi dalam paket perjalanan/liburan/tour Anda?",
                                 "type": "select",
                                 "multiple": false,
@@ -283,6 +322,7 @@
                                 }
                             },
                             {
+                                "code": "S013B",
                                 "text": "Apakah Anda menggunakan layanan akomodasi/penginapan dalam paket perjalanan/liburan/tour Anda?",
                                 "type": "select",
                                 "multiple": false,
@@ -296,6 +336,7 @@
                                 }
                             },
                             {
+                                "code": "S013C",
                                 "text": "Apakah Anda menggunakan layanan makan & minum dalam paket perjalanan/liburan/tour Anda?",
                                 "type": "select",
                                 "multiple": false,
@@ -309,6 +350,7 @@
                                 }
                             },
                             {
+                                "code": "S013D",
                                 "text": "Apakah Anda menggunakan layanan pemandu wisata/tour guide dalam paket perjalanan/liburan/tour Anda?",
                                 "type": "select",
                                 "multiple": false,
@@ -322,6 +364,7 @@
                                 }
                             },
                             {
+                                "code": "S013E",
                                 "text": "Apakah Anda menggunakan layanan objek wisata dalam paket perjalanan/liburan/tour Anda?",
                                 "type": "select",
                                 "multiple": false,
@@ -335,6 +378,7 @@
                                 }
                             },
                             {
+                                "code": "S013F",
                                 "text": "Apakah Anda menggunakan layanan lainnya dalam paket perjalanan/liburan/tour Anda?",
                                 "type": "select",
                                 "multiple": false,
@@ -350,6 +394,7 @@
                         ]
                     },
                     {
+                        "code": "S014",
                         "text": "Berapa harga paket perjalanan/liburan/tour yang Anda beli per orang?",
                         "type": "text",
                         "unit": "Rupiah",
@@ -360,6 +405,7 @@
                         }
                     },
                     {
+                        "code": "S015",
                         "text": "Selama melakukan perjalanan ke {$kabkot} pada Bulan {$bulan}, apa akomodasi utama (paling lama) yang Anda gunakan?",
                         "type": "select",
                         "multiple": false,
@@ -376,6 +422,7 @@
                         "modified_question": "Selama melakukan perjalanan ke {$kabkot} pada Bulan {$bulan}, apa akomodasi utama (paling lama) yang Anda gunakan? Contoh: Hotel Bintang 4 atau 5, Hotel Bintang 3, Penginapan lainnya, atau Rumah teman/keluarga."
                     },
                     {
+                        "code": "S016",
                         "text": "Angkutan utama (paling jauh) apa yang Anda gunakan selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
                         "type": "select",
                         "multiple": false,
@@ -409,12 +456,18 @@
                                 "additional_info": "Misalnya sewa motor atau sewa mobil tidak termasuk sopir"
                             }
                         ],
+                        "system_guidelines": [
+                            "Klasifikasikan sebagai 'unexpected_answer' jika pengguna menjawab angkutan darat tetapi tidak jelas atau tidak secara langsung menjelaskan kepemilikan angkutan darat tersebut",
+                            "Klasifikasikan sebagai 'unexpected_answer' jika belum jelas apakah termasuk angkutan darat milik pribadi atau sewa",
+                            "Klasifikasikan sebagai 'unexpected_answer' jika termasuk angkutan darat sewa tetapi belum jelas apakah termasuk sewa dengan sopir atau tanpa sopir"
+                        ],
                         "validation": {
                             "required": true
                         },
                         "modified_question": "Angkutan utama (paling jauh) apa yang Anda gunakan selama perjalanan ke {$kabkot} pada Bulan {$bulan}? Contoh: pesawat, kapal laut, perahu kecil, kereta api, angkot, taksi online, mobil pribadi, dll."
                     },
                     {
+                        "code": "S017",
                         "text": "Kegiatan apa saja yang Anda lakukan pada perjalanan ke {$kabkot} pada Bulan {$bulan}? (Dapat dipilih lebih dari satu)",
                         "type": "select",
                         "multiple": true,
@@ -438,6 +491,7 @@
                         },
                         "layered_question": [
                             {
+                                "code": "S017A",
                                 "text": "Apakah Anda melakukan wisata bahari selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
                                 "type": "select",
                                 "multiple": false,
@@ -451,6 +505,7 @@
                                 }
                             },
                             {
+                                "code": "S017B",
                                 "text": "Apakah Anda melakukan wisata petualangan selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
                                 "type": "select",
                                 "multiple": false,
@@ -464,6 +519,7 @@
                                 }
                             },
                             {
+                                "code": "S017C",
                                 "text": "Apakah Anda melakukan wisata kesenian selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
                                 "type": "select",
                                 "multiple": false,
@@ -477,6 +533,7 @@
                                 }
                             },
                             {
+                                "code": "S017D",
                                 "text": "Apakah Anda melakukan wisata kota dan pedesaan selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
                                 "type": "select",
                                 "multiple": false,
@@ -490,6 +547,7 @@
                                 }
                             },
                             {
+                                "code": "S017E",
                                 "text": "Apakah Anda melakukan wisata olahraga selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
                                 "type": "select",
                                 "multiple": false,
@@ -503,6 +561,7 @@
                                 }
                             },
                             {
+                                "code": "S017F",
                                 "text": "Apakah Anda melakukan ekowisata selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
                                 "type": "select",
                                 "multiple": false,
@@ -516,6 +575,7 @@
                                 }
                             },
                             {
+                                "code": "S017G",
                                 "text": "Apakah Anda melakukan wisata sejarah/religi selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
                                 "type": "select",
                                 "multiple": false,
@@ -529,6 +589,7 @@
                                 }
                             },
                             {
+                                "code": "S017H",
                                 "text": "Apakah Anda melakukan wisata kuliner selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
                                 "type": "select",
                                 "multiple": false,
@@ -542,6 +603,7 @@
                                 }
                             },
                             {
+                                "code": "S017I",
                                 "text": "Apakah Anda melakukan MICE (Meeting, Incentive, Conference, Exhibition) selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
                                 "type": "select",
                                 "multiple": false,
@@ -555,6 +617,7 @@
                                 }
                             },
                             {
+                                "code": "S017J",
                                 "text": "Apakah Anda melakukan wisata kesehatan selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
                                 "type": "select",
                                 "multiple": false,
@@ -568,6 +631,7 @@
                                 }
                             },
                             {
+                                "code": "S017K",
                                 "text": "Apakah Anda tidak melakukan kegiatan satu pun kegiatan di atas selama perjalanan ke {$kabkot} pada Bulan {$bulan}?",
                                 "type": "select",
                                 "multiple": false,
@@ -583,6 +647,7 @@
                         ]
                     },
                     {
+                        "code": "S018",
                         "text": "Apakah Anda berniat untuk mengulangi kembali perjalanan ke {$kabkot} di masa yang akan datang dengan alasan memiliki pengalaman yang positif selama berkunjung?",
                         "type": "select",
                         "multiple": false,
@@ -596,6 +661,7 @@
                         }
                     },
                     {
+                        "code": "S019",
                         "text": "Akomodasi/Penginapan",
                         "type": "text",
                         "unit": "Rp",
@@ -608,6 +674,7 @@
                         "modified_question": "Berapa total pengeluaran Anda untuk akomodasi atau penginapan selama perjalanan ini?"
                     },
                     {
+                        "code": "S020",
                         "text": "Makanan/Minuman",
                         "type": "text",
                         "unit": "Rp",
@@ -620,6 +687,7 @@
                         "modified_question": "Berapa total pengeluaran Anda untuk makanan dan minuman selama perjalanan ini?"
                     },
                     {
+                        "code": "S021",
                         "text": "Transportasi/Angkutan",
                         "type": "text",
                         "unit": "Rp",
@@ -633,6 +701,7 @@
                         "modified_question": "Berapa total pengeluaran Anda untuk transportasi selama perjalanan ini? Termasuk biaya BBM dan tol jika menggunakan kendaraan pribadi."
                     },
                     {
+                        "code": "S022",
                         "text": "Cinderamata/Oleh-oleh/Buah Tangan",
                         "type": "text",
                         "unit": "Rp",
@@ -645,6 +714,7 @@
                         "modified_question": "Berapa total pengeluaran Anda untuk membeli cinderamata, oleh-oleh, atau buah tangan selama perjalanan ini?"
                     },
                     {
+                        "code": "S023",
                         "text": "Belanja (Tidak untuk Dijual Kembali)",
                         "type": "text",
                         "unit": "Rp",
@@ -658,6 +728,7 @@
                         "modified_question": "Berapa total pengeluaran Anda untuk belanja kebutuhan pribadi selama perjalanan ini? Contohnya seperti sabun, pasta gigi, atau tisu."
                     },
                     {
+                        "code": "S024",
                         "text": "Hiburan/Rekreasi",
                         "type": "text",
                         "unit": "Rp",
@@ -671,6 +742,7 @@
                         "modified_question": "Berapa total pengeluaran Anda untuk hiburan atau rekreasi selama perjalanan ini? Termasuk tiket masuk ke objek wisata atau atraksi."
                     },
                     {
+                        "code": "S025",
                         "text": "Kesehatan/Kecantikan/Olahraga",
                         "type": "text",
                         "unit": "Rp",
@@ -683,6 +755,7 @@
                         "modified_question": "Berapa total pengeluaran Anda untuk kesehatan, kecantikan, atau olahraga selama perjalanan ini?"
                     },
                     {
+                        "code": "S026",
                         "text": "Pemandu Wisata/Tour Guide",
                         "type": "text",
                         "unit": "Rp",
@@ -695,6 +768,7 @@
                         "modified_question": "Berapa total pengeluaran Anda untuk menggunakan jasa pemandu wisata atau tour guide selama perjalanan ini?"
                     },
                     {
+                        "code": "S027",
                         "text": "Biaya Lainnya",
                         "type": "text",
                         "unit": "Rp",
@@ -707,6 +781,7 @@
                         "modified_question": "Apakah ada biaya lain yang Anda keluarkan selama perjalanan ini? Jika ya, berapa totalnya?"
                     },
                     {
+                        "code": "S028",
                         "text": "Pengeluaran sebelum perjalanan",
                         "type": "text",
                         "unit": "Rp",
@@ -720,6 +795,7 @@
                         "modified_question": "Berapa total pengeluaran Anda sebelum perjalanan ini? Misalnya, pembelian pakaian, makanan, atau perawatan kendaraan."
                     },
                     {
+                        "code": "S029",
                         "text": "Pengeluaran setelah perjalanan",
                         "type": "text",
                         "unit": "Rp",
