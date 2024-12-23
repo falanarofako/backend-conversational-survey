@@ -1,0 +1,213 @@
+{
+    "dataset": [
+        {
+            "question": {
+                "code": "S013E",
+                "text": "Apakah Anda menggunakan layanan objek wisata dalam paket perjalanan/liburan/tour Anda?",
+                "type": "select",
+                "multiple": false,
+                "instruction": "Pilih Ya atau Tidak.",
+                "options": [
+                    "Ya",
+                    "Tidak"
+                ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Ya, saya menggunakan layanan objek wisata yang termasuk dalam paket.",
+            "intent": "expected_answer",
+            "explanation": "Jawaban formal yang langsung menyatakan penggunaan layanan objek wisata.",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "S023",
+                "text": "Berapa total pengeluaran Anda untuk belanja kebutuhan pribadi selama perjalanan ini? Contohnya seperti sabun, pasta gigi, atau tisu.",
+                "type": "text",
+                "unit": "Rp",
+                "additional_info": "Termasuk belanja untuk keperluan pribadi selama perjalanan, seperti sabun, pasta gigi, sikat gigi, tisu, dsb",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Eh, perjalanan kemarin cukup lama jadi bikin capek.",
+            "intent": "other",
+            "explanation": "Respons ini tidak menjawab pertanyaan tentang pengeluaran untuk kebutuhan pribadi.",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "code": "S013E",
+                "text": "Apakah Anda menggunakan layanan objek wisata dalam paket perjalanan/liburan/tour Anda?",
+                "type": "select",
+                "multiple": false,
+                "instruction": "Pilih Ya atau Tidak.",
+                "options": [
+                    "Ya",
+                    "Tidak"
+                ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Objek wisata itu maksudnya yang kayak gimana ya?",
+            "intent": "question",
+            "explanation": "Pertanyaan informal yang meminta penjelasan tentang konsep layanan objek wisata.",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "code": "S025",
+                "text": "Berapa total pengeluaran Anda untuk kesehatan, kecantikan, atau olahraga selama perjalanan ini?",
+                "type": "text",
+                "unit": "Rp",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Selama perjalanan, saya menghabiskan sekitar Rp 400.000 untuk perawatan wajah dan olahraga di pusat kebugaran.",
+            "intent": "expected_answer",
+            "explanation": "Respons ini memberikan angka yang jelas untuk total pengeluaran yang terkait dengan kesehatan, kecantikan, dan olahraga.",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "S022",
+                "text": "Berapa total pengeluaran Anda untuk membeli cinderamata, oleh-oleh, atau buah tangan selama perjalanan ini?",
+                "type": "text",
+                "unit": "Rp",
+                "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "validation": {
+                    "required": true,
+                    "input_type": "number",
+                    "min": 0
+                }
+            },
+            "response": "Apakah pengeluaran untuk oleh-oleh ini juga termasuk biaya pengemasan atau hanya barangnya saja?",
+            "intent": "question",
+            "explanation": "Respons ini bertanya untuk klarifikasi apakah biaya pengemasan masuk dalam pengeluaran oleh-oleh.",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "S001",
+                "text": "Tuliskan nomor handphone Anda (misalnya: 08123456789)",
+                "type": "text",
+                "validation": {
+                    "required": true,
+                    "pattern": "^[0-9]{7,15}$"
+                }
+            },
+            "response": "Apakah nomor handphone ini akan dijaga kerahasiaannya dan tidak disebarkan ke pihak lain?",
+            "intent": "question",
+            "explanation": "Respons berupa pertanyaan untuk memastikan kerahasiaan data nomor handphone yang diberikan",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "S017A",
+                "text": "Apakah Anda melakukan wisata bahari selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+                "type": "select",
+                "multiple": false,
+                "instruction": "Pilih Ya atau Tidak.",
+                "options": [
+                    "Ya",
+                    "Tidak"
+                ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Saya rasa Manado adalah kota yang indah.",
+            "intent": "other",
+            "explanation": "Respons ini tidak menjawab pertanyaan dan malah membahas tentang keindahan kota Manado.",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "S011",
+                "text": "Apa maksud utama Anda melakukan perjalanan ke Kota Yogyakarta pada Bulan Mei 2024?",
+                "type": "select",
+                "multiple": false,
+                "options": [
+                    "Profesi/Bisnis",
+                    "Pertemuan/Kongres/Seminar",
+                    "Training/Pelatihan/Diklat",
+                    "Berlibur/Rekreasi",
+                    "Kursus",
+                    "Kesehatan/Berobat",
+                    "Kecantikan/Estetika",
+                    "Keagamaan (Termasuk Berziarah)",
+                    "Mengunjungi Teman/Famili",
+                    "Mudik/Pulkan Hari Raya",
+                    "Olahraga",
+                    "Kesenian",
+                    "Belanja/Shopping"
+                ],
+                "allow_other": true,
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Saya ingin pergi ke Yogyakarta bulan Mei untuk liburan sambil mengeksplorasi tempat-tempat wisata.",
+            "intent": "expected_answer",
+            "explanation": "Jawaban ini menjelaskan bahwa alasan perjalanan adalah untuk liburan dan menjelajahi tempat wisata di Yogyakarta.",
+            "style": "informal"
+        },
+        {
+            "question": {
+                "code": "S005",
+                "text": "Kabupaten/Kota mana yang Anda kunjungi pada perjalanan tersebut?",
+                "type": "select",
+                "multiple": false,
+                "options": [],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "Maaf, saya merasa kurang nyaman untuk menyebutkan kabupaten/kota mana saja yang saya kunjungi.",
+            "intent": "other",
+            "explanation": "Respons menyatakan ketidaknyamanan untuk memberikan informasi kabupaten/kota yang dikunjungi dengan kalimat formal.",
+            "style": "formal"
+        },
+        {
+            "question": {
+                "code": "S017I",
+                "text": "Apakah Anda melakukan MICE (Meeting, Incentive, Conference, Exhibition) selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+                "type": "select",
+                "multiple": false,
+                "instruction": "Pilih Ya atau Tidak.",
+                "options": [
+                    "Ya",
+                    "Tidak"
+                ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
+                "validation": {
+                    "required": true
+                }
+            },
+            "response": "MICE itu maksudnya cuma acara resmi atau termasuk trip bareng tim kantor juga, ya?",
+            "intent": "question",
+            "explanation": "Respons ini berupa pertanyaan santai yang meminta penjelasan lebih lanjut terkait MICE.",
+            "style": "informal"
+        }
+    ]
+}

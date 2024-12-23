@@ -6,7 +6,8 @@ import {
   handleStartEvaluation,
   handleGetEvaluationProgress,
   handleGetSystemStatus,
-  handleResetSystem
+  handleResetSystem,
+  getAllClassificationResults
 } from "../controllers/intentClassificationController";
 
 const router = Router();
@@ -51,5 +52,12 @@ router.get("/system/status", handleGetSystemStatus);
  * @access  Public
  */
 router.post("/system/reset", handleResetSystem);
+
+/**
+ * @route   GET /api/classification-results
+ * @desc    Get all classification results with populated evaluationDataId
+ * @access  Public
+ */
+router.get("/get-all-classification-results", getAllClassificationResults);
 
 export default router;

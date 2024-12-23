@@ -24,6 +24,7 @@ import {
 import EvaluationData from "../models/EvaluationData";
 import mongoose from "mongoose";
 import ClassificationResultData from "../models/ClassificationResultData";
+import EvaluationMetric from "../models/EvaluationMetric";
 
 // Constants
 const PROGRESS_FILE = path.join(
@@ -376,97 +377,60 @@ const calculateMetrics = (
 };
 
 // Evaluate intent classification
-export const evaluateIntentClassification = async (
-  dataset: any[]
-): Promise<ServiceResponse<EvaluationResults>> => {
-  const startTime = Date.now();
+// Perbarui logika evaluasi
+export const evaluateIntentClassification = async (dataset: any[]) => {
   const errors: string[] = [];
-  let processedCount = 0;
-  let totalProcessingTime = 0;
-  
+  const predictions: string[] = [];
+  const actuals: string[] = [];
+
   try {
-    // Track predictions and actuals in fixed-size arrays
-    const predictions: string[] = new Array(dataset.length);
-    const actuals: string[] = new Array(dataset.length);
-    
-    // Process samples in very small batches
-    const BATCH_SIZE = 2; // Minimal batch size
-    const MAX_RETRIES = 2; // Reduced retries
-    const RETRY_DELAY = 3000; // Shorter delay
+    for (const sample of dataset) {
+      // Simpan data evaluasi ke database
+      const evaluationData = await saveEvaluationData(sample.question, sample.response, sample.intent);
 
-    // Process batches sequentially
-    for (let i = 0; i < dataset.length; i += BATCH_SIZE) {
-      const batchEndIndex = Math.min(i + BATCH_SIZE, dataset.length);
-      
-      // Process each sample in current batch
-      for (let j = i; j < batchEndIndex; j++) {
-        const sample = dataset[j];
-        const sampleStartTime = Date.now();
-        
-        try {
-          let retryCount = 0;
-          let result = null;
+      try {
+        const context: ClassificationContext = {
+          question: sample.question,
+          response: sample.response
+        };
 
-          // Simplified retry logic
-          while (!result && retryCount < MAX_RETRIES) {
-            try {
-              result = await classifyIntent({
-                question: sample.question,
-                response: sample.response
-              });
-              
-              if (!result.success) {
-                throw new Error(result.error || "Classification failed");
-              }
-            } catch (error) {
-              retryCount++;
-              if (retryCount < MAX_RETRIES) {
-                await setTimeout(RETRY_DELAY); // Menggunakan setTimeout dari timers/promises
-              } else {
-                throw error;
-              }
-            }
-          }
+        // Lakukan klasifikasi intent
+        const result = await classifyIntent(context);
 
-          if (result?.data) {
-            // Store only essential data
-            predictions[j] = result.data.intent;
-            actuals[j] = sample.intent;
-            processedCount++;
-            
-            // Update processing time
-            const sampleProcessingTime = Date.now() - sampleStartTime;
-            totalProcessingTime += sampleProcessingTime;
-          }
+        if (result.success && result.data) {
+          predictions.push(result.data.intent);
+          actuals.push(sample.intent);
 
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : "Unknown error";
-          errors.push(`Sample ${j}: ${errorMessage}`);
-          
-          // Still track the attempt
-          predictions[j] = "error";
-          actuals[j] = sample.intent;
-          processedCount++;
+          // Simpan hasil klasifikasi ke database
+          await saveClassificationResult(
+            evaluationData._id as mongoose.Types.ObjectId,
+            result.data.intent,
+            result.data.confidence,
+            result.data.explanation,
+            result.data.clarification_reason,
+            result.data.follow_up_question
+          );
+        } else {
+          throw new Error(result.error || "Klasifikasi gagal");
         }
-
-        // Log progress sparingly
-        if (j % 10 === 0 || j === dataset.length - 1) {
-          console.log(`Processed ${j + 1}/${dataset.length} samples`);
-        }
+      } catch (error) {
+        errors.push(`Error klasifikasi untuk data ID ${evaluationData._id}: ${(error as Error).message}`);
+        predictions.push("error");
+        actuals.push(sample.intent);
       }
     }
 
-    // Filter out error cases before calculating metrics
-    const validResults = predictions.reduce((acc, pred, idx) => {
-      if (pred && pred !== "error") {
-        acc.predictions.push(pred);
-        acc.actuals.push(actuals[idx]);
-      }
-      return acc;
-    }, { predictions: [] as string[], actuals: [] as string[] });
+    // Hitung metrik evaluasi
+    const metrics = calculateMetrics(predictions, actuals);
 
-    // Use original calculateMetrics function
-    const metrics = calculateMetrics(validResults.predictions, validResults.actuals);
+    // Simpan metrik evaluasi ke database
+    const evaluationMetric = new EvaluationMetric({
+      accuracy: metrics.accuracy,
+      precision: metrics.precision,
+      recall: metrics.recall,
+      f1Score: metrics.f1Score,
+    });
+    await evaluationMetric.save();
 
     return {
       success: true,
@@ -474,27 +438,16 @@ export const evaluateIntentClassification = async (
         metrics,
         totalSamples: dataset.length,
         errors,
-        evaluationTime: Date.now() - startTime
       },
-      metadata: {
-        processing_time: totalProcessingTime,
-        api_key_used: -1,
-        timestamp: new Date().toISOString()
-      }
     };
-    
   } catch (error) {
     return {
       success: false,
-      error: `Evaluation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
-      metadata: {
-        processing_time: Date.now() - startTime,
-        api_key_used: -1,
-        timestamp: new Date().toISOString()
-      }
+      error: (error as Error).message,
     };
   }
 };
+
 // Get evaluation progress
 export const getEvaluationProgress = async (): Promise<
   ServiceResponse<EvaluationProgress | null>
@@ -638,6 +591,15 @@ export const resetEvaluationProgress = async (): Promise<
       },
     };
   }
+};
+
+export const fetchAllClassificationResults = async () => {
+  // Populasikan evaluationDataId menjadi data lengkap dari EvaluationData
+  const results = await ClassificationResultData.find()
+    .populate("evaluationDataId")
+    .exec();
+
+  return results;
 };
 
 // Export helper functions for testing

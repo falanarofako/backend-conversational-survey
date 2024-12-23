@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 import { 
   classifyIntent, 
   evaluateIntentClassification,
+  fetchAllClassificationResults,
   getEvaluationProgress,
   resetEvaluationProgress 
 } from '../services/intentClassificationService';
@@ -80,58 +81,29 @@ export const handleClassifyIntent = async (
   }
 };
 
-export const handleStartEvaluation = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const handleStartEvaluation = async (req: Request, res: Response) => {
   try {
-    // Load validation dataset
-    const datasetPath = path.join(__dirname, '../data/intent-classification-validation.json');
-    const rawData = await fs.readFile(datasetPath, 'utf-8');
+    const datasetPath = path.join(__dirname, "../data/intent-classification-validation-lite.json");
+    const rawData = await fs.readFile(datasetPath, "utf-8");
     const data = JSON.parse(rawData);
-    
-    // Validate dataset structure
-    if (!Array.isArray(data.dataset)) {
-      res.status(400).json({
-        success: false,
-        message: 'Format dataset tidak valid'
-      });
-      return;
-    }
-
-    // Validate each item in dataset
-    for (const item of data.dataset) {
-      if (!item.question || !item.response || !item.intent) {
-        res.status(400).json({
-          success: false,
-          message: 'Setiap item dalam dataset harus memiliki question, response, dan intent'
-        });
-        return;
-      }
-    }
 
     const result = await evaluateIntentClassification(data.dataset);
-    
+
     if (!result.success) {
-      res.status(500).json({
-        success: false,
-        message: result.error,
-        timestamp: new Date().toISOString()
-      });
+      res.status(500).json({ success: false, message: result.error });
       return;
     }
 
     res.json(result);
-
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error memulai evaluasi',
-      error: error instanceof Error ? error.message : 'Unknown error',
-      timestamp: new Date().toISOString()
+      message: "Error memulai evaluasi",
+      error: (error as Error).message,
     });
   }
 };
+
 
 export const handleGetEvaluationProgress = async (
   req: Request,
@@ -291,6 +263,22 @@ export const handleResetSystem = async (
       message: 'Error mereset sistem',
       error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
+    });
+  }
+};
+
+export const getAllClassificationResults = async (req: Request, res: Response) => {
+  try {
+    const results = await fetchAllClassificationResults();
+    res.status(200).json({
+      success: true,
+      data: results,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch classification results",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
