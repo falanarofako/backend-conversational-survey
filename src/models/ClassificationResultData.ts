@@ -1,8 +1,6 @@
-// src/models/ClassificationResult.ts
-
 import mongoose, { Schema, Document } from "mongoose";
 
-interface ClassificationResult extends Document {
+interface ClassificationResultData extends Document {
   evaluationDataId: mongoose.Types.ObjectId;
   predictedIntent: string;
   confidence: number;
@@ -12,7 +10,7 @@ interface ClassificationResult extends Document {
   timestamp: Date;
 }
 
-const ClassificationResultSchema = new Schema<ClassificationResult>({
+const ClassificationResultDataSchema = new Schema<ClassificationResultData>({
   evaluationDataId: { type: Schema.Types.ObjectId, ref: "EvaluationData", required: true },
   predictedIntent: { type: String, required: true },
   confidence: { type: Number, required: true },
@@ -22,4 +20,4 @@ const ClassificationResultSchema = new Schema<ClassificationResult>({
   timestamp: { type: Date, default: Date.now },
 });
 
-export default mongoose.model<ClassificationResult>("ClassificationResult", ClassificationResultSchema);
+export default mongoose.model<ClassificationResultData>("ClassificationResultData", ClassificationResultDataSchema);

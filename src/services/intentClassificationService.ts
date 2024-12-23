@@ -21,6 +21,9 @@ import {
   ClassificationProgress,
   ServiceResponse,
 } from "../types/intentTypes";
+import EvaluationData from "../models/EvaluationData";
+import mongoose from "mongoose";
+import ClassificationResultData from "../models/ClassificationResultData";
 
 // Constants
 const PROGRESS_FILE = path.join(
@@ -34,6 +37,33 @@ const RESULTS_FILE = path.join(
 const RETRY_DELAY = 5000;
 const MAX_RETRIES = 3;
 const BATCH_SIZE = 5;
+
+// Tambahkan fungsi untuk menyimpan data evaluasi ke database
+const saveEvaluationData = async (question: string, response: string, intent: string) => {
+  const evaluationData = new EvaluationData({ question, response, intent });
+  await evaluationData.save();
+  return evaluationData;
+};
+
+// Tambahkan fungsi untuk menyimpan hasil klasifikasi ke database
+const saveClassificationResult = async (
+  evaluationDataId: mongoose.Types.ObjectId,
+  predictedIntent: string,
+  confidence: number,
+  explanation: string,
+  clarificationReason?: string,
+  followUpQuestion?: string
+) => {
+  const classificationResult = new ClassificationResultData({
+    evaluationDataId,
+    predictedIntent,
+    confidence,
+    explanation,
+    clarificationReason,
+    followUpQuestion,
+  });
+  await classificationResult.save();
+};
 
 // Helper function to format question for prompt
 const formatQuestionContext = (question: Question): string => {
