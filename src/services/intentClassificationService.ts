@@ -1,4 +1,4 @@
-// // src/services/intentClassificationService.ts
+// src/services/intentClassificationService.ts
 
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { setTimeout } from "timers/promises";
@@ -37,26 +37,28 @@ const BATCH_SIZE = 5;
 
 // Helper function to format question for prompt
 const formatQuestionContext = (question: Question): string => {
-  let context = `${question.code ? `[${question.code}] ` : ''}${question.text}\n`;
+  let context = `${question.code ? `[${question.code}] ` : ""}${
+    question.text
+  }\n`;
 
   if (question.type === "select") {
     context += `Tipe: Pilihan\n`;
     if (question.options && question.options.length > 0) {
       context += `Pilihan jawaban yang valid:\n`;
-      
+
       question.options.forEach((opt) => {
-        if (typeof opt === 'string') {
+        if (typeof opt === "string") {
           context += `- ${opt}\n`;
         } else {
           context += `- ${opt.text}`;
           if (opt.additional_info) {
             context += ` (${opt.additional_info})`;
           }
-          context += '\n';
+          context += "\n";
         }
       });
     }
-    
+
     if (question.multiple) {
       context += `(Boleh memilih lebih dari satu)\n`;
     }
@@ -80,11 +82,11 @@ const formatQuestionContext = (question: Question): string => {
         }
         context += "\n";
       }
-      
+
       // Handle pattern validation
       if (question.validation.pattern) {
         let patternDesc = "";
-        
+
         // Common pattern interpretations
         if (question.validation.pattern === "^[0-9]{7,15}$") {
           patternDesc = "Hanya angka, panjang 7-15 digit";
@@ -97,7 +99,7 @@ const formatQuestionContext = (question: Question): string => {
         } else {
           patternDesc = "Format khusus diperlukan";
         }
-        
+
         context += `Format: ${patternDesc}\n`;
       }
     }
@@ -123,6 +125,7 @@ const classificationPrompt = ChatPromptTemplate.fromTemplate(`
   
   Hal yang perlu diperhatikan:
   - Jika pertanyaan memiliki format jawaban berupa angka tetapi pengguna menjawab dengan teks dan relevan dengan pertanyaan, maka klasifikasi sebagai "expected_answer".
+  - Jika pertanyaan memiliki jawaban "Ya" atau "Tidak", pengguna tidak harus secara eksplisit menyebutkan "Ya" atau "Tidak" untuk diklasifikasikan sebagai "expected_answer" sehingga Anda perlu menganalisis mendalam maksud pengguna.
   - Jika respons diklasifikasikan sebagai "unexpected_answer" atau "other", maka berikan alasan pada properti 'clarification_reason' tetapi jangan lupa untuk memberikan penjelasan Anda dalam melakukan klasifikasi pada properti 'explanation'.
   - Jika respons diklasifikasikan sebagai "unexpected_answer", berikan kalimat singkat yang menjelaskan mengapa jawaban pengguna harus diklarifikasi kemudian dilanjutkan dengan pertanyaan klarifikasi yang memandu pengguna untuk memberikan jawaban sesuai format yang diharapkan.
   - Jika respons diklasifikasikan sebagai "other", berikan kalimat singkat yang menjelaskan mengapa pengguna harus menjawab ulang pertanyaan karena jawaban tidak relevan dengan pertanyaan.
@@ -172,7 +175,9 @@ export const classifyIntent = async (
       // const questionContext = formatQuestionContext(params.question);
       const questionContext = params.question;
 
-      console.log(`Classifying intent for question: ${JSON.stringify(questionContext)}`);
+      console.log(
+        `Classifying intent for question: ${JSON.stringify(questionContext)}`
+      );
 
       // Create and invoke classification chain
       const chain = createClassificationChain(llm);
@@ -346,157 +351,120 @@ export const evaluateIntentClassification = async (
 ): Promise<ServiceResponse<EvaluationResults>> => {
   const startTime = Date.now();
   const errors: string[] = [];
-
+  let processedCount = 0;
+  let totalProcessingTime = 0;
+  
   try {
-    let progress = await loadProgress();
-    if (!progress) {
-      progress = initializeProgress(dataset);
-      await saveProgress(progress);
-    }
+    // Track predictions and actuals in fixed-size arrays
+    const predictions: string[] = new Array(dataset.length);
+    const actuals: string[] = new Array(dataset.length);
+    
+    // Process samples in very small batches
+    const BATCH_SIZE = 2; // Minimal batch size
+    const MAX_RETRIES = 2; // Reduced retries
+    const RETRY_DELAY = 3000; // Shorter delay
 
-    const processSample = async (i: number) => {
-      const sample = dataset[i];
-      console.log(`Processing sample ${i + 1}/${dataset.length}`);
-
-      const classificationProgress: ClassificationProgress = {
-        sampleId: i,
-        question: sample.question,
-        response: sample.response,
-        actualIntent: sample.intent,
-        processed: false,
-        timestamp: new Date().toISOString(),
-      };
-
-      let retryCount = 0;
-      let success = false;
-
-      while (!success && retryCount < MAX_RETRIES) {
+    // Process batches sequentially
+    for (let i = 0; i < dataset.length; i += BATCH_SIZE) {
+      const batchEndIndex = Math.min(i + BATCH_SIZE, dataset.length);
+      
+      // Process each sample in current batch
+      for (let j = i; j < batchEndIndex; j++) {
+        const sample = dataset[j];
+        const sampleStartTime = Date.now();
+        
         try {
-          const result = await classifyIntent({
-            question: sample.question,
-            response: sample.response,
-          });
+          let retryCount = 0;
+          let result = null;
 
-          if (result.success) {
-            const { intent, confidence, explanation, follow_up_question } =
-              result.data || {};
-            classificationProgress.predictedIntent = intent;
-            classificationProgress.confidence = confidence;
-            classificationProgress.explanation = explanation;
-            classificationProgress.follow_up_question = follow_up_question;
-            classificationProgress.processed = true;
-            classificationProgress.api_key_used = result.metadata?.api_key_used;
-            classificationProgress.processing_time =
-              result.metadata?.processing_time;
-            success = true;
-          } else {
-            throw new Error(result.error || "Unknown API error");
+          // Simplified retry logic
+          while (!result && retryCount < MAX_RETRIES) {
+            try {
+              result = await classifyIntent({
+                question: sample.question,
+                response: sample.response
+              });
+              
+              if (!result.success) {
+                throw new Error(result.error || "Classification failed");
+              }
+            } catch (error) {
+              retryCount++;
+              if (retryCount < MAX_RETRIES) {
+                await setTimeout(RETRY_DELAY); // Menggunakan setTimeout dari timers/promises
+              } else {
+                throw error;
+              }
+            }
           }
+
+          if (result?.data) {
+            // Store only essential data
+            predictions[j] = result.data.intent;
+            actuals[j] = sample.intent;
+            processedCount++;
+            
+            // Update processing time
+            const sampleProcessingTime = Date.now() - sampleStartTime;
+            totalProcessingTime += sampleProcessingTime;
+          }
+
         } catch (error) {
-          retryCount++;
-          if (retryCount < MAX_RETRIES) {
-            console.log(`Retrying sample ${i}, attempt ${retryCount}`);
-            await setTimeout(RETRY_DELAY);
-          } else {
-            classificationProgress.error =
-              error instanceof Error ? error.message : "Unknown error";
-            errors.push(
-              `Error processing sample ${i}: ${classificationProgress.error}`
-            );
-          }
+          const errorMessage = error instanceof Error ? error.message : "Unknown error";
+          errors.push(`Sample ${j}: ${errorMessage}`);
+          
+          // Still track the attempt
+          predictions[j] = "error";
+          actuals[j] = sample.intent;
+          processedCount++;
+        }
+
+        // Log progress sparingly
+        if (j % 10 === 0 || j === dataset.length - 1) {
+          console.log(`Processed ${j + 1}/${dataset.length} samples`);
         }
       }
-
-      // Update progress
-      progress.results.push(classificationProgress);
-      progress.processedSamples++;
-      progress.lastProcessedIndex = i;
-      progress.lastUpdateTime = new Date().toISOString();
-
-      if (classificationProgress.error) {
-        progress.errorRates.total++;
-        progress.errorRates.byErrorType[classificationProgress.error] =
-          (progress.errorRates.byErrorType[classificationProgress.error] || 0) +
-          1;
-      }
-
-      if (classificationProgress.processing_time) {
-        progress.averageprocessing_time = progress.averageprocessing_time
-          ? (progress.averageprocessing_time +
-              classificationProgress.processing_time) /
-            2
-          : classificationProgress.processing_time;
-      }
-
-      await saveProgress(progress);
-    };
-
-    // Process in batches
-    const batches = Math.ceil(dataset.length / BATCH_SIZE);
-    for (let batchIndex = 0; batchIndex < batches; batchIndex++) {
-      const batchStartIndex = batchIndex * BATCH_SIZE;
-      const batchEndIndex = Math.min(
-        (batchIndex + 1) * BATCH_SIZE,
-        dataset.length
-      );
-      const batch = dataset.slice(batchStartIndex, batchEndIndex);
-
-      console.log(`Processing batch ${batchIndex + 1}/${batches}...`);
-
-      const batchPromises = batch.map((_, i) =>
-        processSample(batchStartIndex + i)
-      );
-      await Promise.allSettled(batchPromises);
     }
 
-    // Calculate final metrics
-    const predictions = progress.results
-      .filter((r) => r.processed)
-      .map((r) => r.predictedIntent as string);
+    // Filter out error cases before calculating metrics
+    const validResults = predictions.reduce((acc, pred, idx) => {
+      if (pred && pred !== "error") {
+        acc.predictions.push(pred);
+        acc.actuals.push(actuals[idx]);
+      }
+      return acc;
+    }, { predictions: [] as string[], actuals: [] as string[] });
 
-    const actuals = progress.results
-      .filter((r) => r.processed)
-      .map((r) => r.actualIntent);
-
-    const metrics = calculateMetrics(predictions, actuals);
-
-    // Prepare final results
-    const results: EvaluationResults = {
-      metrics,
-      totalSamples: dataset.length,
-      errors,
-      evaluationTime: Date.now() - startTime,
-    };
-
-    // Save results using streaming
-    const resultsStream = fsOnly.createWriteStream(RESULTS_FILE);
-    resultsStream.write(JSON.stringify(results, null, 2));
-    resultsStream.end();
+    // Use original calculateMetrics function
+    const metrics = calculateMetrics(validResults.predictions, validResults.actuals);
 
     return {
       success: true,
-      data: results,
-      metadata: {
-        processing_time: Date.now() - startTime,
-        api_key_used: -1,
-        timestamp: new Date().toISOString(),
+      data: {
+        metrics,
+        totalSamples: dataset.length,
+        errors,
+        evaluationTime: Date.now() - startTime
       },
+      metadata: {
+        processing_time: totalProcessingTime,
+        api_key_used: -1,
+        timestamp: new Date().toISOString()
+      }
     };
+    
   } catch (error) {
     return {
       success: false,
-      error: `Evaluation failed: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`,
+      error: `Evaluation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
       metadata: {
         processing_time: Date.now() - startTime,
         api_key_used: -1,
-        timestamp: new Date().toISOString(),
-      },
+        timestamp: new Date().toISOString()
+      }
     };
   }
 };
-
 // Get evaluation progress
 export const getEvaluationProgress = async (): Promise<
   ServiceResponse<EvaluationProgress | null>

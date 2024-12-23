@@ -1,3 +1,5 @@
+// src/config/database.ts
+
 import mongoose from 'mongoose';
 
 const connectDB = async (): Promise<void> => {

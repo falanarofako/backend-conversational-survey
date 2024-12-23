@@ -11,6 +11,9 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
@@ -34,9 +37,9 @@
                     "min": 0
                 }
             },
-            "response": "Eh, saya malah baru inget beli jaket waktu itu, nggak nyangka jadi lupa sama sabun dan pasta gigi.",
+            "response": "Eh, perjalanan kemarin cukup lama jadi bikin capek.",
             "intent": "other",
-            "explanation": "Respons ini tidak menjawab pertanyaan tentang pengeluaran untuk kebutuhan pribadi, malah beralih ke pembelian jaket.",
+            "explanation": "Respons ini tidak menjawab pertanyaan tentang pengeluaran untuk kebutuhan pribadi.",
             "style": "informal"
         },
         {
@@ -49,6 +52,9 @@
                 "options": [
                     "Ya",
                     "Tidak"
+                ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
                 ],
                 "validation": {
                     "required": true
@@ -121,13 +127,16 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
             },
-            "response": "Saya rasa Manado adalah kota yang indah, tapi saya lebih suka mendaki gunung daripada ke pantai.",
+            "response": "Saya rasa Manado adalah kota yang indah.",
             "intent": "other",
-            "explanation": "Respons ini tidak menjawab pertanyaan dan malah membahas preferensi pribadi yang tidak relevan dengan wisata bahari.",
+            "explanation": "Respons ini tidak menjawab pertanyaan dan malah membahas tentang keindahan kota Manado.",
             "style": "formal"
         },
         {
@@ -188,6 +197,9 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
@@ -227,6 +239,9 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
@@ -250,6 +265,10 @@
                         "text": "2. Mengikuti perjalanan orang lain",
                         "additional_info": "Misalnya: menemani orang tua berobat, mengantar anak kejuaraan, dll."
                     }
+                ],
+                "system_guidelines": [
+                    "Jika jawaban motivasi perjalanan pengguna dapat dipetakan ke salah satu opsi jawaban dengan jelas maka klasifikasikan sebagai 'expected_answer'",
+                    "klasifikasikan sebagai 'unexpected_answer' jika jawaban motivasi perjalanan pengguna ada ambiguitas untuk dipetakan ke dalam lebih dari satu opsi jawaban"
                 ],
                 "validation": {
                     "required": true
@@ -305,7 +324,7 @@
                     "min": 0
                 }
             },
-            "response": "Saya lebih banyak fokus pada pengalaman kuliner, jadi pengeluaran untuk hiburan cukup sedikit.",
+            "response": "Hiburan perlu diutamakan agar tidak terjadi stres di pikiran.",
             "intent": "other",
             "explanation": "Respons ini tidak langsung menjawab pertanyaan tentang pengeluaran hiburan, tetapi lebih mengarah ke pengalaman kuliner.",
             "style": "formal"
@@ -324,6 +343,10 @@
                         "text": "2. Mengikuti perjalanan orang lain",
                         "additional_info": "Misalnya: menemani orang tua berobat, mengantar anak kejuaraan, dll."
                     }
+                ],
+                "system_guidelines": [
+                    "Jika jawaban motivasi perjalanan pengguna dapat dipetakan ke salah satu opsi jawaban dengan jelas maka klasifikasikan sebagai 'expected_answer'",
+                    "klasifikasikan sebagai 'unexpected_answer' jika jawaban motivasi perjalanan pengguna ada ambiguitas untuk dipetakan ke dalam lebih dari satu opsi jawaban"
                 ],
                 "validation": {
                     "required": true
@@ -345,6 +368,9 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
@@ -365,6 +391,9 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
@@ -384,6 +413,9 @@
                 "options": [
                     "Ya",
                     "Tidak"
+                ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
                 ],
                 "validation": {
                     "required": true
@@ -512,7 +544,7 @@
                     "min": 0
                 }
             },
-            "response": "Saya lebih suka makan malam enak di restoran, pengeluaran transportasi saya tidak terlalu banyak.",
+            "response": "Transportasi yang paling aman dan mudah adalah kereta api.",
             "intent": "other",
             "explanation": "Respons ini tidak menjawab pertanyaan tentang pengeluaran transportasi, tetapi berfokus pada topik makanan.",
             "style": "formal"
@@ -546,6 +578,10 @@
                     "Tidak bersedia menjawab"
                 ],
                 "additional_info": "Misalnya: Mengurangi penggunaan plastik, bijak menggunakan energi, membuang sampah pada tempatnya, dll.",
+                "system_guidelines": [
+                    "Pastikan bahwa jawaban pengguna benar-benar secara tegas mengarah ke salah satu opsi jawaban dan tidak ada ambiguitas sehingga dapat diklasifikasikan sebagai 'expected_answer' jika tidak klasifikasikan sebagai 'unexpected_answer'",
+                    "Jika jawaban pengguna dapat dikategorikan eco-friendly tetapi tidak jelas dilakukan secara sering atau kadang-kadang maka klasifikasikan sebagai 'unexpected_answer' dan minta klarifikasi"
+                ],
                 "validation": {
                     "required": true
                 }
@@ -607,6 +643,9 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
@@ -660,6 +699,9 @@
                 "options": [
                     "Ya",
                     "Tidak"
+                ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
                 ],
                 "validation": {
                     "required": true
@@ -731,6 +773,9 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
@@ -770,6 +815,9 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
@@ -806,13 +854,16 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
             },
-            "response": "Enggak tahu, saya lebih suka nongkrong di kafe daripada ke laut.",
+            "response": "Perjalanan yang panjang harus diikuti sama kondisi badan yang fit.",
             "intent": "other",
-            "explanation": "Respons ini tidak relevan dengan pertanyaan dan malah membahas preferensi lain dengan gaya santai.",
+            "explanation": "Respons ini tidak relevan dengan pertanyaan dan malah membahas hal lain dengan gaya santai.",
             "style": "informal"
         },
         {
@@ -878,7 +929,7 @@
                     "min": 0
                 }
             },
-            "response": "Eh, saya malah lebih sering main ke pantai daripada pake tour guide, jadi nggak ngeluarin banyak uang buat pemandu.",
+            "response": "Tour guide emang penting bagi orang yang belum pernah main ke sana.",
             "intent": "other",
             "explanation": "Respons ini tidak relevan dengan pertanyaan pengeluaran untuk pemandu wisata dan malah beralih ke topik liburan ke pantai.",
             "style": "informal"
@@ -893,6 +944,9 @@
                 "options": [
                     "Ya",
                     "Tidak"
+                ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
                 ],
                 "validation": {
                     "required": true
@@ -934,6 +988,9 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
@@ -955,7 +1012,7 @@
                     "min": 0
                 }
             },
-            "response": "Gue lebih suka mikirin kegiatan di tempat liburannya daripada harga paketnya.",
+            "response": "Ga harus pake paket tour kalau mau liburan ke sana.",
             "intent": "other",
             "explanation": "Pernyataan informal yang tidak relevan dengan pertanyaan harga, lebih fokus pada kegiatan liburan.",
             "style": "informal"
@@ -989,6 +1046,9 @@
                 "options": [
                     "Ya",
                     "Tidak"
+                ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
                 ],
                 "validation": {
                     "required": true
@@ -1025,11 +1085,14 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
             },
-            "response": "Saya duduk di hotel dan pergi ke tempat-tempat alam.",
+            "response": "Ekowisata itu liburan di tempat alam-alam.",
             "intent": "other",
             "explanation": "Respons ini tidak menjawab pertanyaan secara relevan dan lebih fokus pada kegiatan yang tidak terkait dengan ekowisata.",
             "style": "informal"
@@ -1048,7 +1111,7 @@
                     "min": 0
                 }
             },
-            "response": "Eh, saya malah mikirin pengeluaran buat oleh-oleh, bukan untuk tiket atraksi.",
+            "response": "Emang atraksi pas di sana keren banget gaada obat!",
             "intent": "other",
             "explanation": "Respons ini tidak menjawab pertanyaan tentang hiburan atau rekreasi, malah beralih ke topik pengeluaran untuk oleh-oleh.",
             "style": "informal"
@@ -1078,6 +1141,9 @@
                 "type": "text",
                 "unit": "malam",
                 "additional_info": "Ket: Dihitung sejak Anda meninggalkan rumah sampai kembali lagi ke rumah. Pertambahan malam ditandai dengan pergantian tanggal.",
+                "system_guidelines": [
+                    "Kategorikan sebagai 'expected_answer' jika informasi dari pengguna relevan dan dapat dikonversi menjadi jumlah malam meskipun tidak dalam bentuk angka sehingga Anda harus menghitung total pergantian malam dalam waktu perjalanan secara tepat dan akurat"
+                ],
                 "validation": {
                     "required": true,
                     "input_type": "number",
@@ -1150,6 +1216,9 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
@@ -1167,13 +1236,16 @@
                 "unit": "Rp",
                 "additional_info": "Misalnya: laundry pakaian pada saat pulang, perawatan kendaraan setelah perjalanan, dll.",
                 "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "system_guidelines": [
+                    "Pastikan hanya menghitung pengeluaran setelah perjalanan saat sampai di rumah sehingga pengeluaran saat perjalanan tidak dihitung."
+                ],
                 "validation": {
                     "required": true,
                     "input_type": "number",
                     "min": 0
                 }
             },
-            "response": "Mau tahu juga, tapi mobil saya udah dicuci sebelum berangkat, jadi nggak ada biaya tambahan.",
+            "response": "Laundry di sekitar hotel kemarin cukup bersih, lho.",
             "intent": "other",
             "explanation": "Respons ini tidak menjawab pertanyaan yang dimaksud dan lebih berbicara tentang kondisi mobil yang sudah dicuci sebelumnya.",
             "style": "informal"
@@ -1189,13 +1261,16 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
             },
-            "response": "Wah, saya lebih banyak makan-makan enak daripada jalan-jalan ke tempat seni.",
+            "response": "kesenian jadi isu utama dalam program jangka panjang pemerintah.",
             "intent": "other",
-            "explanation": "Respons ini tidak menjawab pertanyaan secara langsung dan mengalihkan fokus ke aktivitas lain yang tidak relevan.",
+            "explanation": "Respons ini tidak menjawab pertanyaan secara langsung dan mengalihkan fokus ke pembahasan lain yang tidak relevan.",
             "style": "informal"
         },
         {
@@ -1227,6 +1302,9 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
@@ -1250,7 +1328,7 @@
                     "min": 0
                 }
             },
-            "response": "Oh ya, saya beli tiket konser nih, lebih seru daripada mikirin pengeluaran transportasi.",
+            "response": "Oh ya, saya beli tiket konser nih.",
             "intent": "other",
             "explanation": "Respons ini tidak menjawab pertanyaan dan malah beralih ke topik hiburan.",
             "style": "informal"
@@ -1266,11 +1344,14 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
             },
-            "response": "Aku malah asyik main game di hotel sepanjang hari.",
+            "response": "gw punya temen yang gapernah sakit.",
             "intent": "other",
             "explanation": "Respons ini sangat tidak nyambung dengan pertanyaan karena membahas kegiatan yang tidak berkaitan sama sekali.",
             "style": "informal"
@@ -1301,6 +1382,9 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
@@ -1320,6 +1404,9 @@
                 "options": [
                     "Ya",
                     "Tidak"
+                ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
                 ],
                 "validation": {
                     "required": true
@@ -1413,6 +1500,9 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
@@ -1452,6 +1542,10 @@
                         "additional_info": "Misalnya: menemani orang tua berobat, mengantar anak kejuaraan, dll."
                     }
                 ],
+                "system_guidelines": [
+                    "Jika jawaban motivasi perjalanan pengguna dapat dipetakan ke salah satu opsi jawaban dengan jelas maka klasifikasikan sebagai 'expected_answer'",
+                    "klasifikasikan sebagai 'unexpected_answer' jika jawaban motivasi perjalanan pengguna ada ambiguitas untuk dipetakan ke dalam lebih dari satu opsi jawaban"
+                ],
                 "validation": {
                     "required": true
                 }
@@ -1488,6 +1582,9 @@
                 "options": [
                     "Ya",
                     "Tidak"
+                ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
                 ],
                 "validation": {
                     "required": true
@@ -1557,6 +1654,9 @@
                     "Tidak Bekerja"
                 ],
                 "additional_info": "Contoh kasus untuk ASN: - Manajer, yaitu Deputi, Direktur, Gubernur, Walikota, Bupati, Menteri. - Profesional, yaitu Dosen, Guru, Statistisi. - Teknisi, yaitu Pengawas perbatasan, Petugas imigrasi, Petugas bea cukai.",
+                "system_guidelines": [
+                    "Jika respons diklasifikasikan sebagai 'unexpected_answer' atau 'other', maka pastikan Anda jangan sekali-kali meminta pengguna memilih opsi jawaban pekerjaan utama pada properti 'clarification_reason' dan 'follow_up_question' karena opsi jawaban pertanyaan tidak untuk ditunjukkan dan dipilih oleh pengguna"
+                ],
                 "validation": {
                     "required": true
                 }
@@ -1576,6 +1676,9 @@
                 "options": [
                     "Ya",
                     "Tidak"
+                ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
                 ],
                 "validation": {
                     "required": true
@@ -1647,6 +1750,9 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
@@ -1715,6 +1821,9 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
@@ -1750,6 +1859,9 @@
                 "options": [
                     "Ya",
                     "Tidak"
+                ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
                 ],
                 "validation": {
                     "required": true
@@ -1814,11 +1926,14 @@
                     "Ya",
                     "Tidak"
                 ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                ],
                 "validation": {
                     "required": true
                 }
             },
-            "response": "Saya malah sibuk merakit model pesawat di rumah.",
+            "response": "Saya kehilangan dompet saya waktu perjalanan pulang",
             "intent": "other",
             "explanation": "Respons ini sangat tidak relevan karena membahas aktivitas yang sama sekali tidak berkaitan dengan perjalanan atau pertanyaan.",
             "style": "formal"
@@ -1833,6 +1948,9 @@
                 "options": [
                     "Ya",
                     "Tidak"
+                ],
+                "system_guidelines": [
+                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
                 ],
                 "validation": {
                     "required": true
@@ -2110,6 +2228,9 @@
                 "unit": "Rp",
                 "additional_info": "Misalnya: laundry pakaian pada saat pulang, perawatan kendaraan setelah perjalanan, dll.",
                 "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                "system_guidelines": [
+                    "Pastikan hanya menghitung pengeluaran setelah perjalanan saat sampai di rumah sehingga pengeluaran saat perjalanan tidak dihitung."
+                ],
                 "validation": {
                     "required": true,
                     "input_type": "number",

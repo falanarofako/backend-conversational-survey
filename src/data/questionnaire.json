@@ -317,6 +317,9 @@
                                     "Ya",
                                     "Tidak"
                                 ],
+                                "system_guidelines": [
+                                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                                ],
                                 "validation": {
                                     "required": true
                                 }
@@ -330,6 +333,9 @@
                                 "options": [
                                     "Ya",
                                     "Tidak"
+                                ],
+                                "system_guidelines": [
+                                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
                                 ],
                                 "validation": {
                                     "required": true
@@ -345,6 +351,9 @@
                                     "Ya",
                                     "Tidak"
                                 ],
+                                "system_guidelines": [
+                                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                                ],
                                 "validation": {
                                     "required": true
                                 }
@@ -358,6 +367,9 @@
                                 "options": [
                                     "Ya",
                                     "Tidak"
+                                ],
+                                "system_guidelines": [
+                                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
                                 ],
                                 "validation": {
                                     "required": true
@@ -373,6 +385,9 @@
                                     "Ya",
                                     "Tidak"
                                 ],
+                                "system_guidelines": [
+                                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                                ],
                                 "validation": {
                                     "required": true
                                 }
@@ -386,6 +401,9 @@
                                 "options": [
                                     "Ya",
                                     "Tidak"
+                                ],
+                                "system_guidelines": [
+                                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
                                 ],
                                 "validation": {
                                     "required": true
@@ -500,6 +518,9 @@
                                     "Ya",
                                     "Tidak"
                                 ],
+                                "system_guidelines": [
+                                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                                ],
                                 "validation": {
                                     "required": true
                                 }
@@ -513,6 +534,9 @@
                                 "options": [
                                     "Ya",
                                     "Tidak"
+                                ],
+                                "system_guidelines": [
+                                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
                                 ],
                                 "validation": {
                                     "required": true
@@ -528,6 +552,9 @@
                                     "Ya",
                                     "Tidak"
                                 ],
+                                "system_guidelines": [
+                                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                                ],
                                 "validation": {
                                     "required": true
                                 }
@@ -541,6 +568,9 @@
                                 "options": [
                                     "Ya",
                                     "Tidak"
+                                ],
+                                "system_guidelines": [
+                                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
                                 ],
                                 "validation": {
                                     "required": true
@@ -556,6 +586,9 @@
                                     "Ya",
                                     "Tidak"
                                 ],
+                                "system_guidelines": [
+                                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                                ],
                                 "validation": {
                                     "required": true
                                 }
@@ -569,6 +602,9 @@
                                 "options": [
                                     "Ya",
                                     "Tidak"
+                                ],
+                                "system_guidelines": [
+                                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
                                 ],
                                 "validation": {
                                     "required": true
@@ -584,6 +620,9 @@
                                     "Ya",
                                     "Tidak"
                                 ],
+                                "system_guidelines": [
+                                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                                ],
                                 "validation": {
                                     "required": true
                                 }
@@ -597,6 +636,9 @@
                                 "options": [
                                     "Ya",
                                     "Tidak"
+                                ],
+                                "system_guidelines": [
+                                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
                                 ],
                                 "validation": {
                                     "required": true
@@ -612,6 +654,9 @@
                                     "Ya",
                                     "Tidak"
                                 ],
+                                "system_guidelines": [
+                                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                                ],
                                 "validation": {
                                     "required": true
                                 }
@@ -626,6 +671,9 @@
                                     "Ya",
                                     "Tidak"
                                 ],
+                                "system_guidelines": [
+                                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+                                ],
                                 "validation": {
                                     "required": true
                                 }
@@ -639,6 +687,9 @@
                                 "options": [
                                     "Ya",
                                     "Tidak"
+                                ],
+                                "system_guidelines": [
+                                    "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
                                 ],
                                 "validation": {
                                     "required": true
@@ -801,6 +852,9 @@
                         "unit": "Rp",
                         "additional_info": "Misalnya: laundry pakaian pada saat pulang, perawatan kendaraan setelah perjalanan, dll.",
                         "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+                        "system_guidelines": [
+                            "Pastikan hanya menghitung pengeluaran setelah perjalanan saat sampai di rumah sehingga pengeluaran saat perjalanan tidak dihitung."
+                        ],
                         "validation": {
                             "required": true,
                             "input_type": "number",
