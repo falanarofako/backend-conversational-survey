@@ -7,6 +7,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import connectDB from './config/database';
 import intentClassificationRoutes from './routes/intentClassificationRoutes';
+import informationExtractionRoutes from './routes/informationExtractionRoutes';
 
 dotenv.config();
 
@@ -64,6 +65,7 @@ app.use((err: CustomError, req: Request, res: Response, next: NextFunction) => {
 
 // Routes
 app.use('/api/intent', intentClassificationRoutes);
+app.use('/api/information', informationExtractionRoutes);
 
 // Basic route
 app.get('/', (req: Request, res: Response) => {

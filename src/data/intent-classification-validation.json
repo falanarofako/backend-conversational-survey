@@ -259,10 +259,10 @@
                 "multiple": false,
                 "options": [
                     {
-                        "text": "1. Untuk keperluan sendiri"
+                        "text": "Untuk keperluan sendiri"
                     },
                     {
-                        "text": "2. Mengikuti perjalanan orang lain",
+                        "text": "Mengikuti perjalanan orang lain",
                         "additional_info": "Misalnya: menemani orang tua berobat, mengantar anak kejuaraan, dll."
                     }
                 ],
@@ -337,10 +337,10 @@
                 "multiple": false,
                 "options": [
                     {
-                        "text": "1. Untuk keperluan sendiri"
+                        "text": "Untuk keperluan sendiri"
                     },
                     {
-                        "text": "2. Mengikuti perjalanan orang lain",
+                        "text": "Mengikuti perjalanan orang lain",
                         "additional_info": "Misalnya: menemani orang tua berobat, mengantar anak kejuaraan, dll."
                     }
                 ],
@@ -720,31 +720,31 @@
                 "multiple": false,
                 "options": [
                     {
-                        "text": "1. Angkutan udara",
+                        "text": "Angkutan udara",
                         "additional_info": "Misalnya pesawat"
                     },
                     {
-                        "text": "2. Angkutan laut",
+                        "text": "Angkutan laut",
                         "additional_info": "Misalnya Kapal laut dengan rute jauh"
                     },
                     {
-                        "text": "3. Angkutan sungai, danau, dan penyebrangan",
+                        "text": "Angkutan sungai, danau, dan penyebrangan",
                         "additional_info": "Misalnya perahu kecil yang melayani rute di perairan sungai, danau, atau kapal feri penyebrangan selat"
                     },
                     {
-                        "text": "4. Angkutan darat - kereta api/listrik",
+                        "text": "Angkutan darat - kereta api/listrik",
                         "additional_info": "Misalnya kereta api jarak jauh, KRL, LRT, dan MRT"
                     },
                     {
-                        "text": "5. Angkutan darat - umum",
+                        "text": "Angkutan darat - umum",
                         "additional_info": "Misalnya angkot, bus, ojek online, taksi online, dll"
                     },
                     {
-                        "text": "6. Angkutan darat - pribadi",
+                        "text": "Angkutan darat - pribadi",
                         "additional_info": "Yaitu kendaraan milik pribadi yang dipakai sendiri atau bersama rombongan"
                     },
                     {
-                        "text": "7. Angkutan darat - sewa tanpa sopir",
+                        "text": "Angkutan darat - sewa tanpa sopir",
                         "additional_info": "Misalnya sewa motor atau sewa mobil tidak termasuk sopir"
                     }
                 ],
@@ -874,31 +874,31 @@
                 "multiple": false,
                 "options": [
                     {
-                        "text": "1. Angkutan udara",
+                        "text": "Angkutan udara",
                         "additional_info": "Misalnya pesawat"
                     },
                     {
-                        "text": "2. Angkutan laut",
+                        "text": "Angkutan laut",
                         "additional_info": "Misalnya Kapal laut dengan rute jauh"
                     },
                     {
-                        "text": "3. Angkutan sungai, danau, dan penyebrangan",
+                        "text": "Angkutan sungai, danau, dan penyebrangan",
                         "additional_info": "Misalnya perahu kecil yang melayani rute di perairan sungai, danau, atau kapal feri penyebrangan selat"
                     },
                     {
-                        "text": "4. Angkutan darat - kereta api/listrik",
+                        "text": "Angkutan darat - kereta api/listrik",
                         "additional_info": "Misalnya kereta api jarak jauh, KRL, LRT, dan MRT"
                     },
                     {
-                        "text": "5. Angkutan darat - umum",
+                        "text": "Angkutan darat - umum",
                         "additional_info": "Misalnya angkot, bus, ojek online, taksi online, dll"
                     },
                     {
-                        "text": "6. Angkutan darat - pribadi",
+                        "text": "Angkutan darat - pribadi",
                         "additional_info": "Yaitu kendaraan milik pribadi yang dipakai sendiri atau bersama rombongan"
                     },
                     {
-                        "text": "7. Angkutan darat - sewa tanpa sopir",
+                        "text": "Angkutan darat - sewa tanpa sopir",
                         "additional_info": "Misalnya sewa motor atau sewa mobil tidak termasuk sopir"
                     }
                 ],
@@ -1535,10 +1535,10 @@
                 "multiple": false,
                 "options": [
                     {
-                        "text": "1. Untuk keperluan sendiri"
+                        "text": "Untuk keperluan sendiri"
                     },
                     {
-                        "text": "2. Mengikuti perjalanan orang lain",
+                        "text": "Mengikuti perjalanan orang lain",
                         "additional_info": "Misalnya: menemani orang tua berobat, mengantar anak kejuaraan, dll."
                     }
                 ],
@@ -1697,31 +1697,31 @@
                 "multiple": false,
                 "options": [
                     {
-                        "text": "1. Angkutan udara",
+                        "text": "Angkutan udara",
                         "additional_info": "Misalnya pesawat"
                     },
                     {
-                        "text": "2. Angkutan laut",
+                        "text": "Angkutan laut",
                         "additional_info": "Misalnya Kapal laut dengan rute jauh"
                     },
                     {
-                        "text": "3. Angkutan sungai, danau, dan penyebrangan",
+                        "text": "Angkutan sungai, danau, dan penyebrangan",
                         "additional_info": "Misalnya perahu kecil yang melayani rute di perairan sungai, danau, atau kapal feri penyebrangan selat"
                     },
                     {
-                        "text": "4. Angkutan darat - kereta api/listrik",
+                        "text": "Angkutan darat - kereta api/listrik",
                         "additional_info": "Misalnya kereta api jarak jauh, KRL, LRT, dan MRT"
                     },
                     {
-                        "text": "5. Angkutan darat - umum",
+                        "text": "Angkutan darat - umum",
                         "additional_info": "Misalnya angkot, bus, ojek online, taksi online, dll"
                     },
                     {
-                        "text": "6. Angkutan darat - pribadi",
+                        "text": "Angkutan darat - pribadi",
                         "additional_info": "Yaitu kendaraan milik pribadi yang dipakai sendiri atau bersama rombongan"
                     },
                     {
-                        "text": "7. Angkutan darat - sewa tanpa sopir",
+                        "text": "Angkutan darat - sewa tanpa sopir",
                         "additional_info": "Misalnya sewa motor atau sewa mobil tidak termasuk sopir"
                     }
                 ],
@@ -2293,31 +2293,31 @@
                 "multiple": false,
                 "options": [
                     {
-                        "text": "1. Angkutan udara",
+                        "text": "Angkutan udara",
                         "additional_info": "Misalnya pesawat"
                     },
                     {
-                        "text": "2. Angkutan laut",
+                        "text": "Angkutan laut",
                         "additional_info": "Misalnya Kapal laut dengan rute jauh"
                     },
                     {
-                        "text": "3. Angkutan sungai, danau, dan penyebrangan",
+                        "text": "Angkutan sungai, danau, dan penyebrangan",
                         "additional_info": "Misalnya perahu kecil yang melayani rute di perairan sungai, danau, atau kapal feri penyebrangan selat"
                     },
                     {
-                        "text": "4. Angkutan darat - kereta api/listrik",
+                        "text": "Angkutan darat - kereta api/listrik",
                         "additional_info": "Misalnya kereta api jarak jauh, KRL, LRT, dan MRT"
                     },
                     {
-                        "text": "5. Angkutan darat - umum",
+                        "text": "Angkutan darat - umum",
                         "additional_info": "Misalnya angkot, bus, ojek online, taksi online, dll"
                     },
                     {
-                        "text": "6. Angkutan darat - pribadi",
+                        "text": "Angkutan darat - pribadi",
                         "additional_info": "Yaitu kendaraan milik pribadi yang dipakai sendiri atau bersama rombongan"
                     },
                     {
-                        "text": "7. Angkutan darat - sewa tanpa sopir",
+                        "text": "Angkutan darat - sewa tanpa sopir",
                         "additional_info": "Misalnya sewa motor atau sewa mobil tidak termasuk sopir"
                     }
                 ],
@@ -2420,10 +2420,10 @@
                 "multiple": false,
                 "options": [
                     {
-                        "text": "1. Untuk keperluan sendiri"
+                        "text": "Untuk keperluan sendiri"
                     },
                     {
-                        "text": "2. Mengikuti perjalanan orang lain",
+                        "text": "Mengikuti perjalanan orang lain",
                         "additional_info": "Misalnya: menemani orang tua berobat, mengantar anak kejuaraan, dll."
                     }
                 ],

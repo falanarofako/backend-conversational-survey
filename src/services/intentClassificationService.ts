@@ -154,7 +154,7 @@ const classificationPrompt = ChatPromptTemplate.fromTemplate(`
   RESPONS PENGGUNA:
   {response}
   
-  Hal yang perlu diperhatikan:
+  Hal-hal yang perlu diperhatikan:
   - Jika pertanyaan memiliki format jawaban berupa angka tetapi pengguna menjawab dengan teks dan relevan dengan pertanyaan, maka klasifikasi sebagai "expected_answer".
   - Jika pertanyaan memiliki jawaban "Ya" atau "Tidak", pengguna tidak harus secara eksplisit menyebutkan "Ya" atau "Tidak" untuk diklasifikasikan sebagai "expected_answer" sehingga Anda perlu menganalisis mendalam maksud pengguna.
   - Jika respons diklasifikasikan sebagai "unexpected_answer" atau "other", maka berikan alasan pada properti 'clarification_reason' tetapi jangan lupa untuk memberikan penjelasan Anda dalam melakukan klasifikasi pada properti 'explanation'.

@@ -61,6 +61,15 @@ export const classificationSchema = z.object({
     ),
 });
 
+export const informationExtractionSchema = z.object({
+  extracted_information: z
+    .string()
+    .describe("Informasi yang telah diextrak dari jawaban pengguna berdasarkan pertanyaan yang terkait."),
+    explanation: z
+    .string()
+    .describe("Penjelasan mengapa informasi tersebut telah diekstrak dari jawaban pengguna berdasarkan pertanyaan yang terkait."),
+});
+
 // LLM Configuration
 interface LLMConfig {
   model: string;
