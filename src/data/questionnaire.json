@@ -141,6 +141,9 @@
                         "type": "select",
                         "multiple": false,
                         "options": [],
+                        "system_guidelines": [
+                            "Jika nama daerah yang disebut ada dalam kabupaten dan kota maka kategorikan sebagai 'unexpected_answer' dan klarifikasikan daerah yang dimaksud apakah kabupaten atau kota."
+                        ],
                         "validation": {
                             "required": true
                         }
@@ -161,6 +164,9 @@
                         "type": "select",
                         "multiple": false,
                         "options": [],
+                        "system_guidelines": [
+                            "Jika nama daerah yang disebut ada dalam kabupaten dan kota maka kategorikan sebagai 'unexpected_answer' dan klarifikasikan daerah yang dimaksud apakah kabupaten atau kota."
+                        ],
                         "validation": {
                             "required": true
                         }

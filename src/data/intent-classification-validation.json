@@ -460,7 +460,7 @@
         {
             "question": {
                 "code": "KR001",
-                "modified_question": "Apa jenis kelamin Anda?",
+                "text": "Apa jenis kelamin Anda?",
                 "type": "select",
                 "multiple": false,
                 "options": [
@@ -657,8 +657,8 @@
         },
         {
             "question": {
-                "code": "S002",
-                "text": "Di provinsi manakah Anda tinggal?",
+                "code": "S003",
+                "text": "Di Kabupaten/Kota manakah Anda tinggal?",
                 "type": "select",
                 "multiple": false,
                 "options": [],
@@ -666,9 +666,9 @@
                     "required": true
                 }
             },
-            "response": "Gw tinggal di DKI Jakarta.",
+            "response": "Gw tinggal di Kabupaten Malang.",
             "intent": "expected_answer",
-            "explanation": "Respons menyatakan provinsi tempat tinggal dengan gaya bahasa informal",
+            "explanation": "Respons menyatakan kabupaten tempat tinggal dengan gaya bahasa informal",
             "style": "informal"
         },
         {
@@ -1366,7 +1366,7 @@
                     "required": true
                 }
             },
-            "response": "Gw kerja di bagian customer service, jadi ya tugasnya handle komplain, jawab pertanyaan pelanggan, sama kasih informasi soal produk atau layanan gitu deh.",
+            "response": "Gw kerja jadi customer service di restoran, jadi ya tugasnya handle komplain, jawab pertanyaan pelanggan, sama kasih informasi soal produk atau layanan gitu deh.",
             "intent": "expected_answer",
             "explanation": "Respons menjelaskan pekerjaan di bagian customer service beserta tugas-tugasnya dengan gaya bahasa informal",
             "style": "informal"

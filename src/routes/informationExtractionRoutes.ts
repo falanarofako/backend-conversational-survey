@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { handleInformationExtraction } from "../controllers/informationExtractionController";
+import { handleEvaluateInformationExtraction, handleInformationExtraction } from "../controllers/informationExtractionController";
 
 const router = Router();
 
@@ -13,6 +13,13 @@ const router = Router();
  *          }
  */
 router.post("/extract", handleInformationExtraction);
+
+/**
+ * @route   POST /api/information-extraction/evaluate
+ * @desc    Evaluate information extraction
+ * @access  Public
+ */
+router.post("/evaluate", handleEvaluateInformationExtraction);
 
 
 export default router;

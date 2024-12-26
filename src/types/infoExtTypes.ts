@@ -9,6 +9,6 @@ export interface InformationExtractionInput {
 }
 
 export interface InformationExtractionOutput {
-  extracted_information: string | number; // Informasi yang diekstrak (string atau angka)
+  extracted_information: string | number | string[]; // Tambahkan dukungan untuk array string
   explanation: string; // Penjelasan dari LLM
 }
