@@ -1,4 +1,4 @@
-// // src/controllers/intentClassificationController.ts
+// src/controllers/intentClassificationController.ts
 
 import { Request, Response } from 'express';
 import { 

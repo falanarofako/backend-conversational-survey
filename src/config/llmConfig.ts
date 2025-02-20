@@ -16,10 +16,10 @@ dotenv.config();
 // Output schema for classification
 export const classificationSchema = z.object({
   intent: z
-    .enum(["expected_answer", "unexpected_answer", "question", "other"])
+    .enum(["question", "expected_answer", "unexpected_answer", "other"])
     .describe(
       "Klasifikasi respons pengguna:\n" +
-        "- question: Pertanyaan terkait pertanyaan survei atau permintaan klarifikasi.\n" +
+        "- question: Pertanyaan terkait pertanyaan survei yang ditanyakan atau permintaan klarifikasi.\n" +
         "- expected_answer: Jawaban yang memenuhi salah satu kriteria berikut:\n" +
         "1. Menjawab pertanyaan secara langsung walaupun format jawaban tidak sesuai. Misalnya: format jawaban adalah angka tetapi pengguna menjawab dengan teks tetapi menyatakan jumlah atau nilai yang pasti bukan 'lebih dari' atau 'kurang dari'\n" +
         "2. Menggunakan kata/frasa yang sama atau sinonim dari opsi jawaban yang tersedia\n" +
@@ -51,7 +51,7 @@ export const classificationSchema = z.object({
     .string()
     .optional()
     .describe(
-      "Penjelasan singkat (hanya dalam satu kalimat) kepada pengguna mengapa jawaban mereka memerlukan klarifikasi untuk intent unexpected_answer atau perlu dijawab ulang untuk intent other dan pastikan penjelasannya sejalan dengan penjelasan pada properti 'explanation' dan dituliskan secara singkat hanya 1 kalimat saja (hanya ada jika intent adalah unexpected_answer atau other)"
+      "Penjelasan singkat (hanya dalam satu kalimat) kepada pengguna mengapa jawaban mereka memerlukan klarifikasi untuk intent unexpected_answer atau perlu dijawab ulang untuk intent other dan pastikan penjelasannya sejalan dengan penjelasan pada properti 'explanation' dan dituliskan secara singkat hanya 1 kalimat saja (hanya ada jika intent adalah unexpected_answer atau other)."
     ),
   follow_up_question: z
     .string()
