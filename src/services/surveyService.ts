@@ -1,6 +1,9 @@
 // src/services/surveyService.ts
 
-import SurveySession, { IResponse, ISurveySession } from "../models/SurveySession";
+import SurveySession, {
+  IResponse,
+  ISurveySession,
+} from "../models/SurveySession";
 import User from "../models/User";
 import { classifyIntent } from "../services/intentClassificationService";
 import { extractInformation } from "../services/informationExtractionService";
@@ -9,6 +12,8 @@ import {
   getRegencyNamesByProvinceName,
 } from "./provincesAndRegenciesService";
 import mongoose from "mongoose";
+import SurveyMessage from "../models/SurveyMessage";
+import QuestionnaireModel from "../models/Questionnaire";
 
 // Start a new survey session for a user
 export const startSurveySession = async (userId: string, survey: any) => {
@@ -25,8 +30,10 @@ export const startSurveySession = async (userId: string, survey: any) => {
     // Check if the user already has an active session
     if (user.activeSurveySessionId) {
       // Return the existing session instead of creating a new one
-      const existingSession = await SurveySession.findById(user.activeSurveySessionId);
-      if (existingSession && existingSession.status === 'IN_PROGRESS') {
+      const existingSession = await SurveySession.findById(
+        user.activeSurveySessionId
+      );
+      if (existingSession && existingSession.status === "IN_PROGRESS") {
         await session.abortTransaction();
         session.endSession();
         return existingSession;
@@ -46,6 +53,30 @@ export const startSurveySession = async (userId: string, survey: any) => {
     user.activeSurveySessionId = newSession._id as mongoose.Types.ObjectId;
     await user.save({ session });
 
+    // Get the latest questionnaire
+    const latestQuestionnaire = await QuestionnaireModel.findOne().sort({
+      createdAt: -1,
+    }).session(session); // Use the same session for this query
+    if (!latestQuestionnaire) {
+      throw new Error("Questionnaire not found");
+    }
+
+    const system_response = {
+      initial_message:"Selamat datang! Survei ini bertujuan untuk mengumpulkan informasi tentang proﬁl wisatawan nusantara, maksud perjalanan, akomodasi yang digunakan, lama perjalanan, dan rata-rata pengeluaran terkait perjalanan yang dilakukan oleh penduduk Indonesia di dalam wilayah teritorial Indonesia. Apakah Anda siap memulai?",
+      first_question: latestQuestionnaire.survey.categories[0].questions[0].text,
+    };
+
+    await SurveyMessage.create(
+      [
+        {
+          session_id: newSession._id,
+          user_message: null,
+          system_response: system_response,
+        },
+      ],
+      { session } // Use the same session for this operation
+    );
+
     await session.commitTransaction();
     session.endSession();
 
@@ -59,27 +90,29 @@ export const startSurveySession = async (userId: string, survey: any) => {
 };
 
 // Complete a survey session
-export const completeSurveySession = async (sessionId: string): Promise<void> => {
+export const completeSurveySession = async (
+  sessionId: string
+): Promise<void> => {
   const session = await mongoose.startSession();
   session.startTransaction();
-  
+
   try {
     // Update the survey session status to completed
     const surveySession = await SurveySession.findById(sessionId);
     if (!surveySession) {
       throw new Error("Survey session not found");
     }
-    
-    surveySession.status = 'COMPLETED';
+
+    surveySession.status = "COMPLETED";
     await surveySession.save({ session });
-    
+
     // Remove the active session reference from the user
     await User.findByIdAndUpdate(
       surveySession.user_id,
       { $unset: { activeSurveySessionId: 1 } },
       { session }
     );
-    
+
     await session.commitTransaction();
     session.endSession();
   } catch (error) {
@@ -134,8 +167,14 @@ const updateQuestionOptions = async (
       currentQuestion.options = getRegencyNamesByProvinceName(provinceName);
       if (currentQuestion.system_guidelines.length > 0) {
         for (let i = 0; i < currentQuestion.system_guidelines.length; i++) {
-          if (currentQuestion.system_guidelines[i].includes("${choosenProvince}")) {
-            currentQuestion.system_guidelines[i] = currentQuestion.system_guidelines[i].replace("${choosenProvince}", provinceName);
+          if (
+            currentQuestion.system_guidelines[i].includes("${choosenProvince}")
+          ) {
+            currentQuestion.system_guidelines[i] =
+              currentQuestion.system_guidelines[i].replace(
+                "${choosenProvince}",
+                provinceName
+              );
           }
         }
       }
@@ -151,8 +190,14 @@ const updateQuestionOptions = async (
       currentQuestion.options = getRegencyNamesByProvinceName(provinceName);
       if (currentQuestion.system_guidelines.length > 0) {
         for (let i = 0; i < currentQuestion.system_guidelines.length; i++) {
-          if (currentQuestion.system_guidelines[i].includes("${choosenProvince}")) {
-            currentQuestion.system_guidelines[i] = currentQuestion.system_guidelines[i].replace("${choosenProvince}", provinceName);
+          if (
+            currentQuestion.system_guidelines[i].includes("${choosenProvince}")
+          ) {
+            currentQuestion.system_guidelines[i] =
+              currentQuestion.system_guidelines[i].replace(
+                "${choosenProvince}",
+                provinceName
+              );
           }
         }
       }
@@ -247,10 +292,7 @@ export const processSurveyResponse = async (
 
   // Update question options if needed
   if (["S002", "S004", "S003", "S005", "S007"].includes(currentQuestion.code)) {
-    currentQuestion = await updateQuestionOptions(
-      currentQuestion,
-      sessionId
-    );
+    currentQuestion = await updateQuestionOptions(currentQuestion, sessionId);
   }
 
   // Replace placeholders in question text
@@ -277,11 +319,18 @@ export const processSurveyResponse = async (
     classificationResult.data?.intent === "unexpected_answer" ||
     classificationResult.data?.intent === "other"
   ) {
-    return {
+    // Save user message and system response
+    const system_response = {
       currentQuestion: currentQuestion.text,
       clarification_reason: classificationResult.data?.clarification_reason,
       follow_up_question: classificationResult.data?.follow_up_question,
     };
+    await SurveyMessage.create({
+      session_id: sessionId,
+      user_message: userResponse,
+      system_response: system_response,
+    });
+    return system_response;
   }
 
   // Handle question intent (user asked a question)
@@ -304,19 +353,34 @@ export const processSurveyResponse = async (
 
       // Parse the response from the RAG API
       const ragResult = await response.json();
-      
-      // Return the answer from RAG API
-      return {
+
+      // Save user message and system response
+      const system_response = {
         currentQuestion: currentQuestion.text,
         answer: ragResult.answer || ragResult,
       };
+      await SurveyMessage.create({
+        session_id: sessionId,
+        user_message: userResponse,
+        system_response: system_response,
+      });
+      // Return the answer from RAG API
+      return system_response;
     } catch (error) {
       console.error("Error calling RAG API:", error);
       // Fallback to original behavior if RAG API call fails
-      return {
-        additional_info: "Maaf, sistem belum dapat menjawab pertanyaan Anda. Mohon jawab pertanyaan sebelumnya.",
+      // Save user message and system response
+      const system_response = {
+        additional_info:
+          "Maaf, sistem belum dapat menjawab pertanyaan Anda. Mohon jawab pertanyaan sebelumnya.",
         currentQuestion: currentQuestion.text,
       };
+      await SurveyMessage.create({
+        session_id: sessionId,
+        user_message: userResponse,
+        system_response: system_response,
+      });
+      return system_response;
     }
   }
 
@@ -334,7 +398,7 @@ export const processSurveyResponse = async (
     // Save the response
     session.responses.push({
       question_code: currentQuestion.code,
-      valid_response: extractionResult.data?.extracted_information ?? '',
+      valid_response: extractionResult.data?.extracted_information ?? "",
     });
 
     // Handle skiplogic
@@ -343,10 +407,14 @@ export const processSurveyResponse = async (
       S012: { Ya: 18, Tidak: 25 },
     };
 
-    if (skipMapping[currentQuestion.code] && typeof extractionResult.data?.extracted_information === 'string') {
+    if (
+      skipMapping[currentQuestion.code] &&
+      typeof extractionResult.data?.extracted_information === "string"
+    ) {
       session.current_question_index =
-        skipMapping[currentQuestion.code][extractionResult.data?.extracted_information] ||
-        session.current_question_index + 1;
+        skipMapping[currentQuestion.code][
+          extractionResult.data?.extracted_information
+        ] || session.current_question_index + 1;
     } else {
       session.current_question_index += 1;
     }
@@ -356,18 +424,26 @@ export const processSurveyResponse = async (
       session.current_question_index >=
       survey.categories.flatMap((cat: any) => cat.questions).length
     ) {
-      session.status = 'COMPLETED';
-      
+      session.status = "COMPLETED";
+
       // Remove the active session reference from the user
-      await User.findByIdAndUpdate(
-        session.user_id,
-        { $unset: { activeSurveySessionId: 1 } }
-      );
-      
+      await User.findByIdAndUpdate(session.user_id, {
+        $unset: { activeSurveySessionId: 1 },
+      });
+
       await session.save();
-      return {
-        additional_info: 'Survei telah berakhir, terima kasih telah menyelesaikan survei!',
+
+      // Save user message and system response
+      const system_response = {
+        additional_info:
+          "Survei telah berakhir, terima kasih telah menyelesaikan survei!",
       };
+      await SurveyMessage.create({
+        session_id: sessionId,
+        user_message: userResponse,
+        system_response: system_response,
+      });
+      return system_response;
     }
 
     await session.save();
@@ -378,21 +454,29 @@ export const processSurveyResponse = async (
     ];
 
     nextQuestion = await replacePlaceholders(nextQuestion, sessionId);
-
-    return {
+    // Save user message and system response
+    const system_response = {
       next_question: nextQuestion.text || null,
     };
+    await SurveyMessage.create({
+      session_id: sessionId,
+      user_message: userResponse,
+      system_response: system_response,
+    });
+    return system_response;
   }
 };
 
 // Get user's active session
-export const getUserActiveSurveySession = async (userId: string): Promise<ISurveySession | null> => {
+export const getUserActiveSurveySession = async (
+  userId: string
+): Promise<ISurveySession | null> => {
   try {
     const user = await User.findById(userId);
     if (!user || !user.activeSurveySessionId) {
       return null;
     }
-    
+
     return await SurveySession.findById(user.activeSurveySessionId);
   } catch (error) {
     console.error("Error getting user's active survey session:", error);
