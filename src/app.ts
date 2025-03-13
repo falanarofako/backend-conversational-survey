@@ -11,8 +11,7 @@ import informationExtractionRoutes from "./routes/informationExtractionRoutes";
 import questionnaireRoutes from "./routes/questionnaireRoutes";
 import surveyRoutes from "./routes/surveyRoutes";
 import authRoutes from "./routes/authRoutes";
-import ragRoutes from "./routes/ragRoutes";
-import { initializeRAG } from "./controllers/ragController";
+
 dotenv.config();
 
 const app: Express = express();
@@ -75,7 +74,6 @@ app.use("/api/intent", intentClassificationRoutes);
 app.use("/api/information", informationExtractionRoutes);
 app.use("/api/questionnaire", questionnaireRoutes);
 app.use("/api/survey", surveyRoutes);
-app.use("/api/rag", ragRoutes);
 
 // Basic route
 app.get("/", (req: Request, res: Response) => {
@@ -85,15 +83,6 @@ app.get("/", (req: Request, res: Response) => {
 // Create server
 const server = app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);
-  try {
-    await initializeRAG(
-      {} as any,
-      { status: () => ({ json: console.log }) } as any
-    );
-    console.log("RAG system berhasil diinisialisasi");
-  } catch (error) {
-    console.error("Gagal menginisialisasi RAG system:", error);
-  }
 });
 
 // Configure server timeout
