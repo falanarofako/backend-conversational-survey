@@ -154,15 +154,15 @@ const classificationPrompt = ChatPromptTemplate.fromTemplate(`
   RESPONS PENGGUNA:
   {response}
   
-  Hal-hal yang perlu diperhatikan:
-  - Jika respons pengguna merupakan pertanyaan atau permintaan klarifikasi terkait pertanyaan survei, maka klasifikasikan sebagai "question".
-  - Jika pertanyaan memiliki format jawaban berupa angka tetapi pengguna menjawab dengan teks dan relevan dengan pertanyaan, maka klasifikasi sebagai "expected_answer".
-  - Jika pertanyaan memiliki jawaban "Ya" atau "Tidak", pengguna tidak harus secara eksplisit menyebutkan "Ya" atau "Tidak" untuk diklasifikasikan sebagai "expected_answer" sehingga Anda perlu menganalisis mendalam maksud pengguna.
-  - Jika respons diklasifikasikan sebagai "unexpected_answer" atau "other", maka berikan alasan pada properti 'clarification_reason' tetapi jangan lupa untuk memberikan penjelasan Anda dalam melakukan klasifikasi pada properti 'explanation'.
-  - Jika respons diklasifikasikan sebagai "unexpected_answer", berikan kalimat singkat hanya dalam satu kalimat saja yang menjelaskan mengapa jawaban pengguna harus diklarifikasi kemudian dilanjutkan dengan pertanyaan klarifikasi yang memandu pengguna untuk memberikan jawaban yang diharapkan.
-  - Jika respons diklasifikasikan sebagai "other", berikan kalimat singkat yang menjelaskan mengapa pengguna harus menjawab ulang pertanyaan karena jawaban tidak relevan dengan pertanyaan.
-  - Jika pertanyaan memiliki opsi jawaban dan respons diklasifikasikan sebagai "expected_answer", maka sebutkan juga opsi jawaban mana yang paling mendekati dengan maksud pengguna pada properti 'explanation'.
-  - Jika pertanyaan tidak mempersilahkan pengguna menuliskan sendiri secara terbuka, maka Anda jangan meminta pengguna menulis jawaban secara terbuka.
+  Pastikan Anda benar-benar mengikuti setiap perintah di bawah ini:
+  1. Jika respons pengguna merupakan pertanyaan atau permintaan klarifikasi terkait pertanyaan survei, maka klasifikasikan sebagai "question".
+  2. Jika pertanyaan memiliki format jawaban berupa angka tetapi pengguna menjawab dengan teks dan relevan dengan pertanyaan, maka klasifikasi sebagai "expected_answer".
+  3. Jika pertanyaan memiliki jawaban "Ya" atau "Tidak", pengguna tidak harus secara eksplisit menyebutkan "Ya" atau "Tidak" untuk diklasifikasikan sebagai "expected_answer" sehingga Anda perlu menganalisis mendalam maksud pengguna.
+  4. Jika respons diklasifikasikan sebagai "unexpected_answer" atau "other", maka berikan alasan pada properti 'clarification_reason' tetapi jangan lupa untuk memberikan penjelasan Anda dalam melakukan klasifikasi pada properti 'explanation'.
+  5. Jika respons diklasifikasikan sebagai "unexpected_answer", berikan kalimat singkat hanya dalam satu kalimat saja yang menjelaskan mengapa jawaban pengguna harus diklarifikasi kemudian dilanjutkan dengan pertanyaan klarifikasi yang memandu pengguna untuk memberikan jawaban yang diharapkan.
+  6. Jika respons diklasifikasikan sebagai "other", berikan kalimat singkat yang menjelaskan mengapa pengguna harus menjawab ulang pertanyaan dikarenakan jawaban tidak relevan dengan pertanyaan.
+  7. Jika pertanyaan memiliki opsi jawaban dan respons diklasifikasikan sebagai "expected_answer", maka sebutkan juga opsi jawaban mana yang paling mendekati dengan maksud pengguna pada properti 'explanation'.
+  8. Jika pertanyaan tidak mempersilahkan pengguna menuliskan sendiri secara terbuka, maka Anda jangan meminta pengguna menulis jawaban secara terbuka.
 
   Berikan penjelasan detail mengapa respons diklasifikasikan demikian dengan mempertimbangkan:
   - Kesesuaian dengan tipe pertanyaan (text/select)

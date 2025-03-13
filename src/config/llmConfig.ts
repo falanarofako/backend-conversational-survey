@@ -51,13 +51,13 @@ export const classificationSchema = z.object({
     .string()
     .optional()
     .describe(
-      "Penjelasan singkat (hanya dalam satu kalimat) kepada pengguna mengapa jawaban mereka memerlukan klarifikasi untuk intent unexpected_answer atau perlu dijawab ulang untuk intent other dan pastikan penjelasannya sejalan dengan penjelasan pada properti 'explanation' dan dituliskan secara singkat hanya 1 kalimat saja (hanya ada jika intent adalah unexpected_answer atau other)."
+      "Penjelasan singkat (hanya dalam satu kalimat) kepada pengguna mengapa jawaban mereka memerlukan klarifikasi untuk intent unexpected_answer atau perlu dijawab ulang untuk intent other dan pastikan penjelasannya sejalan dengan penjelasan pada properti 'explanation' dan dituliskan secara singkat hanya 1 kalimat saja (hanya ada jika intent adalah unexpected_answer atau other). Dalam penjelasannya, Anda jangan meminta pengguna memilih opsi jawaban yang tersedia karena opsi jawaban memang tidak ditunjukkan kepada pengguna."
     ),
   follow_up_question: z
     .string()
     .optional()
     .describe(
-      "Kalimat klarifikasi untuk mendapatkan jawaban spesifik (hanya ada jika intent adalah unexpected_answer atau other). Berikan kalimat pertama klarifikasi dengan alasan singkat yang dapat diinformasikan kepada pengguna mengapa respons mereka dikategorikan sebagai unexpected_answer atau other kemudian meminta pengguna merespons dengan jawaban yang diharapkan atau meminta pengguna untuk memilih opsi jawaban yang tersedia jika pertanyaan merupakan pertanyaan dengan opsi jawaban."
+      "Kalimat pertanyaan untuk mendapatkan jawaban spesifik (hanya ada jika intent adalah unexpected_answer atau other) dengan meminta pengguna merespons dengan jawaban yang diharapkan atau meminta pengguna untuk memilih opsi jawaban yang tersedia jika pertanyaan merupakan pertanyaan dengan opsi jawaban."
     ),
 });
 
@@ -80,7 +80,7 @@ interface LLMConfig {
 }
 
 const defaultConfig: LLMConfig = {
-  model: "gemini-1.5-flash",
+  model: "gemini-2.0-flash",
   temperature: 0,
   maxRetries: 2,
   retryDelay: 1000,

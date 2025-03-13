@@ -204,22 +204,56 @@ export const processSurveyResponse = async (
     classificationResult.data?.intent === "other"
   ) {
     return {
-      additional_info: null,
-      next_question: null,
+      // additional_info: null,
+      currentQuestion: currentQuestion.text,
+      // next_question: null,
       clarification_reason: classificationResult.data?.clarification_reason,
       follow_up_question: classificationResult.data?.follow_up_question,
     };
   }
 
   if (classificationResult.data?.intent === "question") {
-    return {
-      additional_info:
-        "Maaf, sistem belum dapat menjawab pertanyaan Anda. Mohon jawab pertanyaan sebelumnya.",
-      next_question: null,
-      clarification_reason: null,
-      follow_up_question: null,
-    };
+    try {
+      // Call RAG API to get answer for the question
+      const response = await fetch("http://localhost:8000/api/rag/ask", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question: userResponse,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`RAG API responded with status: ${response.status}`);
+      }
+
+      // Parse the response from the RAG API
+      const ragResult = await response.json();
+      
+      // Return the answer from RAG API
+      return {
+        // additional_info: null,
+        currentQuestion: currentQuestion.text,
+        // next_question: null,
+        // clarification_reason: null,
+        // follow_up_question: null,
+        answer: ragResult.answer || ragResult, // Assuming RAG API returns answer directly or in answer field
+      };
+    } catch (error) {
+      console.error("Error calling RAG API:", error);
+      // Fallback to original behavior if RAG API call fails
+      return {
+        additional_info: "Maaf, sistem belum dapat menjawab pertanyaan Anda. Mohon jawab pertanyaan sebelumnya.",
+        currentQuestion: currentQuestion.text,
+        // next_question: null,
+        // clarification_reason: null,
+        // follow_up_question: null,
+      };
+    }
   }
+
 
   if (classificationResult.data?.intent === "expected_answer") {
     const extractionResult = await extractInformation({
@@ -257,9 +291,9 @@ export const processSurveyResponse = async (
       await session.save();
       return {
         additional_info: 'Survei telah berakhir, terima kasih telah menyelesaikan survei!',
-        next_question: null,
-        clarification_reason: null,
-        follow_up_question: null,
+        // next_question: null,
+        // clarification_reason: null,
+        // follow_up_question: null,
       };
     }
 
@@ -273,10 +307,10 @@ export const processSurveyResponse = async (
     nextQuestion = await replacePlaceholders(nextQuestion, sessionId);
 
     return {
-      additional_info: null,
+      // additional_info: null,
       next_question: nextQuestion.text || null,
-      clarification_reason: null,
-      follow_up_question: null,
+      // clarification_reason: null,
+      // follow_up_question: null,
     };
   }
 };
