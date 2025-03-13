@@ -1,44 +1,118 @@
-// src/routes/surveyRoutes.ts
+// src/services/surveyService.ts
 
-import SurveySession, { IResponse } from "../models/SurveySession";
+import SurveySession, { IResponse, ISurveySession } from "../models/SurveySession";
+import User from "../models/User";
 import { classifyIntent } from "../services/intentClassificationService";
 import { extractInformation } from "../services/informationExtractionService";
 import {
   getProvinceNames,
   getRegencyNamesByProvinceName,
 } from "./provincesAndRegenciesService";
+import mongoose from "mongoose";
 
+// Start a new survey session for a user
 export const startSurveySession = async (userId: string, survey: any) => {
-  const session = new SurveySession({
-    user_id: userId,
-    responses: [],
-  });
-  await session.save();
-  return session;
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    // Find the user
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Check if the user already has an active session
+    if (user.activeSurveySessionId) {
+      // Return the existing session instead of creating a new one
+      const existingSession = await SurveySession.findById(user.activeSurveySessionId);
+      if (existingSession && existingSession.status === 'IN_PROGRESS') {
+        await session.abortTransaction();
+        session.endSession();
+        return existingSession;
+      }
+    }
+
+    // Create a new survey session
+    const newSession = new SurveySession({
+      user_id: new mongoose.Types.ObjectId(userId),
+      responses: [],
+    });
+
+    // Save the new session
+    await newSession.save({ session });
+
+    // Update the user's active session reference
+    user.activeSurveySessionId = newSession._id as mongoose.Types.ObjectId;
+    await user.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return newSession;
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error("Error starting survey session:", error);
+    throw error;
+  }
 };
 
+// Complete a survey session
+export const completeSurveySession = async (sessionId: string): Promise<void> => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  
+  try {
+    // Update the survey session status to completed
+    const surveySession = await SurveySession.findById(sessionId);
+    if (!surveySession) {
+      throw new Error("Survey session not found");
+    }
+    
+    surveySession.status = 'COMPLETED';
+    await surveySession.save({ session });
+    
+    // Remove the active session reference from the user
+    await User.findByIdAndUpdate(
+      surveySession.user_id,
+      { $unset: { activeSurveySessionId: 1 } },
+      { session }
+    );
+    
+    await session.commitTransaction();
+    session.endSession();
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error("Error completing survey session:", error);
+    throw error;
+  }
+};
+
+// Get valid response for a question from a session
 async function getValidResponse(
   sessionId: string,
   questionCode: string
 ): Promise<any | null> {
   try {
-    // Mencari SurveySession berdasarkan sessionId
+    // Find the SurveySession by sessionId
     const session = await SurveySession.findById(sessionId);
 
     if (!session) {
       throw new Error("Survey session not found");
     }
 
-    // Mencari response berdasarkan question_code
+    // Find response by question_code
     const response = session.responses.find(
-      (resp: any) => resp.question_code === questionCode
+      (resp: IResponse) => resp.question_code === questionCode
     );
 
     if (response) {
       return response.valid_response;
     }
 
-    // Jika response tidak ditemukan
+    // If response not found
     return null;
   } catch (error) {
     console.error("Error fetching valid response:", error);
@@ -46,15 +120,14 @@ async function getValidResponse(
   }
 }
 
+// Update question options based on previous responses
 const updateQuestionOptions = async (
   currentQuestion: any,
-  sessionId: string,
-  questionCode: string
+  sessionId: string
 ): Promise<any> => {
   // Ensure the function returns a promise that resolves to the updated question
   if (currentQuestion.code === "S002" || currentQuestion.code === "S004") {
     currentQuestion.options = getProvinceNames();
-    console.log(`Current question ${currentQuestion.code}:`, currentQuestion);
   } else if (currentQuestion.code === "S003") {
     const provinceName = await getValidResponse(sessionId, "S002");
     if (provinceName) {
@@ -66,7 +139,6 @@ const updateQuestionOptions = async (
           }
         }
       }
-      console.log(`Current question ${currentQuestion.code}:`, currentQuestion);
     } else {
       console.error(
         `Province name not found for question ${currentQuestion.code}`
@@ -84,7 +156,6 @@ const updateQuestionOptions = async (
           }
         }
       }
-      console.log(`Current question ${currentQuestion.code}:`, currentQuestion);
     } else {
       console.error(
         `Province name not found for question ${currentQuestion.code}`
@@ -106,6 +177,7 @@ const updateQuestionOptions = async (
   return currentQuestion; // Return the updated question
 };
 
+// Get current month name
 const getCurrentMonthName = (): string => {
   const months = [
     "Januari",
@@ -126,6 +198,7 @@ const getCurrentMonthName = (): string => {
   return months[currentMonth];
 };
 
+// Replace placeholders in question text
 const replacePlaceholders = async (
   currentQuestion: any,
   sessionId: string
@@ -154,11 +227,10 @@ const replacePlaceholders = async (
     }
   }
 
-  console.log(`Current question ${currentQuestion.code}:`, currentQuestion);
-
   return currentQuestion;
 };
 
+// Process a survey response
 export const processSurveyResponse = async (
   sessionId: string,
   userResponse: string,
@@ -173,21 +245,24 @@ export const processSurveyResponse = async (
     (category: any) => category.questions
   )[session.current_question_index];
 
+  // Update question options if needed
   if (["S002", "S004", "S003", "S005", "S007"].includes(currentQuestion.code)) {
     currentQuestion = await updateQuestionOptions(
       currentQuestion,
-      sessionId,
-      currentQuestion.code
+      sessionId
     );
   }
 
+  // Replace placeholders in question text
   currentQuestion = await replacePlaceholders(currentQuestion, sessionId);
 
+  // Add timestamp to S006 responses
   if (currentQuestion.code === "S006") {
     const timestamp = new Date().toLocaleString();
     userResponse = `${userResponse} (Dikirim pada ${timestamp})`;
   }
 
+  // Classify the intent of the response
   const classificationResult = await classifyIntent({
     question: currentQuestion,
     response: userResponse,
@@ -197,21 +272,19 @@ export const processSurveyResponse = async (
     throw new Error(classificationResult.error);
   }
 
-  console.log("Classification result:", classificationResult);
-
+  // Handle different intent types
   if (
     classificationResult.data?.intent === "unexpected_answer" ||
     classificationResult.data?.intent === "other"
   ) {
     return {
-      // additional_info: null,
       currentQuestion: currentQuestion.text,
-      // next_question: null,
       clarification_reason: classificationResult.data?.clarification_reason,
       follow_up_question: classificationResult.data?.follow_up_question,
     };
   }
 
+  // Handle question intent (user asked a question)
   if (classificationResult.data?.intent === "question") {
     try {
       // Call RAG API to get answer for the question
@@ -234,12 +307,8 @@ export const processSurveyResponse = async (
       
       // Return the answer from RAG API
       return {
-        // additional_info: null,
         currentQuestion: currentQuestion.text,
-        // next_question: null,
-        // clarification_reason: null,
-        // follow_up_question: null,
-        answer: ragResult.answer || ragResult, // Assuming RAG API returns answer directly or in answer field
+        answer: ragResult.answer || ragResult,
       };
     } catch (error) {
       console.error("Error calling RAG API:", error);
@@ -247,14 +316,11 @@ export const processSurveyResponse = async (
       return {
         additional_info: "Maaf, sistem belum dapat menjawab pertanyaan Anda. Mohon jawab pertanyaan sebelumnya.",
         currentQuestion: currentQuestion.text,
-        // next_question: null,
-        // clarification_reason: null,
-        // follow_up_question: null,
       };
     }
   }
 
-
+  // Handle expected answer
   if (classificationResult.data?.intent === "expected_answer") {
     const extractionResult = await extractInformation({
       question: currentQuestion,
@@ -265,11 +331,13 @@ export const processSurveyResponse = async (
       throw new Error(extractionResult.error);
     }
 
+    // Save the response
     session.responses.push({
       question_code: currentQuestion.code,
-      valid_response: extractionResult.data?.extracted_information,
+      valid_response: extractionResult.data?.extracted_information ?? '',
     });
 
+    // Handle skiplogic
     const skipMapping: Record<string, Record<string, number>> = {
       S008: { Ya: 14, Tidak: 15 },
       S012: { Ya: 18, Tidak: 25 },
@@ -283,23 +351,28 @@ export const processSurveyResponse = async (
       session.current_question_index += 1;
     }
 
+    // Check if survey is complete
     if (
       session.current_question_index >=
       survey.categories.flatMap((cat: any) => cat.questions).length
     ) {
       session.status = 'COMPLETED';
+      
+      // Remove the active session reference from the user
+      await User.findByIdAndUpdate(
+        session.user_id,
+        { $unset: { activeSurveySessionId: 1 } }
+      );
+      
       await session.save();
       return {
         additional_info: 'Survei telah berakhir, terima kasih telah menyelesaikan survei!',
-        // next_question: null,
-        // clarification_reason: null,
-        // follow_up_question: null,
       };
     }
 
-
     await session.save();
 
+    // Prepare next question
     let nextQuestion = survey.categories.flatMap((cat: any) => cat.questions)[
       session.current_question_index
     ];
@@ -307,10 +380,22 @@ export const processSurveyResponse = async (
     nextQuestion = await replacePlaceholders(nextQuestion, sessionId);
 
     return {
-      // additional_info: null,
       next_question: nextQuestion.text || null,
-      // clarification_reason: null,
-      // follow_up_question: null,
     };
+  }
+};
+
+// Get user's active session
+export const getUserActiveSurveySession = async (userId: string): Promise<ISurveySession | null> => {
+  try {
+    const user = await User.findById(userId);
+    if (!user || !user.activeSurveySessionId) {
+      return null;
+    }
+    
+    return await SurveySession.findById(user.activeSurveySessionId);
+  } catch (error) {
+    console.error("Error getting user's active survey session:", error);
+    throw error;
   }
 };

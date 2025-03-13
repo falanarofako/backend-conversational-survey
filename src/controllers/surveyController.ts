@@ -1,55 +1,175 @@
-import { Request, Response } from 'express';
-import { startSurveySession, processSurveyResponse } from '../services/surveyService';
-import QuestionnaireModel from '../models/Questionnaire';
+// src/controllers/surveyController.ts
 
-export const handleStartSurvey = async (req: Request, res: Response): Promise<void> => {
+import { Request, Response } from "express";
+import {
+  startSurveySession,
+  processSurveyResponse,
+  getUserActiveSurveySession,
+  completeSurveySession,
+} from "../services/surveyService";
+import QuestionnaireModel from "../models/Questionnaire";
+import { IUser } from "../models/User";
+
+export const handleStartSurvey = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
-    const userId = req.body.user_id;
+    // Get user ID from authenticated request
+    const userId = req.user._id;
     if (!userId) {
-      res.status(400).json({ success: false, message: 'User ID is required' });
+      res.status(400).json({ success: false, message: "User ID is required" });
       return;
     }
 
-    const latestQuestionnaire = await QuestionnaireModel.findOne().sort({ createdAt: -1 });
-
+    // Get the latest questionnaire
+    const latestQuestionnaire = await QuestionnaireModel.findOne().sort({
+      createdAt: -1,
+    });
     if (!latestQuestionnaire) {
-      res.status(404).json({ success: false, message: 'Questionnaire not found' });
+      res
+        .status(404)
+        .json({ success: false, message: "Questionnaire not found" });
       return;
     }
 
-    const session = await startSurveySession(userId, latestQuestionnaire.survey);
+    // Check if user already has an active session
+    const existingSession = await getUserActiveSurveySession(userId);
+    if (existingSession) {
+      // Get the current question from the session's progress
+      const currentQuestionIndex = existingSession.current_question_index;
+      let currentQuestion = latestQuestionnaire.survey.categories.flatMap(
+        (category: any) => category.questions
+      )[currentQuestionIndex];
+
+      res.status(200).json({
+        success: true,
+        message: "Resuming existing survey session",
+        additional_info:
+          "Anda sudah memiliki sesi survei yang aktif. Melanjutkan sesi tersebut.",
+        session_id: existingSession._id,
+        current_question_index: currentQuestionIndex,
+        next_question: currentQuestion,
+      });
+      return;
+    }
+
+    // Start a new survey session
+    const session = await startSurveySession(
+      userId,
+      latestQuestionnaire.survey
+    );
 
     res.status(201).json({
       success: true,
-      additional_info: `Selamat datang! Survei ini bertujuan untuk ${latestQuestionnaire.survey.description}. Apakah Anda siap memulai?`,
+      additional_info: `Selamat datang! Survei ini bertujuan untuk mengumpulkan informasi tentang proﬁl wisatawan nusantara, maksud perjalanan, akomodasi yang digunakan, lama perjalanan, dan rata-rata pengeluaran terkait perjalanan yang dilakukan oleh penduduk Indonesia di dalam wilayah teritorial Indonesia. Apakah Anda siap memulai?`,
       next_question: latestQuestionnaire.survey.categories[0].questions[0],
-      clarification_reason: null,
-      follow_up_question: null,
       session_id: session._id,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: (error as Error).message });
+    res.status(500).json({
+      success: false,
+      message: (error as Error).message,
+    });
   }
 };
 
-export const handleProcessSurveyResponse = async (req: Request, res: Response): Promise<void> => {
+export const handleProcessSurveyResponse = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { session_id, user_response } = req.body;
+
+    // Validate required fields
     if (!session_id || user_response === undefined) {
-      res.status(400).json({ success: false, message: 'Session ID and response are required' });
+      res.status(400).json({
+        success: false,
+        message: "Session ID and response are required",
+      });
       return;
     }
 
-    const latestQuestionnaire = await QuestionnaireModel.findOne().sort({ createdAt: -1 });
+    // Verify the session belongs to the authenticated user
+    const userId = req.user._id;
+    const userSession = await getUserActiveSurveySession(userId);
 
+    if (!userSession || (userSession as any)._id.toString() !== session_id) {
+      res.status(403).json({
+        success: false,
+        message:
+          "Unauthorized: This survey session does not belong to the authenticated user",
+      });
+      return;
+    }
+
+    // Get the latest questionnaire
+    const latestQuestionnaire = await QuestionnaireModel.findOne().sort({
+      createdAt: -1,
+    });
     if (!latestQuestionnaire) {
-      res.status(404).json({ success: false, message: 'Questionnaire not found' });
+      res.status(404).json({
+        success: false,
+        message: "Questionnaire not found",
+      });
       return;
     }
 
-    const response = await processSurveyResponse(session_id, user_response, latestQuestionnaire.survey);
+    // Process the response
+    const response = await processSurveyResponse(
+      session_id,
+      user_response,
+      latestQuestionnaire.survey
+    );
+
     res.json({ success: true, ...response });
   } catch (error) {
-    res.status(500).json({ success: false, message: (error as Error).message });
+    res.status(500).json({
+      success: false,
+      message: (error as Error).message,
+    });
+  }
+};
+
+// Manually complete a survey session
+export const handleCompleteSurvey = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { session_id } = req.body;
+
+    if (!session_id) {
+      res.status(400).json({
+        success: false,
+        message: "Session ID is required",
+      });
+      return;
+    }
+
+    // Verify the session belongs to the authenticated user
+    const userId = req.user._id;
+    const userSession = await getUserActiveSurveySession(userId);
+
+    if (!userSession || (userSession as any)._id.toString() !== session_id) {
+      res.status(403).json({
+        success: false,
+        message:
+          "Unauthorized: This survey session does not belong to the authenticated user",
+      });
+      return;
+    }
+
+    await completeSurveySession(session_id);
+
+    res.json({
+      success: true,
+      message: "Survey completed successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: (error as Error).message,
+    });
   }
 };

@@ -10,6 +10,7 @@ import intentClassificationRoutes from "./routes/intentClassificationRoutes";
 import informationExtractionRoutes from "./routes/informationExtractionRoutes";
 import questionnaireRoutes from "./routes/questionnaireRoutes";
 import surveyRoutes from "./routes/surveyRoutes";
+import authRoutes from "./routes/authRoutes";
 import ragRoutes from "./routes/ragRoutes";
 import { initializeRAG } from "./controllers/ragController";
 dotenv.config();
@@ -69,6 +70,7 @@ app.use((err: CustomError, req: Request, res: Response, next: NextFunction) => {
 });
 
 // Routes
+app.use("/api/auth", authRoutes);
 app.use("/api/intent", intentClassificationRoutes);
 app.use("/api/information", informationExtractionRoutes);
 app.use("/api/questionnaire", questionnaireRoutes);
