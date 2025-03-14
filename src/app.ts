@@ -35,9 +35,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // Middleware
 app.use(
   cors({
-    origin: "*",
+    origin: [
+      'https://your-frontend-domain.vercel.app', 
+      'http://localhost:3000'
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization"]
   })
 );
 
