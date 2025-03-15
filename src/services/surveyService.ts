@@ -158,68 +158,74 @@ const updateQuestionOptions = async (
   currentQuestion: any,
   sessionId: string
 ): Promise<any> => {
-  // Ensure the function returns a promise that resolves to the updated question
-  if (currentQuestion.code === "S002" || currentQuestion.code === "S004") {
-    currentQuestion.options = getProvinceNames();
-  } else if (currentQuestion.code === "S003") {
-    const provinceName = await getValidResponse(sessionId, "S002");
-    if (provinceName) {
-      currentQuestion.options = getRegencyNamesByProvinceName(provinceName);
-      if (currentQuestion.system_guidelines.length > 0) {
-        for (let i = 0; i < currentQuestion.system_guidelines.length; i++) {
-          if (
-            currentQuestion.system_guidelines[i].includes("${choosenProvince}")
-          ) {
-            currentQuestion.system_guidelines[i] =
-              currentQuestion.system_guidelines[i].replace(
-                "${choosenProvince}",
-                provinceName
-              );
+  try {
+    // Handle province questions (S002, S004)
+    if (currentQuestion.code === "S002" || currentQuestion.code === "S004") {
+      // Get province names from database - async call
+      const provinceNames = await getProvinceNames();
+      currentQuestion.options = provinceNames;
+    } 
+    // Handle regency questions based on selected province (S003)
+    else if (currentQuestion.code === "S003") {
+      const provinceName = await getValidResponse(sessionId, "S002");
+      if (provinceName) {
+        // Get regency names from database - async call
+        const regencyNames = await getRegencyNamesByProvinceName(provinceName);
+        currentQuestion.options = regencyNames || [];
+        
+        // Update system guidelines if needed
+        if (currentQuestion.system_guidelines && currentQuestion.system_guidelines.length > 0) {
+          for (let i = 0; i < currentQuestion.system_guidelines.length; i++) {
+            if (currentQuestion.system_guidelines[i].includes("${choosenProvince}")) {
+              currentQuestion.system_guidelines[i] = 
+                currentQuestion.system_guidelines[i].replace("${choosenProvince}", provinceName);
+            }
           }
         }
+      } else {
+        console.error(`Province name not found for question ${currentQuestion.code}`);
+        currentQuestion.options = []; // or handle as needed
       }
-    } else {
-      console.error(
-        `Province name not found for question ${currentQuestion.code}`
-      );
-      currentQuestion.options = []; // or handle as needed
-    }
-  } else if (currentQuestion.code === "S005") {
-    const provinceName = await getValidResponse(sessionId, "S004");
-    if (provinceName) {
-      currentQuestion.options = getRegencyNamesByProvinceName(provinceName);
-      if (currentQuestion.system_guidelines.length > 0) {
-        for (let i = 0; i < currentQuestion.system_guidelines.length; i++) {
-          if (
-            currentQuestion.system_guidelines[i].includes("${choosenProvince}")
-          ) {
-            currentQuestion.system_guidelines[i] =
-              currentQuestion.system_guidelines[i].replace(
-                "${choosenProvince}",
-                provinceName
-              );
+    } 
+    // Handle regency questions based on selected province (S005)
+    else if (currentQuestion.code === "S005") {
+      const provinceName = await getValidResponse(sessionId, "S004");
+      if (provinceName) {
+        // Get regency names from database - async call
+        const regencyNames = await getRegencyNamesByProvinceName(provinceName);
+        currentQuestion.options = regencyNames || [];
+        
+        // Update system guidelines if needed
+        if (currentQuestion.system_guidelines && currentQuestion.system_guidelines.length > 0) {
+          for (let i = 0; i < currentQuestion.system_guidelines.length; i++) {
+            if (currentQuestion.system_guidelines[i].includes("${choosenProvince}")) {
+              currentQuestion.system_guidelines[i] = 
+                currentQuestion.system_guidelines[i].replace("${choosenProvince}", provinceName);
+            }
           }
         }
+      } else {
+        console.error(`Province name not found for question ${currentQuestion.code}`);
+        currentQuestion.options = []; // or handle as needed
       }
-    } else {
-      console.error(
-        `Province name not found for question ${currentQuestion.code}`
-      );
-      currentQuestion.options = []; // or handle as needed
+    } 
+    // Handle month selection (S007)
+    else if (currentQuestion.code === "S007") {
+      const monthNamesChosen = await getValidResponse(sessionId, "S006");
+      if (monthNamesChosen) {
+        currentQuestion.options = monthNamesChosen;
+      } else {
+        console.error(`Month names not found for question ${currentQuestion.code}`);
+        currentQuestion.options = []; // or handle as needed
+      }
     }
-  } else if (currentQuestion.code === "S007") {
-    const monthNamesChosen = await getValidResponse(sessionId, "S006");
-    if (monthNamesChosen) {
-      currentQuestion.options = monthNamesChosen;
-    } else {
-      console.error(
-        `Month names not found for question ${currentQuestion.code}`
-      );
-      currentQuestion.options = []; // or handle as needed
-    }
-  }
 
-  return currentQuestion; // Return the updated question
+    return currentQuestion; // Return the updated question
+  } catch (error) {
+    console.error(`Error updating question options for ${currentQuestion.code}:`, error);
+    // Return the original question if there's an error
+    return currentQuestion;
+  }
 };
 
 // Get current month name
