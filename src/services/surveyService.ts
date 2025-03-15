@@ -54,16 +54,20 @@ export const startSurveySession = async (userId: string, survey: any) => {
     await user.save({ session });
 
     // Get the latest questionnaire
-    const latestQuestionnaire = await QuestionnaireModel.findOne().sort({
-      createdAt: -1,
-    }).session(session); // Use the same session for this query
+    const latestQuestionnaire = await QuestionnaireModel.findOne()
+      .sort({
+        createdAt: -1,
+      })
+      .session(session); // Use the same session for this query
     if (!latestQuestionnaire) {
       throw new Error("Questionnaire not found");
     }
 
     const system_response = {
-      initial_message:"Selamat datang! Survei ini bertujuan untuk mengumpulkan informasi tentang proﬁl wisatawan nusantara, maksud perjalanan, akomodasi yang digunakan, lama perjalanan, dan rata-rata pengeluaran terkait perjalanan yang dilakukan oleh penduduk Indonesia di dalam wilayah teritorial Indonesia. Apakah Anda siap memulai?",
-      first_question: latestQuestionnaire.survey.categories[0].questions[0].text,
+      initial_message:
+        "Selamat datang! Survei ini bertujuan untuk mengumpulkan informasi tentang proﬁl wisatawan nusantara, maksud perjalanan, akomodasi yang digunakan, lama perjalanan, dan rata-rata pengeluaran terkait perjalanan yang dilakukan oleh penduduk Indonesia di dalam wilayah teritorial Indonesia. Apakah Anda siap memulai?",
+      first_question:
+        latestQuestionnaire.survey.categories[0].questions[0].text,
     };
 
     await SurveyMessage.create(
@@ -164,7 +168,7 @@ const updateQuestionOptions = async (
       // Get province names from database - async call
       const provinceNames = await getProvinceNames();
       currentQuestion.options = provinceNames;
-    } 
+    }
     // Handle regency questions based on selected province (S003)
     else if (currentQuestion.code === "S003") {
       const provinceName = await getValidResponse(sessionId, "S002");
@@ -172,21 +176,33 @@ const updateQuestionOptions = async (
         // Get regency names from database - async call
         const regencyNames = await getRegencyNamesByProvinceName(provinceName);
         currentQuestion.options = regencyNames || [];
-        
+
         // Update system guidelines if needed
-        if (currentQuestion.system_guidelines && currentQuestion.system_guidelines.length > 0) {
+        if (
+          currentQuestion.system_guidelines &&
+          currentQuestion.system_guidelines.length > 0
+        ) {
           for (let i = 0; i < currentQuestion.system_guidelines.length; i++) {
-            if (currentQuestion.system_guidelines[i].includes("${choosenProvince}")) {
-              currentQuestion.system_guidelines[i] = 
-                currentQuestion.system_guidelines[i].replace("${choosenProvince}", provinceName);
+            if (
+              currentQuestion.system_guidelines[i].includes(
+                "${choosenProvince}"
+              )
+            ) {
+              currentQuestion.system_guidelines[i] =
+                currentQuestion.system_guidelines[i].replace(
+                  "${choosenProvince}",
+                  provinceName
+                );
             }
           }
         }
       } else {
-        console.error(`Province name not found for question ${currentQuestion.code}`);
+        console.error(
+          `Province name not found for question ${currentQuestion.code}`
+        );
         currentQuestion.options = []; // or handle as needed
       }
-    } 
+    }
     // Handle regency questions based on selected province (S005)
     else if (currentQuestion.code === "S005") {
       const provinceName = await getValidResponse(sessionId, "S004");
@@ -194,35 +210,52 @@ const updateQuestionOptions = async (
         // Get regency names from database - async call
         const regencyNames = await getRegencyNamesByProvinceName(provinceName);
         currentQuestion.options = regencyNames || [];
-        
+
         // Update system guidelines if needed
-        if (currentQuestion.system_guidelines && currentQuestion.system_guidelines.length > 0) {
+        if (
+          currentQuestion.system_guidelines &&
+          currentQuestion.system_guidelines.length > 0
+        ) {
           for (let i = 0; i < currentQuestion.system_guidelines.length; i++) {
-            if (currentQuestion.system_guidelines[i].includes("${choosenProvince}")) {
-              currentQuestion.system_guidelines[i] = 
-                currentQuestion.system_guidelines[i].replace("${choosenProvince}", provinceName);
+            if (
+              currentQuestion.system_guidelines[i].includes(
+                "${choosenProvince}"
+              )
+            ) {
+              currentQuestion.system_guidelines[i] =
+                currentQuestion.system_guidelines[i].replace(
+                  "${choosenProvince}",
+                  provinceName
+                );
             }
           }
         }
       } else {
-        console.error(`Province name not found for question ${currentQuestion.code}`);
+        console.error(
+          `Province name not found for question ${currentQuestion.code}`
+        );
         currentQuestion.options = []; // or handle as needed
       }
-    } 
+    }
     // Handle month selection (S007)
     else if (currentQuestion.code === "S007") {
       const monthNamesChosen = await getValidResponse(sessionId, "S006");
       if (monthNamesChosen) {
         currentQuestion.options = monthNamesChosen;
       } else {
-        console.error(`Month names not found for question ${currentQuestion.code}`);
+        console.error(
+          `Month names not found for question ${currentQuestion.code}`
+        );
         currentQuestion.options = []; // or handle as needed
       }
     }
 
     return currentQuestion; // Return the updated question
   } catch (error) {
-    console.error(`Error updating question options for ${currentQuestion.code}:`, error);
+    console.error(
+      `Error updating question options for ${currentQuestion.code}:`,
+      error
+    );
     // Return the original question if there's an error
     return currentQuestion;
   }
@@ -342,8 +375,17 @@ export const processSurveyResponse = async (
   // Handle question intent (user asked a question)
   if (classificationResult.data?.intent === "question") {
     try {
+      // Get the RAG API URL from environment variables
+      const ragApiUrl = process.env.RAG_API_URL || "";
+
+      if (!ragApiUrl) {
+        throw new Error(
+          "RAG API URL is not configured in environment variables"
+        );
+      }
+
       // Call RAG API to get answer for the question
-      const response = await fetch("http://localhost:8000/api/rag/ask", {
+      const response = await fetch(`${ragApiUrl}/api/rag/ask`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
