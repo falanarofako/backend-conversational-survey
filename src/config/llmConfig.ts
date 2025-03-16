@@ -3,13 +3,8 @@
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { z } from "zod";
 import dotenv from "dotenv";
-import {
-  initializeKeyState,
-  getCurrentKey,
-  handleError,
-  resetCounters,
-} from "../utils/apiKeyRotation";
-import { KeyState, ServiceResponse } from "../types/intentTypes";
+import { getKeyManager } from "../utils/apiKeyRotation";
+import { ServiceResponse } from "../types/intentTypes";
 
 dotenv.config();
 
@@ -75,7 +70,6 @@ interface LLMConfig {
   model: string;
   temperature: number;
   maxRetries: number;
-  retryDelay: number;
   timeout: number;
 }
 
@@ -83,12 +77,10 @@ const defaultConfig: LLMConfig = {
   model: "gemini-2.0-flash",
   temperature: 0,
   maxRetries: 2,
-  retryDelay: 1000,
   timeout: 30000,
 };
 
-// State management
-let keyState: KeyState;
+// State flag
 let isInitialized = false;
 
 // Initialize the LLM system
@@ -105,14 +97,15 @@ export const initializeLLM = async (): Promise<ServiceResponse<void>> => {
       };
     }
 
-    keyState = await initializeKeyState();
+    // Initialize key manager (will throw if no keys are configured)
+    getKeyManager();
     isInitialized = true;
 
     return {
       success: true,
       metadata: {
         processing_time: 0,
-        api_key_used: keyState.currentIndex,
+        api_key_used: -1,
         timestamp: new Date().toISOString(),
       },
     };
@@ -131,71 +124,45 @@ export const initializeLLM = async (): Promise<ServiceResponse<void>> => {
 export const getCurrentLLM = async (
   config: Partial<LLMConfig> = {}
 ): Promise<ServiceResponse<ChatGoogleGenerativeAI>> => {
-  console.log("LLM_DEBUG: Starting getCurrentLLM");
   try {
-    console.log("LLM_DEBUG: Checking if initialized:", isInitialized);
+    // Ensure system is initialized
     if (!isInitialized) {
-      console.log("LLM_DEBUG: Not initialized, calling initializeLLM");
-      await initializeLLM();
-      console.log("LLM_DEBUG: initializeLLM completed, initialized:", isInitialized);
+      const initResult = await initializeLLM();
+      if (!initResult.success) {
+        throw new Error(initResult.error || "Failed to initialize LLM system");
+      }
     }
 
-    console.log("LLM_DEBUG: keyState before getCurrentKey:", keyState ? "exists" : "undefined");
-    if (keyState) {
-      console.log("LLM_DEBUG: keyState properties:", Object.keys(keyState).join(", "));
-      console.log("LLM_DEBUG: apiKeys exists:", !!keyState.apiKeys);
-      console.log("LLM_DEBUG: apiKeys length:", keyState.apiKeys ? keyState.apiKeys.length : "N/A");
-    }
-
-    console.log("LLM_DEBUG: Calling getCurrentKey");
-    const keyResponse = await getCurrentKey(keyState);
-    console.log("LLM_DEBUG: getCurrentKey response:", 
-      keyResponse.success ? "success" : "failed", 
-      "error:", keyResponse.error || "none");
-
+    // Get API key
+    const keyManager = getKeyManager();
+    const keyResponse = keyManager.getCurrentKey();
+    
     if (!keyResponse.success || !keyResponse.data) {
-      console.log("LLM_DEBUG: Failed to get API key");
       throw new Error(keyResponse.error || "Failed to get API key");
     }
 
-    console.log("LLM_DEBUG: Got API key successfully");
-    const [apiKey, newState] = keyResponse.data;
-    console.log("LLM_DEBUG: API key length:", apiKey ? apiKey.length : 0);
-    console.log("LLM_DEBUG: New state exists:", !!newState);
-    
-    keyState = newState;
-    console.log("LLM_DEBUG: Updated keyState");
+    const apiKey = keyResponse.data;
+    const keyIndex = keyResponse.metadata?.api_key_used || 0;
 
-    console.log("LLM_DEBUG: Preparing LLM config");
+    // Create LLM instance
     const llmConfig = { ...defaultConfig, ...config };
-    console.log("LLM_DEBUG: Config prepared, model:", llmConfig.model);
-
-    console.log("LLM_DEBUG: Creating ChatGoogleGenerativeAI instance");
     const llm = new ChatGoogleGenerativeAI({
       modelName: llmConfig.model,
       temperature: llmConfig.temperature,
       maxRetries: llmConfig.maxRetries,
       apiKey: apiKey,
-      // timeout: llmConfig.timeout
     });
-    console.log("LLM_DEBUG: ChatGoogleGenerativeAI instance created");
 
-    console.log("LLM_DEBUG: Returning successful response");
     return {
       success: true,
       data: llm,
       metadata: {
         processing_time: 0,
-        api_key_used: keyState.currentIndex,
+        api_key_used: keyIndex,
         timestamp: new Date().toISOString(),
       },
     };
   } catch (error) {
-    console.log("LLM_DEBUG: Error in getCurrentLLM:", error);
-    console.log("LLM_DEBUG: Error type:", typeof error);
-    console.log("LLM_DEBUG: Error message:", error instanceof Error ? error.message : "Unknown error");
-    console.log("LLM_DEBUG: Error stack:", error instanceof Error ? error.stack : "No stack trace");
-    
     return {
       success: false,
       error:
@@ -207,36 +174,30 @@ export const getCurrentLLM = async (
 };
 
 // Handle LLM errors
-export const handleLLMError = async (
-  error: any
-): Promise<ServiceResponse<void>> => {
+export const handleLLMError = async (error: any): Promise<ServiceResponse<void>> => {
   try {
     if (!isInitialized) {
       throw new Error("LLM system not initialized");
     }
 
-    const errorResponse = await handleError(keyState, error);
-    if (!errorResponse.success || !errorResponse.data) {
-      throw new Error(errorResponse.error || "Failed to handle error");
-    }
-
-    const [_, newState] = errorResponse.data;
-    keyState = newState;
+    // Simply rotate the key on error
+    const keyManager = getKeyManager();
+    keyManager.handleError();
 
     return {
       success: true,
       metadata: {
         processing_time: 0,
-        api_key_used: keyState.currentIndex,
+        api_key_used: -1,
         timestamp: new Date().toISOString(),
       },
     };
-  } catch (error) {
+  } catch (err) {
     return {
       success: false,
       error:
-        error instanceof Error
-          ? error.message
+        err instanceof Error
+          ? err.message
           : "Unknown error handling LLM error",
     };
   }
@@ -249,18 +210,18 @@ export const resetLLMState = async (): Promise<ServiceResponse<void>> => {
       throw new Error("LLM system not initialized");
     }
 
-    const resetResponse = await resetCounters(keyState);
-    if (!resetResponse.success || !resetResponse.data) {
+    const keyManager = getKeyManager();
+    const resetResponse = keyManager.resetCounters();
+    
+    if (!resetResponse.success) {
       throw new Error(resetResponse.error || "Failed to reset counters");
     }
-
-    keyState = resetResponse.data;
 
     return {
       success: true,
       metadata: {
         processing_time: 0,
-        api_key_used: keyState.currentIndex,
+        api_key_used: -1,
         timestamp: new Date().toISOString(),
       },
     };
@@ -279,21 +240,62 @@ export const resetLLMState = async (): Promise<ServiceResponse<void>> => {
 export const getLLMStatus = (): ServiceResponse<{
   initialized: boolean;
   currentConfig: LLMConfig;
-  keyState: KeyState | null;
+  keyStatus?: {
+    currentKeyIndex: number;
+    totalKeys: number;
+    usageCounts: number[];
+    timeSinceLastRotation: number;
+  };
 }> => {
-  return {
-    success: true,
-    data: {
+  try {
+    const status = {
       initialized: isInitialized,
       currentConfig: defaultConfig,
-      keyState: isInitialized ? keyState : null,
-    },
-    metadata: {
-      processing_time: 0,
-      api_key_used: isInitialized ? keyState.currentIndex : -1,
-      timestamp: new Date().toISOString(),
-    },
-  };
+    };
+
+    if (isInitialized) {
+      const keyManager = getKeyManager();
+      const keyStatus = keyManager.getStatus();
+      
+      if (keyStatus.success && keyStatus.data) {
+        return {
+          success: true,
+          data: {
+            ...status,
+            keyStatus: keyStatus.data,
+          },
+          metadata: {
+            processing_time: 0,
+            api_key_used: keyStatus.data.currentKeyIndex,
+            timestamp: new Date().toISOString(),
+          },
+        };
+      }
+    }
+
+    return {
+      success: true,
+      data: status,
+      metadata: {
+        processing_time: 0,
+        api_key_used: -1,
+        timestamp: new Date().toISOString(),
+      },
+    };
+  } catch (error) {
+    return {
+      success: true,
+      data: {
+        initialized: isInitialized,
+        currentConfig: defaultConfig,
+      },
+      metadata: {
+        processing_time: 0,
+        api_key_used: -1,
+        timestamp: new Date().toISOString(),
+      },
+    };
+  }
 };
 
 // Custom LLM builder with specific configurations
