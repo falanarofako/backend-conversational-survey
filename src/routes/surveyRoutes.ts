@@ -6,9 +6,17 @@ import {
   handleProcessSurveyResponse,
   handleCompleteSurvey
 } from '../controllers/surveyController';
+import { analyzeSurveyIntentController } from '../controllers/surveyIntentController';
 import { protect } from '../middleware/authMiddleware';
 
 const router = Router();
+
+/**
+ * @route   POST /api/survey/analyze-intent
+ * @desc    Analyze if user wants to start the survey
+ * @access  Public
+ */
+router.post('/analyze-intent', analyzeSurveyIntentController);
 
 /**
  * @route   POST /api/survey/start
