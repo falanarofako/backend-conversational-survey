@@ -131,21 +131,46 @@ export const initializeLLM = async (): Promise<ServiceResponse<void>> => {
 export const getCurrentLLM = async (
   config: Partial<LLMConfig> = {}
 ): Promise<ServiceResponse<ChatGoogleGenerativeAI>> => {
+  console.log("LLM_DEBUG: Starting getCurrentLLM");
   try {
+    console.log("LLM_DEBUG: Checking if initialized:", isInitialized);
     if (!isInitialized) {
+      console.log("LLM_DEBUG: Not initialized, calling initializeLLM");
       await initializeLLM();
+      console.log("LLM_DEBUG: initializeLLM completed, initialized:", isInitialized);
     }
 
+    console.log("LLM_DEBUG: keyState before getCurrentKey:", keyState ? "exists" : "undefined");
+    if (keyState) {
+      console.log("LLM_DEBUG: keyState properties:", Object.keys(keyState).join(", "));
+      console.log("LLM_DEBUG: apiKeys exists:", !!keyState.apiKeys);
+      console.log("LLM_DEBUG: apiKeys length:", keyState.apiKeys ? keyState.apiKeys.length : "N/A");
+    }
+
+    console.log("LLM_DEBUG: Calling getCurrentKey");
     const keyResponse = await getCurrentKey(keyState);
+    console.log("LLM_DEBUG: getCurrentKey response:", 
+      keyResponse.success ? "success" : "failed", 
+      "error:", keyResponse.error || "none");
+
     if (!keyResponse.success || !keyResponse.data) {
+      console.log("LLM_DEBUG: Failed to get API key");
       throw new Error(keyResponse.error || "Failed to get API key");
     }
 
+    console.log("LLM_DEBUG: Got API key successfully");
     const [apiKey, newState] = keyResponse.data;
+    console.log("LLM_DEBUG: API key length:", apiKey ? apiKey.length : 0);
+    console.log("LLM_DEBUG: New state exists:", !!newState);
+    
     keyState = newState;
+    console.log("LLM_DEBUG: Updated keyState");
 
+    console.log("LLM_DEBUG: Preparing LLM config");
     const llmConfig = { ...defaultConfig, ...config };
+    console.log("LLM_DEBUG: Config prepared, model:", llmConfig.model);
 
+    console.log("LLM_DEBUG: Creating ChatGoogleGenerativeAI instance");
     const llm = new ChatGoogleGenerativeAI({
       modelName: llmConfig.model,
       temperature: llmConfig.temperature,
@@ -153,7 +178,9 @@ export const getCurrentLLM = async (
       apiKey: apiKey,
       // timeout: llmConfig.timeout
     });
+    console.log("LLM_DEBUG: ChatGoogleGenerativeAI instance created");
 
+    console.log("LLM_DEBUG: Returning successful response");
     return {
       success: true,
       data: llm,
@@ -164,6 +191,11 @@ export const getCurrentLLM = async (
       },
     };
   } catch (error) {
+    console.log("LLM_DEBUG: Error in getCurrentLLM:", error);
+    console.log("LLM_DEBUG: Error type:", typeof error);
+    console.log("LLM_DEBUG: Error message:", error instanceof Error ? error.message : "Unknown error");
+    console.log("LLM_DEBUG: Error stack:", error instanceof Error ? error.stack : "No stack trace");
+    
     return {
       success: false,
       error:
