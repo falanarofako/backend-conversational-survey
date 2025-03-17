@@ -16,7 +16,7 @@ const router = Router();
  * @desc    Analyze if user wants to start the survey
  * @access  Public
  */
-router.post('/analyze-intent', analyzeSurveyIntentController);
+router.post('/analyze-intent', protect, analyzeSurveyIntentController);
 
 /**
  * @route   POST /api/survey/start
