@@ -360,6 +360,7 @@ export const processSurveyResponse = async (
   ) {
     // Save user message and system response
     const system_response = {
+      info: "unexpected_answer_or_other",
       currentQuestion: currentQuestion.text,
       clarification_reason: classificationResult.data?.clarification_reason,
       follow_up_question: classificationResult.data?.follow_up_question,
@@ -404,6 +405,7 @@ export const processSurveyResponse = async (
 
       // Save user message and system response
       const system_response = {
+        info: "question",
         currentQuestion: currentQuestion.text,
         answer: ragResult.answer || ragResult,
       };
@@ -419,6 +421,7 @@ export const processSurveyResponse = async (
       // Fallback to original behavior if RAG API call fails
       // Save user message and system response
       const system_response = {
+        info: "error",
         additional_info:
           "Maaf, sistem belum dapat menjawab pertanyaan Anda. Mohon jawab pertanyaan sebelumnya.",
         currentQuestion: currentQuestion.text,
@@ -483,6 +486,7 @@ export const processSurveyResponse = async (
 
       // Save user message and system response
       const system_response = {
+        info: "survey_completed",
         additional_info:
           "Survei telah berakhir, terima kasih telah menyelesaikan survei!",
       };
@@ -504,6 +508,7 @@ export const processSurveyResponse = async (
     nextQuestion = await replacePlaceholders(nextQuestion, sessionId);
     // Save user message and system response
     const system_response = {
+      info: "expected_answer",
       next_question: nextQuestion.text || null,
     };
     await SurveyMessage.create({
