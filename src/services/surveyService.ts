@@ -67,7 +67,7 @@ export const startSurveySession = async (userId: string, survey: any) => {
       initial_message:
         "Selamat datang! Survei ini bertujuan untuk mengumpulkan informasi tentang proﬁl wisatawan nusantara, maksud perjalanan, akomodasi yang digunakan, lama perjalanan, dan rata-rata pengeluaran terkait perjalanan yang dilakukan oleh penduduk Indonesia di dalam wilayah teritorial Indonesia. Apakah Anda siap memulai?",
       first_question:
-        latestQuestionnaire.survey.categories[0].questions[0].text,
+        latestQuestionnaire.survey.categories[0].questions[0],
     };
 
     await SurveyMessage.create(
@@ -361,7 +361,7 @@ export const processSurveyResponse = async (
     // Save user message and system response
     const system_response = {
       info: "unexpected_answer_or_other",
-      currentQuestion: currentQuestion.text,
+      currentQuestion: currentQuestion,
       clarification_reason: classificationResult.data?.clarification_reason,
       follow_up_question: classificationResult.data?.follow_up_question,
     };
@@ -406,7 +406,7 @@ export const processSurveyResponse = async (
       // Save user message and system response
       const system_response = {
         info: "question",
-        currentQuestion: currentQuestion.text,
+        currentQuestion: currentQuestion,
         answer: ragResult.answer || ragResult,
       };
       await SurveyMessage.create({
@@ -424,7 +424,7 @@ export const processSurveyResponse = async (
         info: "error",
         additional_info:
           "Maaf, sistem belum dapat menjawab pertanyaan Anda. Mohon jawab pertanyaan sebelumnya.",
-        currentQuestion: currentQuestion.text,
+        currentQuestion: currentQuestion,
       };
       await SurveyMessage.create({
         session_id: sessionId,
@@ -509,7 +509,7 @@ export const processSurveyResponse = async (
     // Save user message and system response
     const system_response = {
       info: "expected_answer",
-      next_question: nextQuestion.text || null,
+      next_question: nextQuestion || null,
     };
     await SurveyMessage.create({
       session_id: sessionId,
