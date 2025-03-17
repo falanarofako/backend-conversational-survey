@@ -49,7 +49,7 @@ export const handleStartSurvey = async (
           "Anda sudah memiliki sesi survei yang aktif. Melanjutkan sesi tersebut.",
         session_id: existingSession._id,
         current_question_index: currentQuestionIndex,
-        next_question: currentQuestion,
+        next_question: currentQuestion.text,
       });
       return;
     }
@@ -63,7 +63,7 @@ export const handleStartSurvey = async (
     res.status(201).json({
       success: true,
       additional_info: `Selamat datang! Survei ini bertujuan untuk mengumpulkan informasi tentang proﬁl wisatawan nusantara, maksud perjalanan, akomodasi yang digunakan, lama perjalanan, dan rata-rata pengeluaran terkait perjalanan yang dilakukan oleh penduduk Indonesia di dalam wilayah teritorial Indonesia. Apakah Anda siap memulai?`,
-      next_question: latestQuestionnaire.survey.categories[0].questions[0],
+      next_question: latestQuestionnaire.survey.categories[0].questions[0].text,
       session_id: session._id,
     });
   } catch (error) {
