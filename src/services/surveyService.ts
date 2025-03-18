@@ -536,3 +536,73 @@ export const getUserActiveSurveySession = async (
     throw error;
   }
 };
+
+export const getSurveySessionStatus = async (sessionId: string) => {
+  try {
+    // Find the survey session
+    const session = await SurveySession.findById(sessionId);
+    
+    if (!session) {
+      throw new Error("Survey session not found");
+    }
+
+    // Get the latest questionnaire
+    const latestQuestionnaire = await QuestionnaireModel.findOne().sort({
+      createdAt: -1,
+    });
+    
+    if (!latestQuestionnaire) {
+      throw new Error("Questionnaire not found");
+    }
+
+    // Get all questions from the questionnaire
+    const allQuestions = latestQuestionnaire.survey.categories.flatMap(
+      (category: any) => category.questions
+    );
+
+    // Get total question count
+    const totalQuestions = allQuestions.length;
+
+    // Get current question (or null if survey is completed)
+    let currentQuestion = null;
+    if (session.status === 'IN_PROGRESS' && session.current_question_index < totalQuestions) {
+      currentQuestion = allQuestions[session.current_question_index];
+    }
+
+    // Get all messages for this session
+    const messages = await SurveyMessage.find({
+      session_id: sessionId
+    }).sort({ timestamp: 1 });
+
+    // Get response statistics
+    const answeredQuestions = session.responses.length;
+    const progressPercentage = Math.round((answeredQuestions / totalQuestions) * 100);
+
+    // Get answered question codes
+    const answeredQuestionCodes = session.responses.map(response => response.question_code);
+
+    // Get current question code
+    const currentQuestionCode = currentQuestion ? currentQuestion.code : null;
+
+    return {
+      session_id: session._id,
+      user_id: session.user_id,
+      status: session.status,
+      started_at: session.createdAt,
+      updated_at: session.updatedAt,
+      progress: {
+        total_questions: totalQuestions,
+        answered_questions: answeredQuestions,
+        current_question_index: session.current_question_index,
+        current_question_code: currentQuestionCode,
+        progress_percentage: progressPercentage,
+        answered_question_codes: answeredQuestionCodes
+      },
+      message_count: messages.length,
+      responses: session.responses
+    };
+  } catch (error) {
+    console.error("Error getting survey session status:", error);
+    throw error;
+  }
+};

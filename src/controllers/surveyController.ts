@@ -6,6 +6,7 @@ import {
   processSurveyResponse,
   getUserActiveSurveySession,
   completeSurveySession,
+  getSurveySessionStatus,
 } from "../services/surveyService";
 import QuestionnaireModel from "../models/Questionnaire";
 import { IUser } from "../models/User";
@@ -165,6 +166,49 @@ export const handleCompleteSurvey = async (
     res.json({
       success: true,
       message: "Survey completed successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: (error as Error).message,
+    });
+  }
+};
+
+export const handleGetSurveyStatus = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const sessionId = req.params.id;
+
+    if (!sessionId) {
+      res.status(400).json({
+        success: false,
+        message: "Session ID is required",
+      });
+      return;
+    }
+
+    // Verify the session belongs to the authenticated user
+    const userId = req.user._id;
+    const userSession = await getUserActiveSurveySession(userId);
+
+    if (!userSession || (userSession as any)._id.toString() !== sessionId) {
+      res.status(403).json({
+        success: false,
+        message:
+          "Unauthorized: This survey session does not belong to the authenticated user",
+      });
+      return;
+    }
+
+    // Get the session status
+    const sessionStatus = await getSurveySessionStatus(sessionId);
+
+    res.json({
+      success: true,
+      data: sessionStatus,
     });
   } catch (error) {
     res.status(500).json({
