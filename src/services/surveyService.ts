@@ -66,8 +66,7 @@ export const startSurveySession = async (userId: string, survey: any) => {
     const system_response = {
       initial_message:
         "Selamat datang! Survei ini bertujuan untuk mengumpulkan informasi tentang proﬁl wisatawan nusantara, maksud perjalanan, akomodasi yang digunakan, lama perjalanan, dan rata-rata pengeluaran terkait perjalanan yang dilakukan oleh penduduk Indonesia di dalam wilayah teritorial Indonesia. Apakah Anda siap memulai?",
-      first_question:
-        latestQuestionnaire.survey.categories[0].questions[0],
+      first_question: latestQuestionnaire.survey.categories[0].questions[0],
     };
 
     await SurveyMessage.create(
@@ -541,7 +540,7 @@ export const getSurveySessionStatus = async (sessionId: string) => {
   try {
     // Find the survey session
     const session = await SurveySession.findById(sessionId);
-    
+
     if (!session) {
       throw new Error("Survey session not found");
     }
@@ -550,7 +549,7 @@ export const getSurveySessionStatus = async (sessionId: string) => {
     const latestQuestionnaire = await QuestionnaireModel.findOne().sort({
       createdAt: -1,
     });
-    
+
     if (!latestQuestionnaire) {
       throw new Error("Questionnaire not found");
     }
@@ -565,21 +564,28 @@ export const getSurveySessionStatus = async (sessionId: string) => {
 
     // Get current question (or null if survey is completed)
     let currentQuestion = null;
-    if (session.status === 'IN_PROGRESS' && session.current_question_index < totalQuestions) {
+    if (
+      session.status === "IN_PROGRESS" &&
+      session.current_question_index < totalQuestions
+    ) {
       currentQuestion = allQuestions[session.current_question_index];
     }
 
     // Get all messages for this session
     const messages = await SurveyMessage.find({
-      session_id: sessionId
+      session_id: sessionId,
     }).sort({ timestamp: 1 });
 
     // Get response statistics
     const answeredQuestions = session.responses.length;
-    const progressPercentage = Math.round((answeredQuestions / totalQuestions) * 100);
+    const progressPercentage = Math.round(
+      (answeredQuestions / totalQuestions) * 100
+    );
 
     // Get answered question codes
-    const answeredQuestionCodes = session.responses.map(response => response.question_code);
+    const answeredQuestionCodes = session.responses.map(
+      (response) => response.question_code
+    );
 
     // Get current question code
     const currentQuestionCode = currentQuestion ? currentQuestion.code : null;
@@ -596,13 +602,34 @@ export const getSurveySessionStatus = async (sessionId: string) => {
         current_question_index: session.current_question_index,
         current_question_code: currentQuestionCode,
         progress_percentage: progressPercentage,
-        answered_question_codes: answeredQuestionCodes
+        answered_question_codes: answeredQuestionCodes,
       },
       message_count: messages.length,
-      responses: session.responses
+      responses: session.responses,
     };
   } catch (error) {
     console.error("Error getting survey session status:", error);
+    throw error;
+  }
+};
+
+export const getSurveySessionMessages = async (sessionId: string) => {
+  try {
+    // Validate that the survey session exists
+    const session = await SurveySession.findById(sessionId);
+
+    if (!session) {
+      throw new Error("Survey session not found");
+    }
+
+    // Fetch all messages for this session, sorted by timestamp
+    const messages = await SurveyMessage.find({
+      session_id: sessionId,
+    }).sort({ timestamp: 1 });
+
+    return messages;
+  } catch (error) {
+    console.error("Error getting survey session messages:", error);
     throw error;
   }
 };

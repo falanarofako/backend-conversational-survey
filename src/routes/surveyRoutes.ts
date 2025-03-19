@@ -6,6 +6,7 @@ import {
   handleProcessSurveyResponse,
   handleCompleteSurvey,
   handleGetSurveyStatus,
+  handleGetSurveyMessages,
 } from "../controllers/surveyController";
 import { analyzeSurveyIntentController } from "../controllers/surveyIntentController";
 import { protect } from "../middleware/authMiddleware";
@@ -18,6 +19,13 @@ const router = Router();
  * @access  Private
  */
 router.get("/status/:id", protect, handleGetSurveyStatus);
+
+/**
+ * @route   GET /api/survey/messages/:id
+ * @desc    Get all messages for a survey session
+ * @access  Private
+ */
+router.get("/messages/:id", protect, handleGetSurveyMessages);
 
 /**
  * @route   POST /api/survey/analyze-intent
