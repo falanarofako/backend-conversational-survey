@@ -10,6 +10,7 @@ export interface IUser extends Document {
   name: string;
   isActive: boolean;
   activeSurveySessionId?: mongoose.Types.ObjectId;
+  activeEvaluationSessionId?: mongoose.Types.ObjectId;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -48,6 +49,11 @@ const UserSchema: Schema = new Schema(
       ref: "SurveySession",
       default: null,
     },
+    activeEvaluationSessionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "SurveyEvaluation",
+      default: null
+    }
   },
   {
     timestamps: true,
