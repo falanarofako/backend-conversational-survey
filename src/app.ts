@@ -11,6 +11,7 @@ import informationExtractionRoutes from "./routes/informationExtractionRoutes";
 import questionnaireRoutes from "./routes/questionnaireRoutes";
 import surveyRoutes from "./routes/surveyRoutes";
 import authRoutes from "./routes/authRoutes";
+import evaluationRoutes from "./routes/evaluationRoutes";
 
 dotenv.config();
 
@@ -77,6 +78,7 @@ app.use("/api/intent", intentClassificationRoutes);
 app.use("/api/information", informationExtractionRoutes);
 app.use("/api/questionnaire", questionnaireRoutes);
 app.use("/api/survey", surveyRoutes);
+app.use("/api/evaluation", evaluationRoutes); 
 
 // Basic route
 app.get("/", (req: Request, res: Response) => {
