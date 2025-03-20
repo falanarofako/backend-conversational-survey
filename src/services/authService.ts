@@ -95,6 +95,7 @@ export const loginUserService = async (email: string, password: string) => {
         name: user.name,
         email: user.email,
         activeSurveySessionId: user.activeSurveySessionId,
+        activeEvaluationSessionId: user.activeEvaluationSessionId,
         token,
       },
     };
