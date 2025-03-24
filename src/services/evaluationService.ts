@@ -1,6 +1,7 @@
 // src/services/evaluationService.ts
 
 import SurveyEvaluation, { ISurveyEvaluation } from '../models/SurveyEvaluation';
+import User from '../models/User';
 import mongoose from 'mongoose';
 
 /**
@@ -13,15 +14,51 @@ export const initializeEvaluation = async (
   userId: string,
   sessionId?: string
 ): Promise<ISurveyEvaluation> => {
+  // Start a mongoose transaction
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    // Check if there's an incomplete evaluation for this user
+    // Find the user
+    const user = await User.findById(userId).session(session);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Check if the user already has an active evaluation in their reference
+    if (user.activeEvaluationSessionId) {
+      // Look up the evaluation
+      const existingEvaluation = await SurveyEvaluation.findById(user.activeEvaluationSessionId).session(session);
+      
+      // If it exists and is not completed, return it
+      if (existingEvaluation && !existingEvaluation.completed) {
+        await session.abortTransaction();
+        session.endSession();
+        return existingEvaluation;
+      }
+      
+      // If the evaluation doesn't exist, clear the reference
+      // But if it's completed, keep the reference since we want to maintain
+      // completed evaluation references
+      if (!existingEvaluation) {
+        user.activeEvaluationSessionId = undefined;
+        await user.save({ session });
+      }
+    }
+
+    // Alternative check: look for any incomplete evaluation for this user
     let evaluation = await SurveyEvaluation.findOne({
       user_id: userId,
       completed: false
-    });
+    }).session(session);
 
-    // If found, return the existing evaluation
+    // If found, update the user reference and return the existing evaluation
     if (evaluation) {
+      user.activeEvaluationSessionId = evaluation._id as mongoose.Types.ObjectId;
+      await user.save({ session });
+      
+      await session.commitTransaction();
+      session.endSession();
       return evaluation;
     }
 
@@ -33,9 +70,18 @@ export const initializeEvaluation = async (
       completed: false
     });
 
-    await newEvaluation.save();
+    await newEvaluation.save({ session });
+    
+    // Update the user's reference
+    user.activeEvaluationSessionId = newEvaluation._id as mongoose.Types.ObjectId;
+    await user.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
     return newEvaluation;
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     console.error('Error initializing survey evaluation:', error);
     throw error;
   }
@@ -107,15 +153,20 @@ export const submitAnswer = async (
 export const completeEvaluation = async (
   evaluationId: string
 ): Promise<ISurveyEvaluation> => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  
   try {
     // Find the evaluation
-    const evaluation = await SurveyEvaluation.findById(evaluationId);
+    const evaluation = await SurveyEvaluation.findById(evaluationId).session(session);
     
     if (!evaluation) {
       throw new Error('Survey evaluation not found');
     }
     
     if (evaluation.completed) {
+      await session.abortTransaction();
+      session.endSession();
       return evaluation; // Already completed
     }
 
@@ -139,10 +190,18 @@ export const completeEvaluation = async (
 
     // Mark as completed
     evaluation.completed = true;
-    await evaluation.save();
+    await evaluation.save({ session });
+    
+    // We no longer remove the activeEvaluationSessionId reference
+    // This allows users to maintain a reference to their completed evaluation
 
+    await session.commitTransaction();
+    session.endSession();
+    
     return evaluation;
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     console.error('Error completing evaluation:', error);
     throw error;
   }
