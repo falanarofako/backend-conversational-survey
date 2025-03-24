@@ -3,21 +3,28 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 interface ISurveyMessage extends Document {
-  session_id: mongoose.Types.ObjectId;
+  user_id: mongoose.Types.ObjectId;
+  session_id?: mongoose.Types.ObjectId;
   user_message: string;
   system_response: any;
   timestamp: Date;
 }
 
 const SurveyMessageSchema = new Schema({
+  user_id: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+    index: true
+  },
   session_id: {
     type: Schema.Types.ObjectId,
     ref: 'SurveySession',
-    required: true,
+    index: true
   },
   user_message: {
     type: String,
-    // required: true,
+    required: true,
   },
   system_response: {
     type: Schema.Types.Mixed,

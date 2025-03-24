@@ -24,7 +24,7 @@ const surveyIntentPrompt = ChatPromptTemplate.fromTemplate(`
   - wants_to_start: true jika pengguna ingin memulai survei, false jika tidak
   - confidence: tingkat keyakinan prediksi (0-1)
   - explanation: penjelasan singkat mengapa Anda membuat keputusan tersebut
-  - system_message: jika nilai 'wants_to_start' false, beri pesan yang memparafrasekan pesan ini 'Tidak masalah jika Anda belum siap untuk memulai survei. Silakan kirim pesan kapan saja jika Anda ingin memulai.'
+  - system_message: jika nilai 'wants_to_start' false, parafrasekan pesan ini "Tidak masalah jika Anda belum siap untuk memulai survei. Silakan kirim pesan kapan saja jika Anda ingin memulai." dengan kalimat yang berbeda-beda setiap kali request.'
 `);
 
 const RETRY_DELAY = 5000;

@@ -14,6 +14,7 @@ import {
 import mongoose from "mongoose";
 import SurveyMessage from "../models/SurveyMessage";
 import QuestionnaireModel from "../models/Questionnaire";
+import { analyzeSurveyIntent } from "./surveyIntentService";
 
 // Start a new survey session for a user
 export const startSurveySession = async (userId: string, survey: any) => {
@@ -315,173 +316,297 @@ const replacePlaceholders = async (
 
 // Process a survey response
 export const processSurveyResponse = async (
-  sessionId: string,
+  userId: string,
   userResponse: string,
-  survey: any
+  sessionId?: string,
+  survey?: any
 ) => {
-  // Find the session in one query and ensure it's active
-  const session = await SurveySession.findById(sessionId);
-  if (!session || session.status !== "IN_PROGRESS") {
-    throw new Error("Survey session not found or already completed");
+  // Get the survey if not provided
+  if (!survey) {
+    const latestQuestionnaire = await QuestionnaireModel.findOne().sort({
+      createdAt: -1,
+    });
+    if (!latestQuestionnaire) {
+      throw new Error("Questionnaire not found");
+    }
+    survey = latestQuestionnaire.survey;
   }
 
-  // Get current question efficiently
-  let currentQuestion = survey.categories.flatMap(
-    (category: any) => category.questions
-  )[session.current_question_index];
-
-  // Handle dynamic question updates in one pass
-  if (["S002", "S004", "S003", "S005", "S007"].includes(currentQuestion.code)) {
-    currentQuestion = await updateQuestionOptions(currentQuestion, sessionId);
-  }
-  currentQuestion = await replacePlaceholders(currentQuestion, sessionId);
-
-  // Special handling for S006 (timestamp)
-  const processedUserResponse = currentQuestion.code === "S006" 
-    ? `${userResponse} (Dikirim pada ${new Date().toLocaleString()})` 
-    : userResponse;
-
-  // Classify intent (no change - already efficient)
-  const classificationResult = await classifyIntent({
-    question: currentQuestion,
-    response: processedUserResponse,
-  });
-
-  if (!classificationResult.success) {
-    throw new Error(classificationResult.error);
+  // If no sessionId, check if user has active session
+  let session;
+  if (!sessionId) {
+    session = await getUserActiveSurveySession(userId);
+    if (session) {
+      sessionId = (session._id as mongoose.Types.ObjectId).toString();
+    }
+  } else {
+    session = await SurveySession.findById(sessionId);
   }
 
-  // Create response object first - we'll save it once at the end
+  // Initialize response
   let system_response: any = {};
   let shouldSaveSession = false;
-  
-  // Handle different intent types more efficiently
-  const intent = classificationResult.data?.intent;
-  
-  if (intent === "unexpected_answer" || intent === "other") {
-    system_response = {
-      info: "unexpected_answer_or_other",
-      currentQuestion: currentQuestion,
-      clarification_reason: classificationResult.data?.clarification_reason,
-      follow_up_question: classificationResult.data?.follow_up_question,
-    };
-  } 
-  else if (intent === "question") {
-    try {
-      // Get the RAG API URL from environment variables
-      const ragApiUrl = process.env.RAG_API_URL || "";
-      if (!ragApiUrl) {
-        throw new Error("RAG API URL is not configured");
-      }
 
-      // Call RAG API in one request
-      const response = await fetch(`${ragApiUrl}/api/rag/ask`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: processedUserResponse }),
-      });
+  // No active session - analyze intent
+  if (!session) {
+    const intentResult = await analyzeSurveyIntent(userResponse);
+    if (!intentResult.success || !intentResult.data) {
+      throw new Error(intentResult.error || "Failed to analyze survey intent");
+    }
 
-      if (!response.ok) {
-        throw new Error(`RAG API responded with status: ${response.status}`);
-      }
+    if (intentResult.data.wants_to_start) {
+      // Create new session
+      session = await startSurveySessionInternal(userId, survey);
+      sessionId = (session._id as mongoose.Types.ObjectId).toString();
 
-      const ragResult = await response.json();
+      // Prepare response
       system_response = {
-        info: "question",
-        currentQuestion: currentQuestion,
-        answer: ragResult.answer || ragResult,
+        info: "survey_started",
+        intent_analysis: {
+          wants_to_start: true,
+          confidence: intentResult.data.confidence,
+          explanation: intentResult.data.explanation,
+        },
+        additional_info: `Selamat datang! Survei ini bertujuan untuk mengumpulkan informasi tentang proﬁl wisatawan nusantara, maksud perjalanan, akomodasi yang digunakan, lama perjalanan, dan rata-rata pengeluaran terkait perjalanan yang dilakukan oleh penduduk Indonesia di dalam wilayah teritorial Indonesia.`,
+        next_question: survey.categories[0].questions[0],
       };
-    } catch (error) {
-      console.error("Error calling RAG API:", error);
+    } else {
+      // User doesn't want to start survey
       system_response = {
-        info: "error",
-        additional_info: "Maaf, sistem belum dapat menjawab pertanyaan Anda. Mohon jawab pertanyaan sebelumnya.",
-        currentQuestion: currentQuestion,
+        info: "not_ready_for_survey",
+        intent_analysis: {
+          wants_to_start: false,
+          confidence: intentResult.data.confidence,
+          explanation: intentResult.data.explanation,
+        },
+        system_message:
+          intentResult.data.system_message ||
+          "Sepertinya Anda belum siap untuk memulai survei. Silakan kirim pesan kapan saja jika Anda ingin memulai.",
       };
     }
-  } 
-  else if (intent === "expected_answer") {
-    // Process the answer
-    const extractionResult = await extractInformation({
+  } else {
+    // Have active session - process response as before
+    if (session.status !== "IN_PROGRESS") {
+      throw new Error("Survey session already completed");
+    }
+
+    // Get current question
+    let currentQuestion = survey.categories.flatMap(
+      (category: any) => category.questions
+    )[session.current_question_index];
+
+    if (!sessionId) {
+      throw new Error("Session ID not found");
+    }
+
+    // Process the question
+    if (
+      ["S002", "S004", "S003", "S005", "S007"].includes(currentQuestion.code)
+    ) {
+      currentQuestion = await updateQuestionOptions(currentQuestion, sessionId);
+    }
+    currentQuestion = await replacePlaceholders(currentQuestion, sessionId);
+
+    // Special handling for S006 (timestamp)
+    const processedUserResponse =
+      currentQuestion.code === "S006"
+        ? `${userResponse} (Dikirim pada ${new Date().toLocaleString()})`
+        : userResponse;
+
+    // Classify intent
+    const classificationResult = await classifyIntent({
       question: currentQuestion,
       response: processedUserResponse,
     });
 
-    if (!extractionResult.success) {
-      throw new Error(extractionResult.error);
+    if (!classificationResult.success) {
+      throw new Error(classificationResult.error);
     }
 
-    // Prepare response data
-    const extractedInfo = extractionResult.data?.extracted_information ?? "";
-    
-    // Update session data efficiently
-    session.responses.push({
-      question_code: currentQuestion.code,
-      valid_response: extractedInfo,
-    });
+    // Handle different intent types
+    const intent = classificationResult.data?.intent;
 
-    // Handle skiplogic more efficiently
-    const skipMapping: Record<string, Record<string, number>> = {
-      S008: { Ya: 14, Tidak: 15 },
-      S012: { Ya: 18, Tidak: 25 },
-    };
+    if (intent === "unexpected_answer" || intent === "other") {
+      system_response = {
+        info: "unexpected_answer_or_other",
+        currentQuestion: currentQuestion,
+        clarification_reason: classificationResult.data?.clarification_reason,
+        follow_up_question: classificationResult.data?.follow_up_question,
+      };
+    } else if (intent === "question") {
+      try {
+        // Get the RAG API URL from environment variables
+        const ragApiUrl = process.env.RAG_API_URL || "";
+        if (!ragApiUrl) {
+          throw new Error("RAG API URL is not configured");
+        }
 
-    if (
-      skipMapping[currentQuestion.code] &&
-      typeof extractedInfo === "string" &&
-      skipMapping[currentQuestion.code][extractedInfo]
-    ) {
-      session.current_question_index = skipMapping[currentQuestion.code][extractedInfo];
-    } else {
-      session.current_question_index += 1;
-    }
+        // Call RAG API
+        const response = await fetch(`${ragApiUrl}/api/rag/ask`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: processedUserResponse }),
+        });
 
-    // Check if survey is complete
-    const totalQuestions = survey.categories.flatMap((cat: any) => cat.questions).length;
-    
-    if (session.current_question_index >= totalQuestions) {
-      session.status = "COMPLETED";
-      
-      // Remove the active session reference from the user in a separate operation
-      // This is more efficient as it's only needed when completing the survey
-      await User.findByIdAndUpdate(session.user_id, {
-        $unset: { activeSurveySessionId: 1 },
+        if (!response.ok) {
+          throw new Error(`RAG API responded with status: ${response.status}`);
+        }
+
+        const ragResult = await response.json();
+        system_response = {
+          info: "question",
+          currentQuestion: currentQuestion,
+          answer: ragResult.answer || ragResult,
+        };
+      } catch (error) {
+        console.error("Error calling RAG API:", error);
+        system_response = {
+          info: "error",
+          additional_info:
+            "Maaf, sistem belum dapat menjawab pertanyaan Anda. Mohon jawab pertanyaan sebelumnya.",
+          currentQuestion: currentQuestion,
+        };
+      }
+    } else if (intent === "expected_answer") {
+      // Process the answer
+      const extractionResult = await extractInformation({
+        question: currentQuestion,
+        response: processedUserResponse,
       });
 
-      system_response = {
-        info: "survey_completed",
-        additional_info: "Survei telah berakhir, terima kasih telah menyelesaikan survei!",
+      if (!extractionResult.success) {
+        throw new Error(extractionResult.error);
+      }
+
+      // Prepare response data
+      const extractedInfo = extractionResult.data?.extracted_information ?? "";
+
+      // Update session data
+      session.responses.push({
+        question_code: currentQuestion.code,
+        valid_response: extractedInfo,
+      });
+
+      // Handle skiplogic
+      const skipMapping: Record<string, Record<string, number>> = {
+        S008: { Ya: 14, Tidak: 15 },
+        S012: { Ya: 18, Tidak: 25 },
       };
-    } else {
-      // Get next question efficiently
-      let nextQuestion = survey.categories.flatMap((cat: any) => cat.questions)[
-        session.current_question_index
-      ];
-      nextQuestion = await replacePlaceholders(nextQuestion, sessionId);
-      
-      system_response = {
-        info: "expected_answer",
-        next_question: nextQuestion || null,
-      };
+
+      if (
+        skipMapping[currentQuestion.code] &&
+        typeof extractedInfo === "string" &&
+        skipMapping[currentQuestion.code][extractedInfo]
+      ) {
+        session.current_question_index =
+          skipMapping[currentQuestion.code][extractedInfo];
+      } else {
+        session.current_question_index += 1;
+      }
+
+      // Check if survey is complete
+      const totalQuestions = survey.categories.flatMap(
+        (cat: any) => cat.questions
+      ).length;
+
+      if (session.current_question_index >= totalQuestions) {
+        session.status = "COMPLETED";
+
+        // Remove active session reference
+        await User.findByIdAndUpdate(userId, {
+          $unset: { activeSurveySessionId: 1 },
+        });
+
+        system_response = {
+          info: "survey_completed",
+          additional_info:
+            "Survei telah berakhir, terima kasih telah menyelesaikan survei!",
+        };
+      } else {
+        // Get next question
+        let nextQuestion = survey.categories.flatMap(
+          (cat: any) => cat.questions
+        )[session.current_question_index];
+        nextQuestion = await replacePlaceholders(nextQuestion, sessionId);
+
+        system_response = {
+          info: "expected_answer",
+          next_question: nextQuestion || null,
+        };
+      }
+
+      shouldSaveSession = true;
     }
-    
-    shouldSaveSession = true;
   }
 
-  // Create survey message
+  // Store message with user_id directly
   await SurveyMessage.create({
+    user_id: userId,
     session_id: sessionId,
-    user_message: processedUserResponse,
+    user_message: userResponse,
     system_response: system_response,
   });
 
-  // Only save session if needed
-  if (shouldSaveSession) {
+  // Save session if needed
+  if (session && shouldSaveSession) {
     await session.save();
   }
 
-  return system_response;
+  // Return appropriate response
+  return {
+    ...system_response,
+    session_id: sessionId,
+  };
 };
+
+// Internal function for starting survey session without creating a welcome message
+// (the welcome message will be created in processSurveyResponse)
+async function startSurveySessionInternal(userId: string, survey: any) {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    // Find the user
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Check if user already has active session
+    if (user.activeSurveySessionId) {
+      const existingSession = await SurveySession.findById(
+        user.activeSurveySessionId
+      );
+      if (existingSession && existingSession.status === "IN_PROGRESS") {
+        await session.abortTransaction();
+        session.endSession();
+        return existingSession;
+      }
+    }
+
+    // Create new session
+    const newSession = new SurveySession({
+      user_id: new mongoose.Types.ObjectId(userId),
+      responses: [],
+    });
+
+    await newSession.save({ session });
+
+    // Update user reference
+    user.activeSurveySessionId = newSession._id as mongoose.Types.ObjectId;
+    await user.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return newSession;
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error("Error starting survey session:", error);
+    throw error;
+  }
+}
 
 // Get user's active session
 export const getUserActiveSurveySession = async (

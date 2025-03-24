@@ -82,30 +82,18 @@ export const handleProcessSurveyResponse = async (
 ): Promise<void> => {
   try {
     const { session_id, user_response } = req.body;
+    const userId = req.user._id;
 
-    // Validate required fields
-    if (!session_id || user_response === undefined) {
+    // Validate user response
+    if (user_response === undefined) {
       res.status(400).json({
         success: false,
-        message: "Session ID and response are required",
+        message: "User response is required",
       });
       return;
     }
 
-    // Verify the session belongs to the authenticated user
-    const userId = req.user._id;
-    const userSession = await getUserActiveSurveySession(userId);
-
-    if (!userSession || (userSession as any)._id.toString() !== session_id) {
-      res.status(403).json({
-        success: false,
-        message:
-          "Unauthorized: This survey session does not belong to the authenticated user",
-      });
-      return;
-    }
-
-    // Get the latest questionnaire
+    // Get latest questionnaire
     const latestQuestionnaire = await QuestionnaireModel.findOne().sort({
       createdAt: -1,
     });
@@ -117,18 +105,23 @@ export const handleProcessSurveyResponse = async (
       return;
     }
 
-    // Process the response
+    // Process the response with the unified function
     const response = await processSurveyResponse(
-      session_id,
+      userId,
       user_response,
+      session_id,
       latestQuestionnaire.survey
     );
 
-    res.json({ success: true, ...response });
+    // Return the response
+    res.json({
+      success: true,
+      ...response
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: (error as Error).message,
+      message: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };
