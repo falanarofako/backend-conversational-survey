@@ -702,18 +702,11 @@ export const getSurveySessionStatus = async (sessionId: string) => {
   }
 };
 
-export const getSurveySessionMessages = async (sessionId: string) => {
+export const getSurveySessionMessages = async (userId: string) => {
   try {
-    // Validate that the survey session exists
-    const session = await SurveySession.findById(sessionId);
-
-    if (!session) {
-      throw new Error("Survey session not found");
-    }
-
-    // Fetch all messages for this session, sorted by timestamp
+    // Fetch all messages for this user, sorted by timestamp
     const messages = await SurveyMessage.find({
-      session_id: sessionId,
+      user_id: userId,
     }).sort({ timestamp: 1 });
 
     return messages;

@@ -222,31 +222,19 @@ export const handleGetSurveyMessages = async (
   res: Response
 ): Promise<void> => {
   try {
-    const sessionId = req.params.id;
-
-    if (!sessionId) {
-      res.status(400).json({
-        success: false,
-        message: "Session ID is required",
-      });
-      return;
-    }
-
-    // Verify the session belongs to the authenticated user
+    // Get user ID from authenticated request
     const userId = req.user._id;
-    const userSession = await getUserActiveSurveySession(userId);
 
-    if (!userSession || (userSession as any)._id.toString() !== sessionId) {
-      res.status(403).json({
-        success: false,
-        message:
-          "Unauthorized: This survey session does not belong to the authenticated user",
+    if (!userId) {
+      res.status(400).json({ 
+        success: false, 
+        message: "User ID is required" 
       });
       return;
     }
 
-    // Get all messages for this survey session
-    const messages = await getSurveySessionMessages(sessionId);
+    // Get all messages for this user
+    const messages = await getSurveySessionMessages(userId);
 
     res.json({
       success: true,
