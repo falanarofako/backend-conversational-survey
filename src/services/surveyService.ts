@@ -319,139 +319,108 @@ export const processSurveyResponse = async (
   userResponse: string,
   survey: any
 ) => {
+  // Find the session in one query and ensure it's active
   const session = await SurveySession.findById(sessionId);
   if (!session || session.status !== "IN_PROGRESS") {
     throw new Error("Survey session not found or already completed");
   }
 
+  // Get current question efficiently
   let currentQuestion = survey.categories.flatMap(
     (category: any) => category.questions
   )[session.current_question_index];
 
-  // Update question options if needed
+  // Handle dynamic question updates in one pass
   if (["S002", "S004", "S003", "S005", "S007"].includes(currentQuestion.code)) {
     currentQuestion = await updateQuestionOptions(currentQuestion, sessionId);
   }
-
-  // Replace placeholders in question text
   currentQuestion = await replacePlaceholders(currentQuestion, sessionId);
 
-  // Add timestamp to S006 responses
-  if (currentQuestion.code === "S006") {
-    const timestamp = new Date().toLocaleString();
-    userResponse = `${userResponse} (Dikirim pada ${timestamp})`;
-  }
+  // Special handling for S006 (timestamp)
+  const processedUserResponse = currentQuestion.code === "S006" 
+    ? `${userResponse} (Dikirim pada ${new Date().toLocaleString()})` 
+    : userResponse;
 
-  // Classify the intent of the response
+  // Classify intent (no change - already efficient)
   const classificationResult = await classifyIntent({
     question: currentQuestion,
-    response: userResponse,
+    response: processedUserResponse,
   });
 
   if (!classificationResult.success) {
     throw new Error(classificationResult.error);
   }
 
-  // Handle different intent types
-  if (
-    classificationResult.data?.intent === "unexpected_answer" ||
-    classificationResult.data?.intent === "other"
-  ) {
-    // Save user message and system response
-    const system_response = {
+  // Create response object first - we'll save it once at the end
+  let system_response: any = {};
+  let shouldSaveSession = false;
+  
+  // Handle different intent types more efficiently
+  const intent = classificationResult.data?.intent;
+  
+  if (intent === "unexpected_answer" || intent === "other") {
+    system_response = {
       info: "unexpected_answer_or_other",
       currentQuestion: currentQuestion,
       clarification_reason: classificationResult.data?.clarification_reason,
       follow_up_question: classificationResult.data?.follow_up_question,
     };
-    await SurveyMessage.create({
-      session_id: sessionId,
-      user_message: userResponse,
-      system_response: system_response,
-    });
-    return system_response;
-  }
-
-  // Handle question intent (user asked a question)
-  if (classificationResult.data?.intent === "question") {
+  } 
+  else if (intent === "question") {
     try {
       // Get the RAG API URL from environment variables
       const ragApiUrl = process.env.RAG_API_URL || "";
-
       if (!ragApiUrl) {
-        throw new Error(
-          "RAG API URL is not configured in environment variables"
-        );
+        throw new Error("RAG API URL is not configured");
       }
 
-      // Call RAG API to get answer for the question
+      // Call RAG API in one request
       const response = await fetch(`${ragApiUrl}/api/rag/ask`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          question: userResponse,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: processedUserResponse }),
       });
 
       if (!response.ok) {
         throw new Error(`RAG API responded with status: ${response.status}`);
       }
 
-      // Parse the response from the RAG API
       const ragResult = await response.json();
-
-      // Save user message and system response
-      const system_response = {
+      system_response = {
         info: "question",
         currentQuestion: currentQuestion,
         answer: ragResult.answer || ragResult,
       };
-      await SurveyMessage.create({
-        session_id: sessionId,
-        user_message: userResponse,
-        system_response: system_response,
-      });
-      // Return the answer from RAG API
-      return system_response;
     } catch (error) {
       console.error("Error calling RAG API:", error);
-      // Fallback to original behavior if RAG API call fails
-      // Save user message and system response
-      const system_response = {
+      system_response = {
         info: "error",
-        additional_info:
-          "Maaf, sistem belum dapat menjawab pertanyaan Anda. Mohon jawab pertanyaan sebelumnya.",
+        additional_info: "Maaf, sistem belum dapat menjawab pertanyaan Anda. Mohon jawab pertanyaan sebelumnya.",
         currentQuestion: currentQuestion,
       };
-      await SurveyMessage.create({
-        session_id: sessionId,
-        user_message: userResponse,
-        system_response: system_response,
-      });
-      return system_response;
     }
-  }
-
-  // Handle expected answer
-  if (classificationResult.data?.intent === "expected_answer") {
+  } 
+  else if (intent === "expected_answer") {
+    // Process the answer
     const extractionResult = await extractInformation({
       question: currentQuestion,
-      response: userResponse,
+      response: processedUserResponse,
     });
 
     if (!extractionResult.success) {
       throw new Error(extractionResult.error);
     }
 
-    // Save the response
+    // Prepare response data
+    const extractedInfo = extractionResult.data?.extracted_information ?? "";
+    
+    // Update session data efficiently
     session.responses.push({
       question_code: currentQuestion.code,
-      valid_response: extractionResult.data?.extracted_information ?? "",
+      valid_response: extractedInfo,
     });
 
-    // Handle skiplogic
+    // Handle skiplogic more efficiently
     const skipMapping: Record<string, Record<string, number>> = {
       S008: { Ya: 14, Tidak: 15 },
       S012: { Ya: 18, Tidak: 25 },
@@ -459,64 +428,59 @@ export const processSurveyResponse = async (
 
     if (
       skipMapping[currentQuestion.code] &&
-      typeof extractionResult.data?.extracted_information === "string"
+      typeof extractedInfo === "string" &&
+      skipMapping[currentQuestion.code][extractedInfo]
     ) {
-      session.current_question_index =
-        skipMapping[currentQuestion.code][
-          extractionResult.data?.extracted_information
-        ] || session.current_question_index + 1;
+      session.current_question_index = skipMapping[currentQuestion.code][extractedInfo];
     } else {
       session.current_question_index += 1;
     }
 
     // Check if survey is complete
-    if (
-      session.current_question_index >=
-      survey.categories.flatMap((cat: any) => cat.questions).length
-    ) {
+    const totalQuestions = survey.categories.flatMap((cat: any) => cat.questions).length;
+    
+    if (session.current_question_index >= totalQuestions) {
       session.status = "COMPLETED";
-
-      // Remove the active session reference from the user
+      
+      // Remove the active session reference from the user in a separate operation
+      // This is more efficient as it's only needed when completing the survey
       await User.findByIdAndUpdate(session.user_id, {
         $unset: { activeSurveySessionId: 1 },
       });
 
-      await session.save();
-
-      // Save user message and system response
-      const system_response = {
+      system_response = {
         info: "survey_completed",
-        additional_info:
-          "Survei telah berakhir, terima kasih telah menyelesaikan survei!",
+        additional_info: "Survei telah berakhir, terima kasih telah menyelesaikan survei!",
       };
-      await SurveyMessage.create({
-        session_id: sessionId,
-        user_message: userResponse,
-        system_response: system_response,
-      });
-      return system_response;
+    } else {
+      // Get next question efficiently
+      let nextQuestion = survey.categories.flatMap((cat: any) => cat.questions)[
+        session.current_question_index
+      ];
+      nextQuestion = await replacePlaceholders(nextQuestion, sessionId);
+      
+      system_response = {
+        info: "expected_answer",
+        next_question: nextQuestion || null,
+      };
     }
-
-    await session.save();
-
-    // Prepare next question
-    let nextQuestion = survey.categories.flatMap((cat: any) => cat.questions)[
-      session.current_question_index
-    ];
-
-    nextQuestion = await replacePlaceholders(nextQuestion, sessionId);
-    // Save user message and system response
-    const system_response = {
-      info: "expected_answer",
-      next_question: nextQuestion || null,
-    };
-    await SurveyMessage.create({
-      session_id: sessionId,
-      user_message: userResponse,
-      system_response: system_response,
-    });
-    return system_response;
+    
+    shouldSaveSession = true;
   }
+
+  // Create survey message
+  await SurveyMessage.create({
+    session_id: sessionId,
+    user_message: processedUserResponse,
+    system_response: system_response,
+  });
+
+  // Only save session if needed
+  if (shouldSaveSession) {
+    await session.save();
+  }
+
+  return system_response;
 };
 
 // Get user's active session
