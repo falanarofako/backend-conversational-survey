@@ -9,7 +9,8 @@ import { ServiceResponse } from "../types/intentTypes";
 const surveyIntentSchema = z.object({
   wants_to_start: z.boolean().describe("Whether the user wants to start the survey"),
   confidence: z.number().min(0).max(1).describe("Confidence level of the prediction"),
-  explanation: z.string().describe("Brief explanation for the decision")
+  explanation: z.string().describe("Brief explanation for the decision"),
+  system_message: z.string().optional().describe("System message from the analysis")
 });
 
 export type SurveyIntentResponse = z.infer<typeof surveyIntentSchema>;
@@ -23,6 +24,7 @@ const surveyIntentPrompt = ChatPromptTemplate.fromTemplate(`
   - wants_to_start: true jika pengguna ingin memulai survei, false jika tidak
   - confidence: tingkat keyakinan prediksi (0-1)
   - explanation: penjelasan singkat mengapa Anda membuat keputusan tersebut
+  - system_message: jika nilai 'wants_to_start' false, beri pesan yang memparafrasekan pesan ini 'Tidak masalah jika Anda belum siap untuk memulai survei. Silakan kirim pesan kapan saja jika Anda ingin memulai.'
 `);
 
 const RETRY_DELAY = 5000;
