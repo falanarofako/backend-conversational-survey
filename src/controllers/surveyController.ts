@@ -81,7 +81,7 @@ export const handleProcessSurveyResponse = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { session_id, user_response } = req.body;
+    let { session_id, user_response } = req.body;
     const userId = req.user._id;
 
     // Validate user response
@@ -91,6 +91,11 @@ export const handleProcessSurveyResponse = async (
         message: "User response is required",
       });
       return;
+    }
+    
+    // Treat empty string as undefined for session_id
+    if (session_id === "") {
+      session_id = undefined;
     }
 
     // Get latest questionnaire
