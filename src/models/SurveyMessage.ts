@@ -7,6 +7,7 @@ interface ISurveyMessage extends Document {
   session_id?: mongoose.Types.ObjectId;
   user_message: string;
   system_response: any;
+  mode: "survey" | "qa";
   timestamp: Date;
 }
 
@@ -28,6 +29,11 @@ const SurveyMessageSchema = new Schema({
   },
   system_response: {
     type: Schema.Types.Mixed,
+    required: true,
+  },
+  mode: {
+    type: String,
+    enum: ["survey", "qa"],
     required: true,
   },
   timestamp: {

@@ -544,6 +544,7 @@ export const processSurveyResponse = async (
     user_id: userId,
     session_id: sessionId,
     user_message: userResponse,
+    mode: "survey",
     system_response: system_response,
   });
 
