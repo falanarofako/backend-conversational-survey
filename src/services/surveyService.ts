@@ -390,6 +390,22 @@ export const processSurveyResponse = async (
       throw new Error("Survey session already completed");
     }
 
+    if (session.current_question_index === 4) {
+      const kr004Response = session.responses.find(
+        (response) => response.question_code === "KR004"
+      );
+
+      if (kr004Response && kr004Response.valid_response === "Tidak Bekerja") {
+        // Update session data
+        session.responses.push({
+          question_code: "KR005",
+          valid_response: "N/A",
+        });
+        const newSession = await session.save();
+        session = newSession;
+      }
+    }
+
     // Get current question
     let currentQuestion = survey.categories.flatMap(
       (category: any) => category.questions
@@ -728,7 +744,9 @@ export const addSurveyMessage = async (
     // Create a new survey message
     const message = await SurveyMessage.create({
       user_id: new mongoose.Types.ObjectId(userId),
-      session_id: sessionId ? new mongoose.Types.ObjectId(sessionId) : undefined,
+      session_id: sessionId
+        ? new mongoose.Types.ObjectId(sessionId)
+        : undefined,
       user_message: userMessage,
       system_response: systemResponse,
       mode,
