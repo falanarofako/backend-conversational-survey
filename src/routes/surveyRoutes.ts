@@ -7,6 +7,7 @@ import {
   handleCompleteSurvey,
   handleGetSurveyStatus,
   handleGetSurveyMessages,
+  handleAddSurveyMessage,
 } from "../controllers/surveyController";
 import { analyzeSurveyIntentController } from "../controllers/surveyIntentController";
 import { protect } from "../middleware/authMiddleware";
@@ -26,6 +27,13 @@ router.get("/status/:id", protect, handleGetSurveyStatus);
  * @access  Private
  */
 router.get("/messages/:id", protect, handleGetSurveyMessages);
+
+/**
+ * @route   POST /api/survey/messages
+ * @desc    Add a new survey message
+ * @access  Private
+ */
+router.post("/messages", protect, handleAddSurveyMessage);
 
 /**
  * @route   POST /api/survey/analyze-intent

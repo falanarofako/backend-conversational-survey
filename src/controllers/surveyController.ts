@@ -11,6 +11,7 @@ import {
 } from "../services/surveyService";
 import QuestionnaireModel from "../models/Questionnaire";
 import { IUser } from "../models/User";
+import SurveyMessage from "../models/SurveyMessage";
 
 export const handleStartSurvey = async (
   req: Request,
@@ -92,7 +93,7 @@ export const handleProcessSurveyResponse = async (
       });
       return;
     }
-    
+
     // Treat empty string as undefined for session_id
     if (session_id === "") {
       session_id = undefined;
@@ -121,7 +122,7 @@ export const handleProcessSurveyResponse = async (
     // Return the response
     res.json({
       success: true,
-      ...response
+      ...response,
     });
   } catch (error) {
     res.status(500).json({
@@ -226,9 +227,9 @@ export const handleGetSurveyMessages = async (
     const userId = req.user._id;
 
     if (!userId) {
-      res.status(400).json({ 
-        success: false, 
-        message: "User ID is required" 
+      res.status(400).json({
+        success: false,
+        message: "User ID is required",
       });
       return;
     }
@@ -244,6 +245,54 @@ export const handleGetSurveyMessages = async (
     res.status(500).json({
       success: false,
       message: (error as Error).message,
+    });
+  }
+};
+
+export const handleAddSurveyMessage = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { session_id, user_message, system_response, mode } = req.body;
+    const userId = req.user._id;
+
+    // Validate required fields
+    if (!user_message || !system_response) {
+      res.status(400).json({
+        success: false,
+        message: "User message and system response are required",
+      });
+      return;
+    }
+
+    // Validate mode if provided
+    if (mode && !["survey", "qa"].includes(mode)) {
+      res.status(400).json({
+        success: false,
+        message: "Mode must be either 'survey' or 'qa'",
+      });
+      return;
+    }
+
+    // Create a new survey message
+    const surveyMessage = await SurveyMessage.create({
+      user_id: userId,
+      session_id: session_id || undefined,
+      user_message,
+      system_response,
+      mode: mode || "survey", // Default to survey mode
+    });
+
+    res.status(201).json({
+      success: true,
+      data: surveyMessage,
+      message: "Survey message added successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };

@@ -716,3 +716,27 @@ export const getSurveySessionMessages = async (userId: string) => {
     throw error;
   }
 };
+
+export const addSurveyMessage = async (
+  userId: string,
+  userMessage: string,
+  systemResponse: any,
+  sessionId?: string,
+  mode: "survey" | "qa" = "survey"
+) => {
+  try {
+    // Create a new survey message
+    const message = await SurveyMessage.create({
+      user_id: new mongoose.Types.ObjectId(userId),
+      session_id: sessionId ? new mongoose.Types.ObjectId(sessionId) : undefined,
+      user_message: userMessage,
+      system_response: systemResponse,
+      mode,
+    });
+
+    return message;
+  } catch (error) {
+    console.error("Error adding survey message:", error);
+    throw error;
+  }
+};
