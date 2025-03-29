@@ -390,22 +390,6 @@ export const processSurveyResponse = async (
       throw new Error("Survey session already completed");
     }
 
-    if (session.current_question_index === 4) {
-      const kr004Response = session.responses.find(
-        (response) => response.question_code === "KR004"
-      );
-
-      if (kr004Response && kr004Response.valid_response === "Tidak Bekerja") {
-        // Update session data
-        session.responses.push({
-          question_code: "KR005",
-          valid_response: "N/A",
-        });
-        const newSession = await session.save();
-        session = newSession;
-      }
-    }
-
     // Get current question
     let currentQuestion = survey.categories.flatMap(
       (category: any) => category.questions
@@ -517,7 +501,11 @@ export const processSurveyResponse = async (
         session.current_question_index =
           skipMapping[currentQuestion.code][extractedInfo];
       } else {
-        session.current_question_index += 1;
+        if (currentQuestion.code === "KR004" && extractedInfo === "Tidak Bekerja") {
+          session.current_question_index += 2;
+        } else {
+          session.current_question_index += 1;
+        }
       }
 
       // Check if survey is complete
@@ -567,6 +555,22 @@ export const processSurveyResponse = async (
   // Save session if needed
   if (session && shouldSaveSession) {
     await session.save();
+
+    if (session.current_question_index === 5) {
+      const kr004Response = session.responses.find(
+        (response) => response.question_code === "KR004"
+      );
+
+      if (kr004Response && kr004Response.valid_response === "Tidak Bekerja") {
+        // Update session data
+        session.responses.push({
+          question_code: "KR005",
+          valid_response: "N/A",
+        });
+        const newSession = await session.save();
+        console.log("new session: ", newSession);
+      }
+    }
   }
 
   // Return appropriate response
