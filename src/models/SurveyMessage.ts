@@ -5,7 +5,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 interface ISurveyMessage extends Document {
   user_id: mongoose.Types.ObjectId;
   session_id?: mongoose.Types.ObjectId;
-  user_message: string;
+  user_message: string | null;
   system_response: any;
   mode: "survey" | "qa";
   timestamp: Date;
@@ -25,7 +25,7 @@ const SurveyMessageSchema = new Schema({
   },
   user_message: {
     type: String,
-    required: true,
+    // required: true,
   },
   system_response: {
     type: Schema.Types.Mixed,
