@@ -261,10 +261,10 @@ export const handleAddSurveyMessage = async (
     const userId = req.user._id;
 
     // Validate required fields
-    if (!user_message || !system_response) {
+    if (!system_response) {
       res.status(400).json({
         success: false,
-        message: "User message and system response are required",
+        message: "System response are required",
       });
       return;
     }
