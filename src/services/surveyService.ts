@@ -762,3 +762,6 @@ export const addSurveyMessage = async (
     throw error;
   }
 };
+
+// Export utility functions to be used by controllers
+export { updateQuestionOptions, replacePlaceholders };

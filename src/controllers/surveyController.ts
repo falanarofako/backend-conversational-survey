@@ -8,10 +8,13 @@ import {
   completeSurveySession,
   getSurveySessionStatus,
   getSurveySessionMessages,
+  updateQuestionOptions,
+  replacePlaceholders,
 } from "../services/surveyService";
 import QuestionnaireModel from "../models/Questionnaire";
 import { IUser } from "../models/User";
 import SurveyMessage from "../models/SurveyMessage";
+import mongoose from "mongoose";
 
 export const handleStartSurvey = async (
   req: Request,
@@ -293,6 +296,99 @@ export const handleAddSurveyMessage = async (
     res.status(500).json({
       success: false,
       message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
+
+export const handleGetCurrentQuestion = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    // Get user ID from authenticated request
+    const userId = req.user._id;
+
+    if (!userId) {
+      res.status(401).json({
+        success: false,
+        message: "User not authenticated",
+      });
+      return;
+    }
+
+    // Get user's active session
+    const session = await getUserActiveSurveySession(userId);
+    if (!session) {
+      res.status(404).json({
+        success: false,
+        message: "No active survey session found",
+      });
+      return;
+    }
+
+    // Get the latest questionnaire
+    const latestQuestionnaire = await QuestionnaireModel.findOne().sort({
+      createdAt: -1,
+    });
+    if (!latestQuestionnaire) {
+      res.status(404).json({
+        success: false,
+        message: "Questionnaire not found",
+      });
+      return;
+    }
+
+    // Get all questions from the questionnaire
+    const allQuestions = latestQuestionnaire.survey.categories.flatMap(
+      (category: any) => category.questions
+    );
+
+    // Get the current question
+    const currentQuestionIndex = session.current_question_index;
+    if (currentQuestionIndex >= allQuestions.length) {
+      res.status(200).json({
+        success: true,
+        data: {
+          session_id: session._id,
+          status: session.status,
+          message: "Survey is completed",
+        },
+      });
+      return;
+    }
+
+    let currentQuestion = allQuestions[currentQuestionIndex];
+    const sessionId = (session._id as mongoose.Types.ObjectId).toString();
+
+    // Update question options and placeholders if needed
+    if (
+      ["S002", "S004", "S003", "S005", "S007"].includes(currentQuestion.code)
+    ) {
+      currentQuestion = await updateQuestionOptions(currentQuestion, sessionId);
+    }
+    currentQuestion = await replacePlaceholders(currentQuestion, sessionId);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        session_id: session._id,
+        status: session.status,
+        current_question_index: currentQuestionIndex,
+        current_question: currentQuestion,
+        progress: {
+          total_questions: allQuestions.length,
+          answered_questions: session.responses.length,
+          progress_percentage: Math.round(
+            (session.responses.length / allQuestions.length) * 100
+          ),
+        },
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error retrieving current question",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 };

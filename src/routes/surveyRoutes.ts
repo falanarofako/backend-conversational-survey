@@ -8,11 +8,19 @@ import {
   handleGetSurveyStatus,
   handleGetSurveyMessages,
   handleAddSurveyMessage,
+  handleGetCurrentQuestion,
 } from "../controllers/surveyController";
 import { analyzeSurveyIntentController } from "../controllers/surveyIntentController";
 import { protect } from "../middleware/authMiddleware";
 
 const router = Router();
+
+/**
+ * @route   GET /api/survey/current-question
+ * @desc    Get the current question from user's active survey session
+ * @access  Private
+ */
+router.get("/current-question", protect, handleGetCurrentQuestion);
 
 /**
  * @route   GET /api/survey/status/:id
