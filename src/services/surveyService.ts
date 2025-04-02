@@ -15,6 +15,7 @@ import mongoose from "mongoose";
 import SurveyMessage from "../models/SurveyMessage";
 import QuestionnaireModel from "../models/Questionnaire";
 import { analyzeSurveyIntent } from "./surveyIntentService";
+import { classifyIntentWithContext } from "./enhancedIntentClassificationService";
 
 // Start a new survey session for a user
 export const startSurveySession = async (userId: string, survey: any) => {
@@ -385,7 +386,7 @@ export const processSurveyResponse = async (
       };
     }
   } else {
-    // Have active session - process response as before
+    // Have active session - process response with enhanced intent classification
     if (session.status !== "IN_PROGRESS") {
       throw new Error("Survey session already completed");
     }
@@ -413,10 +414,11 @@ export const processSurveyResponse = async (
         ? `${userResponse} (Dikirim pada ${new Date().toLocaleString()})`
         : userResponse;
 
-    // Classify intent
-    const classificationResult = await classifyIntent({
+    // Use enhanced context-aware classification that returns improved responses
+    const classificationResult = await classifyIntentWithContext({
       question: currentQuestion,
       response: processedUserResponse,
+      sessionId: sessionId,
     });
 
     if (!classificationResult.success) {
@@ -432,6 +434,7 @@ export const processSurveyResponse = async (
         currentQuestion: currentQuestion,
         clarification_reason: classificationResult.data?.clarification_reason,
         follow_up_question: classificationResult.data?.follow_up_question,
+        improved_response: classificationResult.data?.improved_response,
       };
     } else if (intent === "question") {
       try {
@@ -441,11 +444,13 @@ export const processSurveyResponse = async (
           throw new Error("RAG API URL is not configured");
         }
 
-        // Call RAG API
+        // Call RAG API - use improved_response if available
+        const questionToAsk =
+          classificationResult.data?.improved_response || processedUserResponse;
         const response = await fetch(`${ragApiUrl}/api/rag/ask`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: processedUserResponse }),
+          body: JSON.stringify({ question: questionToAsk }),
         });
 
         if (!response.ok) {
@@ -457,6 +462,7 @@ export const processSurveyResponse = async (
           info: "question",
           currentQuestion: currentQuestion,
           answer: ragResult.answer || ragResult,
+          improved_response: classificationResult.data?.improved_response,
         };
       } catch (error) {
         console.error("Error calling RAG API:", error);
@@ -465,13 +471,18 @@ export const processSurveyResponse = async (
           additional_info:
             "Maaf, sistem belum dapat menjawab pertanyaan Anda. Mohon jawab pertanyaan sebelumnya.",
           currentQuestion: currentQuestion,
+          improved_response: classificationResult.data?.improved_response,
         };
       }
     } else if (intent === "expected_answer") {
-      // Process the answer
+      // Use the improved response for extraction
+      const improvedResponse =
+        classificationResult.data?.improved_response || processedUserResponse;
+
+      // Process the answer with improved response
       const extractionResult = await extractInformation({
         question: currentQuestion,
-        response: processedUserResponse,
+        response: improvedResponse,
       });
 
       if (!extractionResult.success) {
@@ -501,7 +512,10 @@ export const processSurveyResponse = async (
         session.current_question_index =
           skipMapping[currentQuestion.code][extractedInfo];
       } else {
-        if (currentQuestion.code === "KR004" && extractedInfo === "Tidak Bekerja") {
+        if (
+          currentQuestion.code === "KR004" &&
+          extractedInfo === "Tidak Bekerja"
+        ) {
           session.current_question_index += 2;
         } else {
           session.current_question_index += 1;
@@ -525,6 +539,7 @@ export const processSurveyResponse = async (
           info: "survey_completed",
           additional_info:
             "Survei telah berakhir, terima kasih telah menyelesaikan survei!",
+          improved_response: classificationResult.data?.improved_response,
         };
       } else {
         // Get next question
@@ -536,6 +551,7 @@ export const processSurveyResponse = async (
         system_response = {
           info: "expected_answer",
           next_question: nextQuestion || null,
+          improved_response: classificationResult.data?.improved_response,
         };
       }
 
@@ -543,7 +559,7 @@ export const processSurveyResponse = async (
     }
   }
 
-  // Store message with user_id directly
+  // Store message with user_id directly - include improved_response in the system_response
   await SurveyMessage.create({
     user_id: userId,
     session_id: sessionId,

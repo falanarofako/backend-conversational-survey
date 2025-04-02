@@ -74,7 +74,7 @@ interface LLMConfig {
 }
 
 const defaultConfig: LLMConfig = {
-  model: "gemini-1.5-flash",
+  model: "gemini-2.5-pro-exp-03-25",
   temperature: 0,
   maxRetries: 2,
   timeout: 30000,
