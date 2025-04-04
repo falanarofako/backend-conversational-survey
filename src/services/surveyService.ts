@@ -11,7 +11,7 @@ import {
   getProvinceNames,
   getRegencyNamesByProvinceName,
 } from "./provincesAndRegenciesService";
-import mongoose from "mongoose";
+import mongoose, { set } from "mongoose";
 import SurveyMessage from "../models/SurveyMessage";
 import QuestionnaireModel from "../models/Questionnaire";
 import { analyzeSurveyIntent } from "./surveyIntentService";
@@ -159,7 +159,7 @@ async function getValidResponse(
 }
 
 // Update question options based on previous responses
-const updateQuestionOptions = async (
+export const updateQuestionOptions = async (
   currentQuestion: any,
   sessionId: string
 ): Promise<any> => {
@@ -284,7 +284,7 @@ const getCurrentMonthName = (): string => {
 };
 
 // Replace placeholders in question text
-const replacePlaceholders = async (
+export const replacePlaceholders = async (
   currentQuestion: any,
   sessionId: string
 ): Promise<any> => {
@@ -292,6 +292,10 @@ const replacePlaceholders = async (
 
   for (const placeholder of placeholders) {
     if (currentQuestion.text.includes(placeholder)) {
+      console.log(
+        "Current question text before replacement:",
+        currentQuestion.text
+      );
       if (placeholder === "${currentMonth}") {
         const currentMonthName = getCurrentMonthName();
         currentQuestion.text = currentQuestion.text.replace(
@@ -306,6 +310,10 @@ const replacePlaceholders = async (
           currentQuestion.text = currentQuestion.text.replace(
             placeholder,
             validResponse
+          );
+          console.log(
+            "Current question text after replacement:",
+            currentQuestion.text
           );
         }
       }
@@ -391,6 +399,9 @@ export const processSurveyResponse = async (
       throw new Error("Survey session already completed");
     }
 
+    // Di fungsi processSurveyResponse, tambahkan logging
+    console.log("Current responses in session:", session.responses);
+
     // Get current question
     let currentQuestion = survey.categories.flatMap(
       (category: any) => category.questions
@@ -406,6 +417,7 @@ export const processSurveyResponse = async (
     ) {
       currentQuestion = await updateQuestionOptions(currentQuestion, sessionId);
     }
+
     currentQuestion = await replacePlaceholders(currentQuestion, sessionId);
 
     // Special handling for S006 (timestamp)
@@ -541,7 +553,9 @@ export const processSurveyResponse = async (
             "Survei telah berakhir, terima kasih telah menyelesaikan survei!",
           improved_response: classificationResult.data?.improved_response,
         };
+        await session.save();
       } else {
+        await session.save();
         // Get next question
         let nextQuestion = survey.categories.flatMap(
           (cat: any) => cat.questions
@@ -555,7 +569,7 @@ export const processSurveyResponse = async (
         };
       }
 
-      shouldSaveSession = true;
+      // shouldSaveSession = true;
     }
   }
 
@@ -568,24 +582,23 @@ export const processSurveyResponse = async (
     system_response: system_response,
   });
 
-  // Save session if needed
-  if (session && shouldSaveSession) {
-    await session.save();
+  if (!session) {
+    throw new Error("Survey session not found");
+  }
 
-    if (session.current_question_index === 5) {
-      const kr004Response = session.responses.find(
-        (response) => response.question_code === "KR004"
-      );
+  if (session.current_question_index === 5) {
+    const kr004Response = session.responses.find(
+      (response) => response.question_code === "KR004"
+    );
 
-      if (kr004Response && kr004Response.valid_response === "Tidak Bekerja") {
-        // Update session data
-        session.responses.push({
-          question_code: "KR005",
-          valid_response: "N/A",
-        });
-        const newSession = await session.save();
-        console.log("new session: ", newSession);
-      }
+    if (kr004Response && kr004Response.valid_response === "Tidak Bekerja") {
+      // Update session data
+      session.responses.push({
+        question_code: "KR005",
+        valid_response: "N/A",
+      });
+      const newSession = await session.save();
+      console.log("new session: ", newSession);
     }
   }
 
@@ -778,6 +791,3 @@ export const addSurveyMessage = async (
     throw error;
   }
 };
-
-// Export utility functions to be used by controllers
-export { updateQuestionOptions, replacePlaceholders };

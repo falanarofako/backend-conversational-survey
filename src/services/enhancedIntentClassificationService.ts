@@ -2,16 +2,13 @@
 
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { setTimeout } from "timers/promises";
-import { 
-  ClassificationContext, 
-  ClassificationOutput, 
-  Question, 
-  ServiceResponse
+import {
+  ClassificationContext,
+  ClassificationOutput,
+  Question,
+  ServiceResponse,
 } from "../types/intentTypes";
-import { 
-  getCurrentLLM, 
-  handleLLMError 
-} from "../config/llmConfig";
+import { getCurrentLLM, handleLLMError } from "../config/llmConfig";
 import SurveyMessage from "../models/SurveyMessage";
 import SurveySession from "../models/SurveySession";
 import { z } from "zod";
@@ -24,24 +21,29 @@ const enhancedClassificationSchema = z.object({
   intent: z
     .enum(["question", "expected_answer", "unexpected_answer", "other"])
     .describe(
+      // "Klasifikasi respons pengguna:\n" +
+      //   "- question: Pertanyaan terkait pertanyaan survei yang ditanyakan atau permintaan klarifikasi.\n" +
+      //   "- expected_answer: Jawaban yang memenuhi salah satu kriteria berikut:\n" +
+      //   "1. Menjawab pertanyaan secara langsung walaupun format jawaban tidak sesuai. Misalnya: format jawaban adalah angka tetapi pengguna menjawab dengan teks tetapi menyatakan jumlah atau nilai yang pasti bukan 'lebih dari' atau 'kurang dari'\n" +
+      //   "2. Menggunakan kata/frasa yang sama atau sinonim dari opsi jawaban yang tersedia\n" +
+      //   "3. Dapat dipetakan secara langsung ke salah satu opsi jawaban berdasarkan maknanya\n" +
+      //   "- unexpected_answer: Jawaban yang memenuhi semua kriteria berikut:\n" +
+      //   "1. Merespons pertanyaan yang diajukan\n" +
+      //   "2. Mengandung informasi yang relevan\n" +
+      //   "3. Menyatakan nilai baik dalam angka atau teks yang tidak pasti atau spesifik. Misalnya kurang dari satu juta atau lebih dari satu juta\n" +
+      //   "4. Tidak memenuhi validasi jawaban seperti nilai minimum dan maksimum jika pertanyaan menanyakan angka kemudian berikan sedikit penjelasan pada property 'follow_up_question' bahwa jawaban tidak memenuhi validasi\n" +
+      //   "5. Tidak dapat langsung dipetakan ke format atau opsi jawaban yang tersedia\n" +
+      //   "6. Memiliki ambiguitas yang dapat mengarah ke lebih dari satu opsi jawaban\n" +
+      //   "7. Memerlukan klarifikasi atau konversi lebih lanjut\n" +
+      //   "- other:  Respons yang tidak termasuk kategori di atas, seperti:\n" +
+      //   "1. Tidak relevan dengan pertanyaan\n" +
+      //   "2. Bukan pertanyaan maupun jawaban\n" +
+      //   "3. Respons kosong atau tidak bermakna"
       "Klasifikasi respons pengguna:\n" +
         "- question: Pertanyaan terkait pertanyaan survei yang ditanyakan atau permintaan klarifikasi.\n" +
         "- expected_answer: Jawaban yang memenuhi salah satu kriteria berikut:\n" +
-        "1. Menjawab pertanyaan secara langsung walaupun format jawaban tidak sesuai. Misalnya: format jawaban adalah angka tetapi pengguna menjawab dengan teks tetapi menyatakan jumlah atau nilai yang pasti bukan 'lebih dari' atau 'kurang dari'\n" +
-        "2. Menggunakan kata/frasa yang sama atau sinonim dari opsi jawaban yang tersedia\n" +
-        "3. Dapat dipetakan secara langsung ke salah satu opsi jawaban berdasarkan maknanya\n" +
         "- unexpected_answer: Jawaban yang memenuhi semua kriteria berikut:\n" +
-        "1. Merespons pertanyaan yang diajukan\n" +
-        "2. Mengandung informasi yang relevan\n" +
-        "3. Menyatakan nilai baik dalam angka atau teks yang tidak pasti atau spesifik. Misalnya kurang dari satu juta atau lebih dari satu juta\n" + 
-        "4. Tidak memenuhi validasi jawaban seperti nilai minimum dan maksimum jika pertanyaan menanyakan angka kemudian berikan sedikit penjelasan pada property 'follow_up_question' bahwa jawaban tidak memenuhi validasi\n" +
-        "5. Tidak dapat langsung dipetakan ke format atau opsi jawaban yang tersedia\n" +
-        "6. Memiliki ambiguitas yang dapat mengarah ke lebih dari satu opsi jawaban\n" +
-        "7. Memerlukan klarifikasi atau konversi lebih lanjut\n" +
-        "- other:  Respons yang tidak termasuk kategori di atas, seperti:\n" +
-        "1. Tidak relevan dengan pertanyaan\n" +
-        "2. Bukan pertanyaan maupun jawaban\n" +
-        "3. Respons kosong atau tidak bermakna"
+        "- other:  Respons yang tidak termasuk kategori di atas, seperti:\n"
     ),
   confidence: z
     .number()
@@ -69,7 +71,7 @@ const enhancedClassificationSchema = z.object({
     .string()
     .describe(
       "Versi jawaban pengguna yang sudah distandarisasi, diperbaiki, dan disesuaikan dengan format yang diharapkan, berdasarkan konteks pertanyaan dan riwayat percakapan."
-    )
+    ),
 });
 
 // Type for enhanced output
@@ -82,25 +84,25 @@ export interface EnhancedClassificationOutput extends ClassificationOutput {
  */
 const formatPreviousMessages = (messages: any[]): string => {
   if (!messages || messages.length === 0) return "Tidak ada riwayat pesan.";
-  
+
   // Get the last 3 message pairs maximum (to keep context manageable)
   const recentMessages = messages.slice(-6);
-  
+
   let formattedContext = "RIWAYAT PESAN TERKINI:\n";
-  
+
   recentMessages.forEach((message, index) => {
     // User message
     if (message.user_message) {
       formattedContext += `Pengguna: ${message.user_message}\n`;
     }
-    
+
     // System response - extract only relevant parts
     if (message.system_response) {
       const sr = message.system_response;
-      
+
       // Extract question if available
       let systemMessage = "";
-      
+
       if (sr.next_question && sr.next_question.text) {
         systemMessage = `Sistem: ${sr.next_question.text}\n`;
       } else if (sr.currentQuestion && sr.currentQuestion.text) {
@@ -114,11 +116,11 @@ const formatPreviousMessages = (messages: any[]): string => {
       } else if (sr.additional_info) {
         systemMessage = `Sistem: ${sr.additional_info}\n`;
       }
-      
+
       formattedContext += systemMessage;
     }
   });
-  
+
   return formattedContext;
 };
 
@@ -128,18 +130,18 @@ const formatPreviousMessages = (messages: any[]): string => {
 const getPreviousAnswers = async (sessionId: string): Promise<string> => {
   try {
     if (!sessionId) return "Tidak ada jawaban sebelumnya.";
-    
+
     const session = await SurveySession.findById(sessionId);
     if (!session || session.responses.length === 0) {
       return "Tidak ada jawaban sebelumnya.";
     }
-    
+
     // Format responses
     let formattedResponses = "JAWABAN SEBELUMNYA:\n";
     session.responses.forEach((response, index) => {
       formattedResponses += `- Pertanyaan kode ${response.question_code}: ${response.valid_response}\n`;
     });
-    
+
     return formattedResponses;
   } catch (error) {
     console.error("Error fetching previous answers:", error);
@@ -166,6 +168,25 @@ const enhancedClassificationPrompt = ChatPromptTemplate.fromTemplate(`
   
   RESPONS PENGGUNA:
   {response}
+
+  Klasifikasi respons pengguna:
+  - question: Pertanyaan terkait pertanyaan survei yang ditanyakan atau permintaan klarifikasi.
+  - expected_answer: Jawaban yang memenuhi salah satu kriteria berikut:
+  1. Menjawab pertanyaan secara langsung walaupun format jawaban tidak sesuai. Misalnya: format jawaban adalah angka tetapi pengguna menjawab dengan teks tetapi menyatakan jumlah atau nilai yang pasti bukan 'lebih dari' atau 'kurang dari'
+  2. Menggunakan kata/frasa yang sama atau sinonim dari opsi jawaban yang tersedia
+  3. Dapat dipetakan secara langsung ke salah satu opsi jawaban berdasarkan maknanya
+  - unexpected_answer: Jawaban yang memenuhi semua kriteria berikut:
+  1. Merespons pertanyaan yang diajukan
+  2. Mengandung informasi yang relevan
+  3. Menyatakan nilai baik dalam angka atau teks yang tidak pasti atau spesifik. Misalnya kurang dari satu juta atau lebih dari satu juta
+  4. Tidak memenuhi validasi jawaban seperti nilai minimum dan maksimum jika pertanyaan menanyakan angka kemudian berikan sedikit penjelasan pada property 'follow_up_question' bahwa jawaban tidak memenuhi validasi
+  5. Tidak dapat langsung dipetakan ke format atau opsi jawaban yang tersedia
+  6. Memiliki ambiguitas yang dapat mengarah ke lebih dari satu opsi jawaban
+  7. Memerlukan klarifikasi atau konversi lebih lanjut
+  - other:  Respons yang tidak termasuk kategori di atas, seperti:
+  1. Tidak relevan dengan pertanyaan
+  2. Bukan pertanyaan maupun jawaban
+  3. Respons kosong atau tidak bermakna
   
   Pastikan Anda benar-benar mengikuti setiap perintah di bawah ini:
   1. Jika respons pengguna merupakan pertanyaan atau permintaan klarifikasi terkait pertanyaan survei, maka klasifikasikan sebagai "question".
@@ -205,36 +226,38 @@ export const classifyIntentWithContext = async (
 
     // Get LLM instance
     const llmResponse = await getCurrentLLM();
-    
+
     if (!llmResponse.success || !llmResponse.data) {
       throw new Error(llmResponse.error || "Failed to get LLM instance");
     }
-    
+
     const llm = llmResponse.data;
 
     try {
       // Format question context
-      const questionContext = typeof params.question === 'string' 
-        ? params.question 
-        : JSON.stringify(params.question, null, 2);
-      
+      const questionContext =
+        typeof params.question === "string"
+          ? params.question
+          : JSON.stringify(params.question, null, 2);
+
       // Get conversation history if sessionId is provided
       let conversationHistory = "Tidak ada riwayat percakapan.";
       let previousAnswers = "Tidak ada jawaban sebelumnya.";
-      
+
       if (params.sessionId) {
         // Get previous messages for this session
-        const messages = await SurveyMessage.find({ 
-          session_id: params.sessionId 
+        const messages = await SurveyMessage.find({
+          session_id: params.sessionId,
         }).sort({ timestamp: 1 });
-        
+
         conversationHistory = formatPreviousMessages(messages);
         previousAnswers = await getPreviousAnswers(params.sessionId);
       }
-      
-      const currentQuestion = typeof params.question === 'string'
-        ? params.question
-        : params.question.text || '';
+
+      const currentQuestion =
+        typeof params.question === "string"
+          ? params.question
+          : params.question.text || "";
 
       // Create LLM with structured output
       const llmWithStructuredOutput = llm.withStructuredOutput(
@@ -246,13 +269,13 @@ export const classifyIntentWithContext = async (
 
       // Create and invoke classification chain
       const chain = enhancedClassificationPrompt.pipe(llmWithStructuredOutput);
-      const result = await chain.invoke({
+      const result = (await chain.invoke({
         questionContext,
         conversationHistory,
         previousAnswers,
         currentQuestion,
         response: params.response,
-      }) as EnhancedClassificationOutput;
+      })) as EnhancedClassificationOutput;
 
       // Validate result
       const validatedResult = enhancedClassificationSchema.parse(result);
@@ -272,7 +295,9 @@ export const classifyIntentWithContext = async (
 
       if (attempt < MAX_RETRIES) {
         console.log(
-          `Retrying enhanced classification (attempt ${attempt + 1}/${MAX_RETRIES})`
+          `Retrying enhanced classification (attempt ${
+            attempt + 1
+          }/${MAX_RETRIES})`
         );
         await setTimeout(RETRY_DELAY);
         return classifyIntentWithContext(params, attempt + 1);

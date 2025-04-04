@@ -8,8 +8,10 @@ import {
   completeSurveySession,
   getSurveySessionStatus,
   getSurveySessionMessages,
-  updateQuestionOptions,
   replacePlaceholders,
+  updateQuestionOptions,
+  // updateQuestionOptions,
+  // replacePlaceholders,
 } from "../services/surveyService";
 import QuestionnaireModel from "../models/Questionnaire";
 import { IUser } from "../models/User";
