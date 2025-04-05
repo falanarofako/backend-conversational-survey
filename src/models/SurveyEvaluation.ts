@@ -12,7 +12,8 @@ export interface ISurveyEvaluation extends Document {
     data_security?: number;
     privacy_safety?: number;
     mental_effort?: number;
-    [key: string]: number | undefined;
+    overall_experience?: string;
+    [key: string]: number | string | undefined;
   };
   completed: boolean;
   created_at: Date;
@@ -36,7 +37,11 @@ const SurveyEvaluationSchema = new Schema({
     enjoyment: { type: Number, min: 1, max: 7 },
     data_security: { type: Number, min: 1, max: 7 },
     privacy_safety: { type: Number, min: 1, max: 7 },
-    mental_effort: { type: Number, min: 1, max: 9 }
+    mental_effort: { type: Number, min: 1, max: 9 },
+    overall_experience: { 
+      type: String, 
+      maxlength: 1000 // Batasi panjang respons terbuka
+    }
   },
   completed: {
     type: Boolean,

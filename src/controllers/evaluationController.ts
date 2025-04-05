@@ -63,14 +63,18 @@ export const handleSubmitAnswer = async (
       return;
     }
 
-    // Validate numeric value
-    const numericValue = Number(value);
-    if (isNaN(numericValue)) {
-      res.status(400).json({
-        success: false,
-        message: 'Value must be a number'
-      });
-      return;
+    // Verifikasi tipe jawaban untuk numerik
+    let processedValue: number | string = value;
+    if (question_id !== 'overall_experience') {
+      const numericValue = Number(value);
+      if (isNaN(numericValue)) {
+        res.status(400).json({
+          success: false,
+          message: 'Value must be a number for numeric questions'
+        });
+        return;
+      }
+      processedValue = numericValue;
     }
 
     // Verify the evaluation belongs to the user
@@ -84,7 +88,11 @@ export const handleSubmitAnswer = async (
     }
 
     // Submit the answer
-    const updatedEvaluation = await submitAnswer(evaluation_id, question_id, numericValue);
+    const updatedEvaluation = await submitAnswer(
+      evaluation_id, 
+      question_id, 
+      processedValue
+    );
 
     res.json({
       success: true,

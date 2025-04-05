@@ -97,7 +97,7 @@ export const initializeEvaluation = async (
 export const submitAnswer = async (
   evaluationId: string,
   questionId: string,
-  value: number
+  value: number | string
 ): Promise<ISurveyEvaluation> => {
   try {
     // Find the evaluation
@@ -118,17 +118,36 @@ export const submitAnswer = async (
       'enjoyment', 
       'data_security', 
       'privacy_safety',
-      'mental_effort'
+      'mental_effort',
+      'overall_experience' // Tambahkan pertanyaan terbuka
     ];
     
     if (!validQuestionIds.includes(questionId)) {
       throw new Error(`Invalid question ID: ${questionId}`);
     }
 
-    // Validate the value range
-    const maxValue = questionId === 'mental_effort' ? 9 : 7;
-    if (value < 1 || value > maxValue) {
-      throw new Error(`Value must be between 1 and ${maxValue} for ${questionId}`);
+    // Validasi untuk pertanyaan numerik
+    if (typeof value === 'number') {
+      const maxValue = questionId === 'mental_effort' ? 9 : 7;
+      if (value < 1 || value > maxValue) {
+        throw new Error(`Value must be between 1 and ${maxValue} for ${questionId}`);
+      }
+    } 
+    // Validasi untuk pertanyaan terbuka
+    else if (questionId === 'overall_experience') {
+      if (typeof value !== 'string') {
+        throw new Error('Overall experience must be a string');
+      }
+      
+      // Validasi panjang respons
+      if (value.trim().length > 1000) {
+        throw new Error('Overall experience response is too long (max 1000 characters)');
+      }
+
+      // Trim respons untuk menghilangkan spasi berlebih
+      value = value.trim();
+    } else {
+      throw new Error(`Unexpected value type for question ${questionId}`);
     }
 
     // Update the answer

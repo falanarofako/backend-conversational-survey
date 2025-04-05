@@ -1,4 +1,5 @@
 // src/services/enhancedIntentClassificationService.ts
+// Updating the function to support dynamic model selection
 
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { setTimeout } from "timers/promises";
@@ -8,7 +9,7 @@ import {
   Question,
   ServiceResponse,
 } from "../types/intentTypes";
-import { getCurrentLLM, handleLLMError } from "../config/llmConfig";
+import { getCurrentLLM, handleLLMError, createCustomLLM } from "../config/llmConfig";
 import SurveyMessage from "../models/SurveyMessage";
 import SurveySession from "../models/SurveySession";
 import { z } from "zod";
@@ -21,24 +22,6 @@ const enhancedClassificationSchema = z.object({
   intent: z
     .enum(["question", "expected_answer", "unexpected_answer", "other"])
     .describe(
-      // "Klasifikasi respons pengguna:\n" +
-      //   "- question: Pertanyaan terkait pertanyaan survei yang ditanyakan atau permintaan klarifikasi.\n" +
-      //   "- expected_answer: Jawaban yang memenuhi salah satu kriteria berikut:\n" +
-      //   "1. Menjawab pertanyaan secara langsung walaupun format jawaban tidak sesuai. Misalnya: format jawaban adalah angka tetapi pengguna menjawab dengan teks tetapi menyatakan jumlah atau nilai yang pasti bukan 'lebih dari' atau 'kurang dari'\n" +
-      //   "2. Menggunakan kata/frasa yang sama atau sinonim dari opsi jawaban yang tersedia\n" +
-      //   "3. Dapat dipetakan secara langsung ke salah satu opsi jawaban berdasarkan maknanya\n" +
-      //   "- unexpected_answer: Jawaban yang memenuhi semua kriteria berikut:\n" +
-      //   "1. Merespons pertanyaan yang diajukan\n" +
-      //   "2. Mengandung informasi yang relevan\n" +
-      //   "3. Menyatakan nilai baik dalam angka atau teks yang tidak pasti atau spesifik. Misalnya kurang dari satu juta atau lebih dari satu juta\n" +
-      //   "4. Tidak memenuhi validasi jawaban seperti nilai minimum dan maksimum jika pertanyaan menanyakan angka kemudian berikan sedikit penjelasan pada property 'follow_up_question' bahwa jawaban tidak memenuhi validasi\n" +
-      //   "5. Tidak dapat langsung dipetakan ke format atau opsi jawaban yang tersedia\n" +
-      //   "6. Memiliki ambiguitas yang dapat mengarah ke lebih dari satu opsi jawaban\n" +
-      //   "7. Memerlukan klarifikasi atau konversi lebih lanjut\n" +
-      //   "- other:  Respons yang tidak termasuk kategori di atas, seperti:\n" +
-      //   "1. Tidak relevan dengan pertanyaan\n" +
-      //   "2. Bukan pertanyaan maupun jawaban\n" +
-      //   "3. Respons kosong atau tidak bermakna"
       "Klasifikasi respons pengguna:\n" +
         "- question: Pertanyaan terkait pertanyaan survei yang ditanyakan atau permintaan klarifikasi.\n" +
         "- expected_answer: Jawaban yang memenuhi salah satu kriteria berikut:\n" +
@@ -149,6 +132,30 @@ const getPreviousAnswers = async (sessionId: string): Promise<string> => {
   }
 };
 
+/**
+ * Determine which LLM model to use based on the question
+ * @param question The question object or string
+ * @returns Model name to use
+ */
+const determineModelForQuestion = (question: Question | string): string => {
+  // Complex questions that require advanced reasoning use gemini-2.5-pro
+  const advancedQuestionCodes = ["S002", "S003", "S004", "S005", "S010"];
+  
+  // Extract question code if it's an object
+  let questionCode = "";
+  if (typeof question !== "string") {
+    questionCode = question.code || "";
+  }
+  
+  // Use Pro model for complex questions
+  if (advancedQuestionCodes.includes(questionCode)) {
+    return "gemini-2.5-pro-exp-03-25";
+  }
+  
+  // Default to flash model for simpler questions
+  return "gemini-1.5-flash";
+};
+
 // Enhanced classification prompt template
 const enhancedClassificationPrompt = ChatPromptTemplate.fromTemplate(`
   Anda adalah sistem klasifikasi intent untuk survei digital.
@@ -215,7 +222,7 @@ const enhancedClassificationPrompt = ChatPromptTemplate.fromTemplate(`
 
 /**
  * Enhanced classifyIntent function that incorporates conversation history and previous answers
- * Now also provides improved and standardized responses
+ * Now also provides improved and standardized responses with dynamic model selection
  */
 export const classifyIntentWithContext = async (
   params: ClassificationContext & { sessionId?: string },
@@ -224,14 +231,22 @@ export const classifyIntentWithContext = async (
   try {
     const startTime = Date.now();
 
-    // Get LLM instance
-    const llmResponse = await getCurrentLLM();
+    // Determine which model to use based on the question
+    const modelToUse = determineModelForQuestion(params.question);
+    
+    // Get LLM instance with appropriate model
+    const llmResponse = modelToUse === "gemini-1.5-flash"
+      ? await getCurrentLLM() // Use Flash model for simple questions 
+      : await createCustomLLM({ model: "gemini-2.5-pro-exp-03-25" }); // Default to Pro model
 
     if (!llmResponse.success || !llmResponse.data) {
       throw new Error(llmResponse.error || "Failed to get LLM instance");
     }
 
     const llm = llmResponse.data;
+    
+    // Log which model is being used for transparency
+    console.log(`Using model ${modelToUse} for question`, params.question.code || "unknown");
 
     try {
       // Format question context
