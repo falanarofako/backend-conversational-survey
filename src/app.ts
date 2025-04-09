@@ -12,6 +12,7 @@ import questionnaireRoutes from "./routes/questionnaireRoutes";
 import surveyRoutes from "./routes/surveyRoutes";
 import authRoutes from "./routes/authRoutes";
 import evaluationRoutes from "./routes/evaluationRoutes";
+import geographicRoutes from "./routes/geographicRoutes";
 
 dotenv.config();
 
@@ -79,6 +80,7 @@ app.use("/api/information", informationExtractionRoutes);
 app.use("/api/questionnaire", questionnaireRoutes);
 app.use("/api/survey", surveyRoutes);
 app.use("/api/evaluation", evaluationRoutes); 
+app.use("/api/geographic", geographicRoutes);
 
 // Basic route
 app.get("/", (req: Request, res: Response) => {
