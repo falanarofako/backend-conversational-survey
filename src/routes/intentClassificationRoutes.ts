@@ -7,7 +7,8 @@ import {
   handleGetEvaluationProgress,
   handleGetSystemStatus,
   handleResetSystem,
-  getAllClassificationResults
+  getAllClassificationResults,
+  handleCalculateAndSaveMetrics
 } from "../controllers/intentClassificationController";
 
 const router = Router();
@@ -38,6 +39,8 @@ router.post("/evaluate/start", handleStartEvaluation);
  * @access  Public
  */
 router.get("/evaluate/progress", handleGetEvaluationProgress);
+
+router.post("/evaluate/metrics", handleCalculateAndSaveMetrics);
 
 /**
  * @route   GET /api/intent/system/status

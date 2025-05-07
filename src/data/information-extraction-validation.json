@@ -1,706 +1,1083 @@
 [
-    {
-        "question": {
-            "code": "S013E",
-            "text": "Apakah Anda menggunakan layanan objek wisata dalam paket perjalanan/liburan/tour Anda?",
-            "type": "select",
-            "multiple": false,
-            "instruction": "Pilih Ya atau Tidak.",
-            "options": [
-                "Ya",
-                "Tidak"
-            ],
-            "system_guidelines": [
-                "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Ya, saya menggunakan layanan objek wisata yang termasuk dalam paket.",
-        "ground_truth": "Ya"
+  {
+    "question": {
+      "code": "S013E",
+      "text": "Apakah Anda menggunakan layanan objek wisata dalam paket perjalanan/liburan/tour Anda?",
+      "type": "select",
+      "multiple": false,
+      "instruction": "Pilih Ya atau Tidak.",
+      "options": ["Ya", "Tidak"],
+      "system_guidelines": [
+        "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+      ],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S025",
-            "text": "Berapa total pengeluaran Anda untuk kesehatan, kecantikan, atau olahraga selama perjalanan ini?",
-            "type": "text",
-            "unit": "Rp",
-            "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
-            "validation": {
-                "required": true,
-                "input_type": "number",
-                "min": 0
-            }
-        },
-        "response": "Selama perjalanan, saya menghabiskan sekitar Rp 400.000 untuk perawatan wajah dan olahraga di pusat kebugaran.",
-        "ground_truth": 400000
+    "response": "Ya, saya menggunakan layanan objek wisata yang termasuk dalam paket.",
+    "ground_truth": "Ya"
+  },
+  {
+    "question": {
+      "code": "S025",
+      "text": "Berapa total pengeluaran Anda untuk kesehatan, kecantikan, atau olahraga selama perjalanan ini?",
+      "type": "text",
+      "unit": "Rp",
+      "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+      "validation": {
+        "required": true,
+        "input_type": "number",
+        "min": 0
+      }
     },
-    {
-        "question": {
-            "code": "S011",
-            "text": "Apa maksud utama Anda melakukan perjalanan ke Kota Yogyakarta pada Bulan Mei 2024?",
-            "type": "select",
-            "multiple": false,
-            "options": [
-                "Profesi/Bisnis",
-                "Pertemuan/Kongres/Seminar",
-                "Training/Pelatihan/Diklat",
-                "Berlibur/Rekreasi",
-                "Kursus",
-                "Kesehatan/Berobat",
-                "Kecantikan/Estetika",
-                "Keagamaan (Termasuk Berziarah)",
-                "Mengunjungi Teman/Famili",
-                "Mudik/Pulkan Hari Raya",
-                "Olahraga",
-                "Kesenian",
-                "Belanja/Shopping"
-            ],
-            "allow_other": true,
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Saya ingin pergi ke Yogyakarta bulan Mei untuk liburan sambil mengeksplorasi tempat-tempat wisata.",
-        "ground_truth": "Berlibur/Rekreasi"
+    "response": "Selama perjalanan, saya menghabiskan sekitar Rp 400.000 untuk perawatan wajah dan olahraga di pusat kebugaran.",
+    "ground_truth": 400000
+  },
+  {
+    "question": {
+      "code": "S011",
+      "text": "Apa maksud utama Anda melakukan perjalanan ke Kota Yogyakarta pada Bulan Mei 2024?",
+      "type": "select",
+      "multiple": false,
+      "options": [
+        "Profesi/Bisnis",
+        "Pertemuan/Kongres/Seminar",
+        "Training/Pelatihan/Diklat",
+        "Berlibur/Rekreasi",
+        "Kursus",
+        "Kesehatan/Berobat",
+        "Kecantikan/Estetika",
+        "Keagamaan (Termasuk Berziarah)",
+        "Mengunjungi Teman/Famili",
+        "Mudik/Pulkan Hari Raya",
+        "Olahraga",
+        "Kesenian",
+        "Belanja/Shopping"
+      ],
+      "allow_other": true,
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S010",
-            "text": "Apa motivasi utama Anda melakukan perjalanan ke Kota Semarang pada Bulan Juni 2024?",
-            "type": "select",
-            "multiple": false,
-            "options": [
-                {
-                    "text": "Untuk keperluan sendiri"
-                },
-                {
-                    "text": "Mengikuti perjalanan orang lain",
-                    "additional_info": "Misalnya: menemani orang tua berobat, mengantar anak kejuaraan, dll."
-                }
-            ],
-            "system_guidelines": [
-                "Jika jawaban motivasi perjalanan pengguna dapat dipetakan ke salah satu opsi jawaban dengan jelas maka klasifikasikan sebagai 'expected_answer'",
-                "klasifikasikan sebagai 'unexpected_answer' jika jawaban motivasi perjalanan pengguna ada ambiguitas untuk dipetakan ke dalam lebih dari satu opsi jawaban"
-            ],
-            "validation": {
-                "required": true
-            }
+    "response": "Saya ingin pergi ke Yogyakarta bulan Mei untuk liburan sambil mengeksplorasi tempat-tempat wisata.",
+    "ground_truth": "Berlibur/Rekreasi"
+  },
+  {
+    "question": {
+      "code": "S010",
+      "text": "Apa motivasi utama Anda melakukan perjalanan ke Kota Semarang pada Bulan Juni 2024?",
+      "type": "select",
+      "multiple": false,
+      "options": [
+        {
+          "text": "Untuk keperluan sendiri"
         },
-        "response": "Motivasi utama saya adalah untuk menghadiri acara pelantikan jabatan pekerjaan saya yang diadakan di Semarang pada bulan Juni 2024.",
-        "ground_truth": "Untuk keperluan sendiri"
+        {
+          "text": "Mengikuti perjalanan orang lain",
+          "additional_info": "Misalnya: menemani orang tua berobat, mengantar anak kejuaraan, dll."
+        }
+      ],
+      "system_guidelines": [
+        "Jika jawaban motivasi perjalanan pengguna dapat dipetakan ke salah satu opsi jawaban dengan jelas maka klasifikasikan sebagai 'expected_answer'",
+        "klasifikasikan sebagai 'unexpected_answer' jika jawaban motivasi perjalanan pengguna ada ambiguitas untuk dipetakan ke dalam lebih dari satu opsi jawaban"
+      ],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S010",
-            "text": "Apa motivasi utama Anda melakukan perjalanan ke Kota Semarang pada Bulan Juni 2024?",
-            "type": "select",
-            "multiple": false,
-            "options": [
-                {
-                    "text": "Untuk keperluan sendiri"
-                },
-                {
-                    "text": "Mengikuti perjalanan orang lain",
-                    "additional_info": "Misalnya: menemani orang tua berobat, mengantar anak kejuaraan, dll."
-                }
-            ],
-            "system_guidelines": [
-                "Jika jawaban motivasi perjalanan pengguna dapat dipetakan ke salah satu opsi jawaban dengan jelas maka klasifikasikan sebagai 'expected_answer'",
-                "klasifikasikan sebagai 'unexpected_answer' jika jawaban motivasi perjalanan pengguna ada ambiguitas untuk dipetakan ke dalam lebih dari satu opsi jawaban"
-            ],
-            "validation": {
-                "required": true
-            }
+    "response": "Motivasi utama saya adalah untuk menghadiri acara pelantikan jabatan pekerjaan saya yang diadakan di Semarang pada bulan Juni 2024.",
+    "ground_truth": "Untuk keperluan sendiri"
+  },
+  {
+    "question": {
+      "code": "S010",
+      "text": "Apa motivasi utama Anda melakukan perjalanan ke Kota Semarang pada Bulan Juni 2024?",
+      "type": "select",
+      "multiple": false,
+      "options": [
+        {
+          "text": "Untuk keperluan sendiri"
         },
-        "response": "Saya berencana ke Semarang bulan Juni untuk liburan bareng teman-teman.",
-        "ground_truth": "Untuk keperluan sendiri"
+        {
+          "text": "Mengikuti perjalanan orang lain",
+          "additional_info": "Misalnya: menemani orang tua berobat, mengantar anak kejuaraan, dll."
+        }
+      ],
+      "system_guidelines": [
+        "Jika jawaban motivasi perjalanan pengguna dapat dipetakan ke salah satu opsi jawaban dengan jelas maka klasifikasikan sebagai 'expected_answer'",
+        "klasifikasikan sebagai 'unexpected_answer' jika jawaban motivasi perjalanan pengguna ada ambiguitas untuk dipetakan ke dalam lebih dari satu opsi jawaban"
+      ],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S017J",
-            "text": "Apakah Anda melakukan wisata kesehatan selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
-            "type": "select",
-            "multiple": false,
-            "instruction": "Pilih Ya atau Tidak.",
-            "options": [
-                "Ya",
-                "Tidak"
-            ],
-            "system_guidelines": [
-                "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Iya, aku sempat coba spa tradisional di salah satu resort di Manado!",
-        "ground_truth": "Ya"
+    "response": "Saya berencana ke Semarang bulan Juni untuk liburan bareng teman-teman.",
+    "ground_truth": "Untuk keperluan sendiri"
+  },
+  {
+    "question": {
+      "code": "S017J",
+      "text": "Apakah Anda melakukan wisata kesehatan selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+      "type": "select",
+      "multiple": false,
+      "instruction": "Pilih Ya atau Tidak.",
+      "options": ["Ya", "Tidak"],
+      "system_guidelines": [
+        "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+      ],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "KR001",
-            "text": "Apa jenis kelamin Anda?",
-            "type": "select",
-            "multiple": false,
-            "options": [
-                "Laki-laki",
-                "Perempuan"
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Cowok",
-        "ground_truth": "Laki-laki"
+    "response": "Iya, aku sempat coba spa tradisional di salah satu resort di Manado!",
+    "ground_truth": "Ya"
+  },
+  {
+    "question": {
+      "code": "KR001",
+      "text": "Apa jenis kelamin Anda?",
+      "type": "select",
+      "multiple": false,
+      "options": ["Laki-laki", "Perempuan"],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S006",
-            "text": "Bulan apa saja Anda melakukan perjalanan ke Kota Denpasar?",
-            "type": "select",
-            "multiple": true,
-            "instruction": "Isian boleh lebih dari satu",
-            "options": [
-                "Januari 2024",
-                "Februari 2024",
-                "Maret 2024",
-                "April 2024",
-                "Mei 2024",
-                "Juni 2024",
-                "Juli 2024",
-                "Agustus 2024",
-                "September 2024",
-                "Oktober 2024",
-                "November 2024",
-                "Desember 2024"
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Saya melakukan perjalanan ke Kota Denpasar pada bulan Juli 2024 dan November 2024.",
-        "ground_truth": [
-            "Juli 2024",
-            "November 2024"
-        ]
+    "response": "Cowok",
+    "ground_truth": "Laki-laki"
+  },
+  {
+    "question": {
+      "code": "S006",
+      "text": "Bulan apa saja Anda melakukan perjalanan ke Kota Denpasar?",
+      "type": "select",
+      "multiple": true,
+      "instruction": "Isian boleh lebih dari satu",
+      "options": [
+        "Januari 2024",
+        "Februari 2024",
+        "Maret 2024",
+        "April 2024",
+        "Mei 2024",
+        "Juni 2024",
+        "Juli 2024",
+        "Agustus 2024",
+        "September 2024",
+        "Oktober 2024",
+        "November 2024",
+        "Desember 2024"
+      ],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "KR003",
-            "text": "Apa jenjang pendidikan tertinggi yang Anda tamatkan?",
-            "type": "select",
-            "multiple": false,
-            "options": [
-                "Tidak/Belum Sekolah/Tidak Tamat SD/MI",
-                "SD/MI",
-                "SMP/MTs",
-                "SMA/MA/SMK",
-                "D1/D2/D3",
-                "D4/S1",
-                "S2/S3"
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Saya lulusan dari program Sarjana (S1)",
-        "ground_truth": "D4/S1"
+    "response": "Saya melakukan perjalanan ke Kota Denpasar pada bulan Juli 2024 dan November 2024.",
+    "ground_truth": ["Juli 2024", "November 2024"]
+  },
+  {
+    "question": {
+      "code": "KR003",
+      "text": "Apa jenjang pendidikan tertinggi yang Anda tamatkan?",
+      "type": "select",
+      "multiple": false,
+      "options": [
+        "Tidak/Belum Sekolah/Tidak Tamat SD/MI",
+        "SD/MI",
+        "SMP/MTs",
+        "SMA/MA/SMK",
+        "D1/D2/D3",
+        "D4/S1",
+        "S2/S3"
+      ],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "KR006",
-            "text": "Apakah Anda menerapkan prinsip eco-friendly saat melakukan perjalanan? Misalnya: Mengurangi penggunaan plastik, bijak menggunakan energi, membuang sampah pada tempatnya, dll. Pilih salah satu: Ya, Tidak, Kadang-kadang, atau Tidak bersedia menjawab.",
-            "type": "select",
-            "multiple": false,
-            "options": [
-                "Ya",
-                "Tidak",
-                "Kadang-kadang",
-                "Tidak bersedia menjawab"
-            ],
-            "additional_info": "Misalnya: Mengurangi penggunaan plastik, bijak menggunakan energi, membuang sampah pada tempatnya, dll.",
-            "system_guidelines": [
-                "Pastikan bahwa jawaban pengguna benar-benar secara tegas mengarah ke salah satu opsi jawaban dan tidak ada ambiguitas sehingga dapat diklasifikasikan sebagai 'expected_answer' jika tidak klasifikasikan sebagai 'unexpected_answer'",
-                "Jika jawaban pengguna dapat dikategorikan eco-friendly tetapi tidak jelas dilakukan secara sering atau kadang-kadang maka klasifikasikan sebagai 'unexpected_answer' dan minta klarifikasi"
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Ya, saya selalu berusaha menerapkan prinsip ramah lingkungan dalam setiap perjalanan yang saya lakukan, seperti mengurangi penggunaan plastik sekali pakai, memilih transportasi umum atau bersepeda, dan menginap di eco-lodge yang menerapkan praktik berkelanjutan.",
-        "ground_truth": "Ya"
+    "response": "Saya lulusan dari program Sarjana (S1)",
+    "ground_truth": "D4/S1"
+  },
+  {
+    "question": {
+      "code": "KR006",
+      "text": "Apakah Anda menerapkan prinsip eco-friendly saat melakukan perjalanan? Misalnya: Mengurangi penggunaan plastik, bijak menggunakan energi, membuang sampah pada tempatnya, dll. Pilih salah satu: Ya, Tidak, Kadang-kadang, atau Tidak bersedia menjawab.",
+      "type": "select",
+      "multiple": false,
+      "options": ["Ya", "Tidak", "Kadang-kadang", "Tidak bersedia menjawab"],
+      "additional_info": "Misalnya: Mengurangi penggunaan plastik, bijak menggunakan energi, membuang sampah pada tempatnya, dll.",
+      "system_guidelines": [
+        "Pastikan bahwa jawaban pengguna benar-benar secara tegas mengarah ke salah satu opsi jawaban dan tidak ada ambiguitas sehingga dapat diklasifikasikan sebagai 'expected_answer' jika tidak klasifikasikan sebagai 'unexpected_answer'",
+        "Jika jawaban pengguna dapat dikategorikan eco-friendly tetapi tidak jelas dilakukan secara sering atau kadang-kadang maka klasifikasikan sebagai 'unexpected_answer' dan minta klarifikasi"
+      ],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S021",
-            "text": "Berapa total pengeluaran Anda untuk transportasi selama perjalanan ini? Termasuk biaya BBM dan tol jika menggunakan kendaraan pribadi.",
-            "type": "text",
-            "unit": "Rp",
-            "additional_info": "Total pengeluaran untuk transportasi selama perjalanan. Jika menggunakan angkutan pribadi, isikan pengeluaran pembelian BBM dan biaya tol.",
-            "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
-            "validation": {
-                "required": true,
-                "input_type": "number",
-                "min": 0
-            }
-        },
-        "response": "Saya kira sekitar Rp 600.000, karena sering lewat tol dan pengisian BBM cukup sering.",
-        "ground_truth": 600000
+    "response": "Ya, saya selalu berusaha menerapkan prinsip ramah lingkungan dalam setiap perjalanan yang saya lakukan, seperti mengurangi penggunaan plastik sekali pakai, memilih transportasi umum atau bersepeda, dan menginap di eco-lodge yang menerapkan praktik berkelanjutan.",
+    "ground_truth": "Ya"
+  },
+  {
+    "question": {
+      "code": "S021",
+      "text": "Berapa total pengeluaran Anda untuk transportasi selama perjalanan ini? Termasuk biaya BBM dan tol jika menggunakan kendaraan pribadi.",
+      "type": "text",
+      "unit": "Rp",
+      "additional_info": "Total pengeluaran untuk transportasi selama perjalanan. Jika menggunakan angkutan pribadi, isikan pengeluaran pembelian BBM dan biaya tol.",
+      "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+      "validation": {
+        "required": true,
+        "input_type": "number",
+        "min": 0
+      }
     },
-    {
-        "question": {
-            "code": "S016",
-            "text": "Angkutan utama (paling jauh) apa yang Anda gunakan selama perjalanan ke Kabupaten Magelang pada Bulan Desember 2024? Contoh: pesawat, kapal laut, perahu kecil, kereta api, angkot, taksi online, mobil pribadi, dll.",
-            "type": "select",
-            "multiple": false,
-            "options": [
-                {
-                    "text": "Angkutan udara",
-                    "additional_info": "Misalnya pesawat"
-                },
-                {
-                    "text": "Angkutan laut",
-                    "additional_info": "Misalnya Kapal laut dengan rute jauh"
-                },
-                {
-                    "text": "Angkutan sungai, danau, dan penyebrangan",
-                    "additional_info": "Misalnya perahu kecil yang melayani rute di perairan sungai, danau, atau kapal feri penyebrangan selat"
-                },
-                {
-                    "text": "Angkutan darat - kereta api/listrik",
-                    "additional_info": "Misalnya kereta api jarak jauh, KRL, LRT, dan MRT"
-                },
-                {
-                    "text": "Angkutan darat - umum",
-                    "additional_info": "Misalnya angkot, bus, ojek online, taksi online, dll"
-                },
-                {
-                    "text": "Angkutan darat - pribadi",
-                    "additional_info": "Yaitu kendaraan milik pribadi yang dipakai sendiri atau bersama rombongan"
-                },
-                {
-                    "text": "Angkutan darat - sewa tanpa sopir",
-                    "additional_info": "Misalnya sewa motor atau sewa mobil tidak termasuk sopir"
-                }
-            ],
-            "system_guidelines": [
-                "Klasifikasikan sebagai 'unexpected_answer' jika pengguna menjawab angkutan darat tetapi tidak jelas atau tidak secara langsung menjelaskan kepemilikan angkutan darat tersebut",
-                "Klasifikasikan sebagai 'unexpected_answer' jika belum jelas apakah termasuk angkutan darat milik pribadi atau sewa",
-                "Klasifikasikan sebagai 'unexpected_answer' jika termasuk angkutan darat sewa tetapi belum jelas apakah termasuk sewa dengan sopir atau tanpa sopir"
-            ],
-            "validation": {
-                "required": true
-            }
+    "response": "Saya kira sekitar Rp 600.000, karena sering lewat tol dan pengisian BBM cukup sering.",
+    "ground_truth": 600000
+  },
+  {
+    "question": {
+      "code": "S016",
+      "text": "Angkutan utama (paling jauh) apa yang Anda gunakan selama perjalanan ke Kabupaten Magelang pada Bulan Desember 2024? Contoh: pesawat, kapal laut, perahu kecil, kereta api, angkot, taksi online, mobil pribadi, dll.",
+      "type": "select",
+      "multiple": false,
+      "options": [
+        {
+          "text": "Angkutan udara",
+          "additional_info": "Misalnya pesawat"
         },
-        "response": "Kapal laut",
-        "ground_truth": "Angkutan laut"
+        {
+          "text": "Angkutan laut",
+          "additional_info": "Misalnya Kapal laut dengan rute jauh"
+        },
+        {
+          "text": "Angkutan sungai, danau, dan penyebrangan",
+          "additional_info": "Misalnya perahu kecil yang melayani rute di perairan sungai, danau, atau kapal feri penyebrangan selat"
+        },
+        {
+          "text": "Angkutan darat - kereta api/listrik",
+          "additional_info": "Misalnya kereta api jarak jauh, KRL, LRT, dan MRT"
+        },
+        {
+          "text": "Angkutan darat - umum",
+          "additional_info": "Misalnya angkot, bus, ojek online, taksi online, dll"
+        },
+        {
+          "text": "Angkutan darat - pribadi",
+          "additional_info": "Yaitu kendaraan milik pribadi yang dipakai sendiri atau bersama rombongan"
+        },
+        {
+          "text": "Angkutan darat - sewa tanpa sopir",
+          "additional_info": "Misalnya sewa motor atau sewa mobil tidak termasuk sopir"
+        }
+      ],
+      "system_guidelines": [
+        "Klasifikasikan sebagai 'unexpected_answer' jika pengguna menjawab angkutan darat tetapi tidak jelas atau tidak secara langsung menjelaskan kepemilikan angkutan darat tersebut",
+        "Klasifikasikan sebagai 'unexpected_answer' jika belum jelas apakah termasuk angkutan darat milik pribadi atau sewa",
+        "Klasifikasikan sebagai 'unexpected_answer' jika termasuk angkutan darat sewa tetapi belum jelas apakah termasuk sewa dengan sopir atau tanpa sopir"
+      ],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S017H",
-            "text": "Apakah Anda melakukan wisata kuliner selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
-            "type": "select",
-            "multiple": false,
-            "instruction": "Pilih Ya atau Tidak.",
-            "options": [
-                "Ya",
-                "Tidak"
-            ],
-            "system_guidelines": [
-                "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Iya, makanan Manado enak banget! Aku suka coba Tinutuan sama ikan Cakalang bakar.",
-        "ground_truth": "Ya"
+    "response": "Kapal laut",
+    "ground_truth": "Angkutan laut"
+  },
+  {
+    "question": {
+      "code": "S017H",
+      "text": "Apakah Anda melakukan wisata kuliner selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+      "type": "select",
+      "multiple": false,
+      "instruction": "Pilih Ya atau Tidak.",
+      "options": ["Ya", "Tidak"],
+      "system_guidelines": [
+        "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+      ],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S018",
-            "text": "Apakah Anda berniat untuk mengulangi kembali perjalanan ke Kota Manado di masa yang akan datang dengan alasan memiliki pengalaman yang positif selama berkunjung?",
-            "type": "select",
-            "multiple": false,
-            "options": [
-                "Ya",
-                "Tidak",
-                "Belum Tahu"
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Iya banget! Manado itu seru banget, makanannya enak, orang-orangnya ramah. Pasti pengen balik lagi!",
-        "ground_truth": "Ya"
+    "response": "Iya, makanan Manado enak banget! Aku suka coba Tinutuan sama ikan Cakalang bakar.",
+    "ground_truth": "Ya"
+  },
+  {
+    "question": {
+      "code": "S018",
+      "text": "Apakah Anda berniat untuk mengulangi kembali perjalanan ke Kota Manado di masa yang akan datang dengan alasan memiliki pengalaman yang positif selama berkunjung?",
+      "type": "select",
+      "multiple": false,
+      "options": ["Ya", "Tidak", "Belum Tahu"],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S017I",
-            "text": "Apakah Anda melakukan MICE (Meeting, Incentive, Conference, Exhibition) selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
-            "type": "select",
-            "multiple": false,
-            "instruction": "Pilih Ya atau Tidak.",
-            "options": [
-                "Ya",
-                "Tidak"
-            ],
-            "system_guidelines": [
-                "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Ya, saya menghadiri sebuah konferensi bisnis dan pameran produk lokal selama perjalanan tersebut.",
-        "ground_truth": "Ya"
+    "response": "Iya banget! Manado itu seru banget, makanannya enak, orang-orangnya ramah. Pasti pengen balik lagi!",
+    "ground_truth": "Ya"
+  },
+  {
+    "question": {
+      "code": "S017I",
+      "text": "Apakah Anda melakukan MICE (Meeting, Incentive, Conference, Exhibition) selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+      "type": "select",
+      "multiple": false,
+      "instruction": "Pilih Ya atau Tidak.",
+      "options": ["Ya", "Tidak"],
+      "system_guidelines": [
+        "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+      ],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S008",
-            "text": "Pada perjalanan ke Kota Batu pada Bulan Desember 2024, apakah Anda melakukan perjalanan Pulang-Pergi di hari yang sama?",
-            "type": "select",
-            "multiple": false,
-            "options": [
-                "Ya",
-                "Tidak"
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Ya, pada perjalanan ke Kota Batu pada bulan Desember 2024, saya melakukan perjalanan pulang-pergi di hari yang sama.",
-        "ground_truth": "Ya"
+    "response": "Ya, saya menghadiri sebuah konferensi bisnis dan pameran produk lokal selama perjalanan tersebut.",
+    "ground_truth": "Ya"
+  },
+  {
+    "question": {
+      "code": "S008",
+      "text": "Pada perjalanan ke Kota Batu pada Bulan Desember 2024, apakah Anda melakukan perjalanan Pulang-Pergi di hari yang sama?",
+      "type": "select",
+      "multiple": false,
+      "options": ["Ya", "Tidak"],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S013D",
-            "text": "Apakah Anda menggunakan layanan pemandu wisata/tour guide dalam paket perjalanan/liburan/tour Anda?",
-            "type": "select",
-            "multiple": false,
-            "instruction": "Pilih Ya atau Tidak.",
-            "options": [
-                "Ya",
-                "Tidak"
-            ],
-            "system_guidelines": [
-                "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Ya, saya menggunakan layanan pemandu wisata untuk mendapatkan informasi lebih detail dan mendalam mengenai destinasi yang dikunjungi.",
-        "ground_truth": "Ya"
+    "response": "Ya, pada perjalanan ke Kota Batu pada bulan Desember 2024, saya melakukan perjalanan pulang-pergi di hari yang sama.",
+    "ground_truth": "Ya"
+  },
+  {
+    "question": {
+      "code": "S013D",
+      "text": "Apakah Anda menggunakan layanan pemandu wisata/tour guide dalam paket perjalanan/liburan/tour Anda?",
+      "type": "select",
+      "multiple": false,
+      "instruction": "Pilih Ya atau Tidak.",
+      "options": ["Ya", "Tidak"],
+      "system_guidelines": [
+        "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+      ],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S013B",
-            "text": "Apakah Anda menggunakan layanan akomodasi/penginapan dalam paket perjalanan/liburan/tour Anda?",
-            "type": "select",
-            "multiple": false,
-            "instruction": "Pilih Ya atau Tidak.",
-            "options": [
-                "Ya",
-                "Tidak"
-            ],
-            "system_guidelines": [
-                "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Iya, nginep sih, soalnya enggak mungkin bolak-balik.",
-        "ground_truth": "Ya"
+    "response": "Ya, saya menggunakan layanan pemandu wisata untuk mendapatkan informasi lebih detail dan mendalam mengenai destinasi yang dikunjungi.",
+    "ground_truth": "Ya"
+  },
+  {
+    "question": {
+      "code": "S013B",
+      "text": "Apakah Anda menggunakan layanan akomodasi/penginapan dalam paket perjalanan/liburan/tour Anda?",
+      "type": "select",
+      "multiple": false,
+      "instruction": "Pilih Ya atau Tidak.",
+      "options": ["Ya", "Tidak"],
+      "system_guidelines": [
+        "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+      ],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "KR005",
-            "text": "Deskripsikan pekerjaan Anda",
-            "type": "text",
-            "additional_info": "Contoh: - Mengajar anak SD. - Sekretaris di Kantor kecamatan.",
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Gw kerja jadi customer service di restoran, jadi ya tugasnya handle komplain, jawab pertanyaan pelanggan, sama kasih informasi soal produk atau layanan gitu deh.",
-        "ground_truth": "Customer service di restoran"
+    "response": "Iya, nginep sih, soalnya enggak mungkin bolak-balik.",
+    "ground_truth": "Ya"
+  },
+  {
+    "question": {
+      "code": "KR005",
+      "text": "Deskripsikan pekerjaan Anda",
+      "type": "text",
+      "additional_info": "Contoh: - Mengajar anak SD. - Sekretaris di Kantor kecamatan.",
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S018",
-            "text": "Apakah Anda berniat untuk mengulangi kembali perjalanan ke Kota Manado di masa yang akan datang dengan alasan memiliki pengalaman yang positif selama berkunjung?",
-            "type": "select",
-            "multiple": false,
-            "options": [
-                "Ya",
-                "Tidak",
-                "Belum Tahu"
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Ya, saya sangat tertarik untuk kembali ke sana karena Kota Manado memberikan pengalaman yang menyenangkan dan berkesan.",
-        "ground_truth": "Ya"
+    "response": "Gw kerja jadi customer service di restoran, jadi ya tugasnya handle komplain, jawab pertanyaan pelanggan, sama kasih informasi soal produk atau layanan gitu deh.",
+    "ground_truth": "Customer service di restoran"
+  },
+  {
+    "question": {
+      "code": "S018",
+      "text": "Apakah Anda berniat untuk mengulangi kembali perjalanan ke Kota Manado di masa yang akan datang dengan alasan memiliki pengalaman yang positif selama berkunjung?",
+      "type": "select",
+      "multiple": false,
+      "options": ["Ya", "Tidak", "Belum Tahu"],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S013E",
-            "text": "Apakah Anda menggunakan layanan objek wisata dalam paket perjalanan/liburan/tour Anda?",
-            "type": "select",
-            "multiple": false,
-            "instruction": "Pilih Ya atau Tidak.",
-            "options": [
-                "Ya",
-                "Tidak"
-            ],
-            "system_guidelines": [
-                "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Iya, objek wisatanya udah masuk di paket.",
-        "ground_truth": "Ya"
+    "response": "Ya, saya sangat tertarik untuk kembali ke sana karena Kota Manado memberikan pengalaman yang menyenangkan dan berkesan.",
+    "ground_truth": "Ya"
+  },
+  {
+    "question": {
+      "code": "S013E",
+      "text": "Apakah Anda menggunakan layanan objek wisata dalam paket perjalanan/liburan/tour Anda?",
+      "type": "select",
+      "multiple": false,
+      "instruction": "Pilih Ya atau Tidak.",
+      "options": ["Ya", "Tidak"],
+      "system_guidelines": [
+        "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+      ],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S001",
-            "text": "Tuliskan nomor handphone Anda (misalnya: 08123456789)",
-            "type": "text",
-            "validation": {
-                "required": true,
-                "pattern": "^[0-9]{7,15}$"
-            }
-        },
-        "response": "081234567890",
-        "ground_truth": "081234567890"
+    "response": "Iya, objek wisatanya udah masuk di paket.",
+    "ground_truth": "Ya"
+  },
+  {
+    "question": {
+      "code": "S001",
+      "text": "Tuliskan nomor handphone Anda (misalnya: 08123456789)",
+      "type": "text",
+      "validation": {
+        "required": true,
+        "pattern": "^[0-9]{7,15}$"
+      }
     },
-    {
-        "question": {
-            "code": "S028",
-            "text": "Berapa total pengeluaran Anda sebelum perjalanan ini? Misalnya, pembelian pakaian, makanan, atau perawatan kendaraan.",
-            "type": "text",
-            "unit": "Rp",
-            "additional_info": "Misalnya: pembelian pakaian dan makanan untuk keberangkatan wisata, buah tangan untuk teman/keluarga di daerah tujuan, stok obat, perawatan kendaraan sebelum perjalanan, dll.",
-            "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
-            "validation": {
-                "required": true,
-                "input_type": "number",
-                "min": 0
-            }
-        },
-        "response": "Total pengeluaran saya sebelum perjalanan ini sekitar Rp 2.500.000 untuk pembelian pakaian dan persiapan kendaraan.",
-        "ground_truth": 2500000
+    "response": "081234567890",
+    "ground_truth": "081234567890"
+  },
+  {
+    "question": {
+      "code": "S028",
+      "text": "Berapa total pengeluaran Anda sebelum perjalanan ini? Misalnya, pembelian pakaian, makanan, atau perawatan kendaraan.",
+      "type": "text",
+      "unit": "Rp",
+      "additional_info": "Misalnya: pembelian pakaian dan makanan untuk keberangkatan wisata, buah tangan untuk teman/keluarga di daerah tujuan, stok obat, perawatan kendaraan sebelum perjalanan, dll.",
+      "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+      "validation": {
+        "required": true,
+        "input_type": "number",
+        "min": 0
+      }
     },
-    {
-        "question": {
-            "code": "S017A",
-            "text": "Apakah Anda melakukan wisata bahari selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
-            "type": "select",
-            "multiple": false,
-            "instruction": "Pilih Ya atau Tidak.",
-            "options": [
-                "Ya",
-                "Tidak"
-            ],
-            "system_guidelines": [
-                "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Iya dong, sempat snorkeling di Bunaken sama nikmatin sunset di pantai.",
-        "ground_truth": "Ya"
+    "response": "Total pengeluaran saya sebelum perjalanan ini sekitar Rp 2.500.000 untuk pembelian pakaian dan persiapan kendaraan.",
+    "ground_truth": 2500000
+  },
+  {
+    "question": {
+      "code": "S017A",
+      "text": "Apakah Anda melakukan wisata bahari selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+      "type": "select",
+      "multiple": false,
+      "instruction": "Pilih Ya atau Tidak.",
+      "options": ["Ya", "Tidak"],
+      "system_guidelines": [
+        "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+      ],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S013C",
-            "text": "Apakah Anda menggunakan layanan makan & minum dalam paket perjalanan/liburan/tour Anda?",
-            "type": "select",
-            "multiple": false,
-            "instruction": "Pilih Ya atau Tidak.",
-            "options": [
-                "Ya",
-                "Tidak"
-            ],
-            "system_guidelines": [
-                "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Ya, saya menggunakan layanan makan dan minum yang disediakan dalam paket.",
-        "ground_truth": "Ya"
+    "response": "Iya dong, sempat snorkeling di Bunaken sama nikmatin sunset di pantai.",
+    "ground_truth": "Ya"
+  },
+  {
+    "question": {
+      "code": "S013C",
+      "text": "Apakah Anda menggunakan layanan makan & minum dalam paket perjalanan/liburan/tour Anda?",
+      "type": "select",
+      "multiple": false,
+      "instruction": "Pilih Ya atau Tidak.",
+      "options": ["Ya", "Tidak"],
+      "system_guidelines": [
+        "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+      ],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S020",
-            "text": "Berapa total pengeluaran Anda untuk makanan dan minuman selama perjalanan ini?",
-            "type": "text",
-            "unit": "Rp",
-            "instruction": "Wajib diisi.",
-            "validation": {
-                "required": true,
-                "input_type": "number",
-                "min": 0
-            }
-        },
-        "response": "Pengeluaran saya untuk makanan dan minuman sekitar Rp 1.200.000 selama perjalanan.",
-        "ground_truth": 1200000
+    "response": "Ya, saya menggunakan layanan makan dan minum yang disediakan dalam paket.",
+    "ground_truth": "Ya"
+  },
+  {
+    "question": {
+      "code": "S020",
+      "text": "Berapa total pengeluaran Anda untuk makanan dan minuman selama perjalanan ini?",
+      "type": "text",
+      "unit": "Rp",
+      "instruction": "Wajib diisi.",
+      "validation": {
+        "required": true,
+        "input_type": "number",
+        "min": 0
+      }
     },
-    {
-        "question": {
-            "code": "S017J",
-            "text": "Apakah Anda melakukan wisata kesehatan selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
-            "type": "select",
-            "multiple": false,
-            "instruction": "Pilih Ya atau Tidak.",
-            "options": [
-                "Ya",
-                "Tidak"
-            ],
-            "system_guidelines": [
-                "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Ya, saya mengikuti program terapi kesehatan di salah satu pusat kesehatan di Kota Manado.",
-        "ground_truth": "Ya"
+    "response": "Pengeluaran saya untuk makanan dan minuman sekitar Rp 1.200.000 selama perjalanan.",
+    "ground_truth": 1200000
+  },
+  {
+    "question": {
+      "code": "S017J",
+      "text": "Apakah Anda melakukan wisata kesehatan selama perjalanan ke Kota Manado pada Bulan Mei 2024?",
+      "type": "select",
+      "multiple": false,
+      "instruction": "Pilih Ya atau Tidak.",
+      "options": ["Ya", "Tidak"],
+      "system_guidelines": [
+        "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+      ],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S024",
-            "text": "Berapa total pengeluaran Anda untuk hiburan atau rekreasi selama perjalanan ini? Termasuk tiket masuk ke objek wisata atau atraksi.",
-            "type": "text",
-            "unit": "Rp",
-            "additional_info": "Tiket masuk objek wisata atau atraksi, seperti museum, taman, kebun binatang, candi, pendakian gunung, tari-tarian, konser, pertunjukkan, diving, dll",
-            "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
-            "validation": {
-                "required": true,
-                "input_type": "number",
-                "min": 0
-            }
-        },
-        "response": "Saya menghabiskan sekitar Rp 500.000 untuk tiket masuk ke beberapa tempat wisata dan atraksi selama perjalanan.",
-        "ground_truth": 500000
+    "response": "Ya, saya mengikuti program terapi kesehatan di salah satu pusat kesehatan di Kota Manado.",
+    "ground_truth": "Ya"
+  },
+  {
+    "question": {
+      "code": "S024",
+      "text": "Berapa total pengeluaran Anda untuk hiburan atau rekreasi selama perjalanan ini? Termasuk tiket masuk ke objek wisata atau atraksi.",
+      "type": "text",
+      "unit": "Rp",
+      "additional_info": "Tiket masuk objek wisata atau atraksi, seperti museum, taman, kebun binatang, candi, pendakian gunung, tari-tarian, konser, pertunjukkan, diving, dll",
+      "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+      "validation": {
+        "required": true,
+        "input_type": "number",
+        "min": 0
+      }
     },
-    {
-        "question": {
-            "code": "S004",
-            "text": "Provinsi manakah yang Anda kunjungi pada periode Januari 2024-Desember 2024?",
-            "type": "select",
-            "multiple": false,
-            "options": [
-                "Aceh",
-                "Sumatera Utara",
-                "Sumatera Barat",
-                "Riau",
-                "Jambi",
-                "Sumatera Selatan",
-                "Bengkulu",
-                "Lampung",
-                "Kepulauan Bangka Belitung",
-                "Kepulauan Riau",
-                "DKI Jakarta",
-                "Jawa Barat",
-                "Jawa Tengah",
-                "DI Yogyakarta",
-                "Jawa Timur",
-                "Banten",
-                "Bali",
-                "Nusa Tenggara Barat",
-                "Nusa Tenggara Timur",
-                "Kalimantan Barat",
-                "Kalimantan Tengah",
-                "Kalimantan Selatan",
-                "Kalimantan Timur",
-                "Kalimantan Utara",
-                "Sulawesi Utara",
-                "Sulawesi Tengah",
-                "Sulawesi Selatan",
-                "Sulawesi Tenggara",
-                "Gorontalo",
-                "Sulawesi Barat",
-                "Maluku",
-                "Maluku Utara",
-                "Papua",
-                "Papua Barat",
-                "Papua Selatan",
-                "Papua Tengah",
-                "Papua Pegunungan",
-                "Papua Barat Daya"
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Saya mengunjungi Provinsi Jawa Tengah selama periode Januari 2024 hingga Desember 2024.",
-        "ground_truth": "Jawa Tengah"
+    "response": "Saya menghabiskan sekitar Rp 500.000 untuk tiket masuk ke beberapa tempat wisata dan atraksi selama perjalanan.",
+    "ground_truth": 500000
+  },
+  {
+    "question": {
+      "code": "S004",
+      "text": "Provinsi manakah yang Anda kunjungi pada periode Januari 2024-Desember 2024?",
+      "type": "select",
+      "multiple": false,
+      "options": [
+        "Aceh",
+        "Sumatera Utara",
+        "Sumatera Barat",
+        "Riau",
+        "Jambi",
+        "Sumatera Selatan",
+        "Bengkulu",
+        "Lampung",
+        "Kepulauan Bangka Belitung",
+        "Kepulauan Riau",
+        "DKI Jakarta",
+        "Jawa Barat",
+        "Jawa Tengah",
+        "DI Yogyakarta",
+        "Jawa Timur",
+        "Banten",
+        "Bali",
+        "Nusa Tenggara Barat",
+        "Nusa Tenggara Timur",
+        "Kalimantan Barat",
+        "Kalimantan Tengah",
+        "Kalimantan Selatan",
+        "Kalimantan Timur",
+        "Kalimantan Utara",
+        "Sulawesi Utara",
+        "Sulawesi Tengah",
+        "Sulawesi Selatan",
+        "Sulawesi Tenggara",
+        "Gorontalo",
+        "Sulawesi Barat",
+        "Maluku",
+        "Maluku Utara",
+        "Papua",
+        "Papua Barat",
+        "Papua Selatan",
+        "Papua Tengah",
+        "Papua Pegunungan",
+        "Papua Barat Daya"
+      ],
+      "validation": {
+        "required": true
+      }
     },
-    {
-        "question": {
-            "code": "S003",
-            "text": "Di Kabupaten/Kota manakah Anda tinggal?",
-            "type": "select",
-            "multiple": false,
-            "options": [
-                "Kabupaten Bangkalan",
-                "Kabupaten Banyuwangi",
-                "Kabupaten Blitar",
-                "Kabupaten Bojonegoro",
-                "Kabupaten Bondowoso",
-                "Kabupaten Gresik",
-                "Kabupaten Jember",
-                "Kabupaten Jombang",
-                "Kabupaten Kediri",
-                "Kabupaten Lamongan",
-                "Kabupaten Lumajang",
-                "Kabupaten Madiun",
-                "Kabupaten Magetan",
-                "Kabupaten Malang",
-                "Kabupaten Mojokerto",
-                "Kabupaten Nganjuk",
-                "Kabupaten Ngawi",
-                "Kabupaten Pacitan",
-                "Kabupaten Pamekasan",
-                "Kabupaten Pasuruan",
-                "Kabupaten Ponorogo",
-                "Kabupaten Probolinggo",
-                "Kabupaten Sampang",
-                "Kabupaten Sidoarjo",
-                "Kabupaten Situbondo",
-                "Kabupaten Sumenep",
-                "Kabupaten Trenggalek",
-                "Kabupaten Tuban",
-                "Kabupaten Tulungagung",
-                "Kota Batu",
-                "Kota Blitar",
-                "Kota Kediri",
-                "Kota Madiun",
-                "Kota Malang",
-                "Kota Mojokerto",
-                "Kota Pasuruan",
-                "Kota Probolinggo",
-                "Kota Surabaya"
-            ],
-            "system_guidelines": [
-                "Jika nama daerah yang disebut ada dalam kabupaten dan kota maka kategorikan sebagai 'unexpected_answer' dan klarifikasikan daerah yang dimaksud apakah kabupaten atau kota."
-            ],
-            "validation": {
-                "required": true
-            }
-        },
-        "response": "Gw tinggal di Kabupaten Malang.",
-        "ground_truth": "Kabupaten Malang"
-    }
+    "response": "Saya mengunjungi Provinsi Jawa Tengah selama periode Januari 2024 hingga Desember 2024.",
+    "ground_truth": "Jawa Tengah"
+  },
+  {
+    "question": {
+      "code": "S003",
+      "text": "Di Kabupaten/Kota manakah Anda tinggal?",
+      "type": "select",
+      "multiple": false,
+      "options": [
+        "Kabupaten Bangkalan",
+        "Kabupaten Banyuwangi",
+        "Kabupaten Blitar",
+        "Kabupaten Bojonegoro",
+        "Kabupaten Bondowoso",
+        "Kabupaten Gresik",
+        "Kabupaten Jember",
+        "Kabupaten Jombang",
+        "Kabupaten Kediri",
+        "Kabupaten Lamongan",
+        "Kabupaten Lumajang",
+        "Kabupaten Madiun",
+        "Kabupaten Magetan",
+        "Kabupaten Malang",
+        "Kabupaten Mojokerto",
+        "Kabupaten Nganjuk",
+        "Kabupaten Ngawi",
+        "Kabupaten Pacitan",
+        "Kabupaten Pamekasan",
+        "Kabupaten Pasuruan",
+        "Kabupaten Ponorogo",
+        "Kabupaten Probolinggo",
+        "Kabupaten Sampang",
+        "Kabupaten Sidoarjo",
+        "Kabupaten Situbondo",
+        "Kabupaten Sumenep",
+        "Kabupaten Trenggalek",
+        "Kabupaten Tuban",
+        "Kabupaten Tulungagung",
+        "Kota Batu",
+        "Kota Blitar",
+        "Kota Kediri",
+        "Kota Madiun",
+        "Kota Malang",
+        "Kota Mojokerto",
+        "Kota Pasuruan",
+        "Kota Probolinggo",
+        "Kota Surabaya"
+      ],
+      "system_guidelines": [
+        "Jika nama daerah yang disebut ada dalam kabupaten dan kota maka kategorikan sebagai 'unexpected_answer' dan klarifikasikan daerah yang dimaksud apakah kabupaten atau kota."
+      ],
+      "validation": {
+        "required": true
+      }
+    },
+    "response": "Gw tinggal di Kabupaten Malang.",
+    "ground_truth": "Kabupaten Malang"
+  },
+  {
+    "question": {
+      "code": "KR002",
+      "text": "Berapa usia Anda?",
+      "type": "text",
+      "unit": "tahun",
+      "multiple": false,
+      "options": [],
+      "system_guidelines": [],
+      "allow_other": false,
+      "additional_info": "Berdasarkan ulang tahun terakhir",
+      "validation": {
+        "required": true,
+        "input_type": "number",
+        "min": 0,
+        "max": 120
+      }
+    },
+    "response": "Saya berumur 27 tahun.",
+    "ground_truth": 27
+  },
+  {
+    "question": {
+      "code": "KR004",
+      "text": "Apa pekerjaan utama atau aktivitas utama Anda?",
+      "type": "select",
+      "multiple": false,
+      "options": [
+        "Manajer/Pimpinan Organisasi",
+        "Profesional",
+        "Teknisi dan Asisten Profesional",
+        "Tenaga Tata Usaha",
+        "Tenaga Usaha Jasa dan Tenaga Penjualan",
+        "Pekerja Terampil Pertanian, Kehutanan, dan Perikanan",
+        "Operator dan Perakit Mesin",
+        "Pekerja Kasar",
+        "TNI dan Polri",
+        "Mengurus Rumah Tangga",
+        "Pensiunan",
+        "Tidak Bekerja"
+      ],
+      "system_guidelines": [
+        "Jika respons diklasifikasikan sebagai 'unexpected_answer' atau 'other', maka pastikan Anda jangan sekali-kali meminta pengguna memilih opsi jawaban pekerjaan utama pada properti 'clarification_reason' dan 'follow_up_question' karena opsi jawaban pertanyaan tidak untuk ditunjukkan dan dipilih oleh pengguna"
+      ],
+      "allow_other": false,
+      "additional_info": "Contoh kasus untuk ASN: - Manajer, yaitu Deputi, Direktur, Gubernur, Walikota, Bupati, Menteri. - Profesional, yaitu Dosen, Guru, Statistisi. - Teknisi, yaitu Pengawas perbatasan, Petugas imigrasi, Petugas bea cukai.",
+      "validation": {
+        "required": true
+      }
+    },
+    "response": "Saya seorang guru di sekolah dasar.",
+    "ground_truth": "Profesional"
+  },
+  {
+    "question": {
+      "code": "S009",
+      "text": "Berapa malam Anda melakukan perjalanan tersebut?",
+      "type": "text",
+      "unit": "malam",
+      "multiple": false,
+      "options": [],
+      "system_guidelines": [
+        "Kategorikan sebagai 'expected_answer' jika informasi dari pengguna relevan dan dapat dikonversi menjadi jumlah malam meskipun tidak dalam bentuk angka sehingga Anda harus menghitung total pergantian malam dalam waktu perjalanan secara tepat dan akurat"
+      ],
+      "allow_other": false,
+      "additional_info": "Ket: Dihitung sejak Anda meninggalkan rumah sampai kembali lagi ke rumah. Pertambahan malam ditandai dengan pergantian tanggal.",
+      "validation": {
+        "required": true,
+        "input_type": "number",
+        "min": 0
+      }
+    },
+    "response": "Saya menginap selama 3 malam.",
+    "ground_truth": 3
+  },
+  {
+    "question": {
+      "code": "S015",
+      "text": "Selama melakukan perjalanan ke Kota Surabaya pada Bulan Desember 2024, apa akomodasi utama (paling lama) yang Anda gunakan? Contoh: Hotel Bintang 4 atau 5, Hotel Bintang 3, Penginapan lainnya, atau Rumah teman/keluarga.",
+      "type": "select",
+      "multiple": false,
+      "options": [
+        "Hotel Bintang 4 atau 5",
+        "Hotel Bintang 3",
+        "Penginapan lainnya",
+        "Rumah teman/keluarga"
+      ],
+      "system_guidelines": [],
+      "allow_other": false,
+      "additional_info": "Ket: Bermalam di kendaraan selama dalam perjalanan seperti di mobil, kapal, kereta api, dan sejenisnya, tidak dianggap menggunakan akomodasi.",
+      "validation": {
+        "required": true
+      }
+    },
+    "response": "Saya menginap di rumah saudara.",
+    "ground_truth": "Rumah teman/keluarga"
+  },
+  {
+    "question": {
+      "code": "S012",
+      "text": "Apakah dalam perjalanan ke Kota Semarang pada Bulan November 2024 membeli paket perjalanan/liburan/tour?",
+      "type": "select",
+      "multiple": false,
+      "options": ["Ya", "Tidak"],
+      "system_guidelines": [],
+      "allow_other": false,
+      "validation": {
+        "required": true
+      }
+    },
+    "response": "Tidak, saya mengatur perjalanan sendiri.",
+    "ground_truth": "Tidak"
+  },
+  {
+    "question": {
+      "code": "S014",
+      "text": "Berapa harga paket perjalanan/liburan/tour yang Anda beli per orang?",
+      "type": "text",
+      "unit": "Rupiah",
+      "multiple": false,
+      "options": [],
+      "system_guidelines": [],
+      "allow_other": false,
+      "validation": {
+        "required": true,
+        "input_type": "number",
+        "min": 0
+      }
+    },
+    "response": "Paketnya seharga Rp 1.500.000 per orang.",
+    "ground_truth": 1500000
+  },
+  {
+    "question": {
+      "code": "S022",
+      "text": "Berapa rupiah total pengeluaran Anda untuk membeli cinderamata, oleh-oleh, atau buah tangan selama perjalanan ini?",
+      "type": "text",
+      "unit": "Rp",
+      "multiple": false,
+      "options": [],
+      "system_guidelines": [],
+      "allow_other": false,
+      "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+      "validation": {
+        "required": true,
+        "input_type": "number",
+        "min": 0
+      }
+    },
+    "response": "Saya menghabiskan sekitar Rp 300.000 untuk oleh-oleh.",
+    "ground_truth": 300000
+  },
+  {
+    "question": {
+      "code": "S017F",
+      "text": "Apakah Anda melakukan ekowisata selama perjalanan ke Kabupaten Badung pada Bulan Desember 2024?",
+      "type": "select",
+      "multiple": false,
+      "options": ["Ya", "Tidak"],
+      "system_guidelines": [
+        "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+      ],
+      "allow_other": false,
+      "instruction": "Pilih Ya atau Tidak.",
+      "validation": {
+        "required": true
+      }
+    },
+    "response": "Ya, saya mengunjungi taman nasional dan melakukan trekking.",
+    "ground_truth": "Ya"
+  },
+  {
+    "question": {
+      "code": "S027",
+      "text": "Apakah ada biaya lain yang Anda keluarkan selama perjalanan ini? Jika ya, berapa totalnya?",
+      "type": "text",
+      "unit": "Rp",
+      "multiple": false,
+      "options": [],
+      "system_guidelines": [],
+      "allow_other": false,
+      "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+      "validation": {
+        "required": true,
+        "input_type": "number",
+        "min": 0
+      }
+    },
+    "response": "Tidak ada biaya tambahan.",
+    "ground_truth": 0
+  },
+  {
+    "question": {
+      "code": "S019",
+      "text": "Berapa rupiah total pengeluaran Anda untuk akomodasi atau penginapan selama perjalanan ini?",
+      "type": "text",
+      "unit": "Rp",
+      "multiple": false,
+      "options": [],
+      "system_guidelines": [],
+      "allow_other": false,
+      "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0. Jika tidak tahu, mohon perkirakan.",
+      "validation": {
+        "required": true,
+        "input_type": "number",
+        "min": 0
+      }
+    },
+    "response": "Saya membayar Rp 800.000 untuk penginapan.",
+    "ground_truth": 800000
+  },
+  {
+    "question": {
+      "code": "S017G",
+      "text": "Apakah Anda melakukan wisata sejarah/religi selama perjalanan ke ${S005} pada Bulan ${S007}?",
+      "type": "select",
+      "multiple": false,
+      "options": ["Ya", "Tidak"],
+      "system_guidelines": [
+        "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+      ],
+      "allow_other": false,
+      "instruction": "Pilih Ya atau Tidak.",
+      "validation": {
+        "required": true
+      }
+    },
+    "response": "Ya, saya mengunjungi beberapa situs sejarah dan masjid tua di Surabaya.",
+    "ground_truth": "Ya"
+  },
+  {
+    "question": {
+      "code": "S017G",
+      "text": "Apakah Anda melakukan wisata sejarah/religi selama perjalanan ke ${S005} pada Bulan ${S007}?",
+      "type": "select",
+      "multiple": false,
+      "options": ["Ya", "Tidak"],
+      "system_guidelines": [
+        "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+      ],
+      "allow_other": false,
+      "instruction": "Pilih Ya atau Tidak.",
+      "validation": {
+        "required": true
+      }
+    },
+    "response": "Tidak, saya hanya berwisata kuliner dan belanja.",
+    "ground_truth": "Tidak"
+  },
+  {
+    "question": {
+      "code": "S017K",
+      "text": "Apakah Anda tidak melakukan kegiatan satu pun kegiatan di atas selama perjalanan ke ${S005} pada Bulan ${S007}?",
+      "type": "select",
+      "multiple": false,
+      "options": ["Ya", "Tidak"],
+      "system_guidelines": [
+        "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+      ],
+      "allow_other": false,
+      "instruction": "Pilih Ya atau Tidak.",
+      "validation": {
+        "required": true
+      }
+    },
+    "response": "Tidak, saya melakukan beberapa kegiatan wisata di Bandung.",
+    "ground_truth": "Tidak"
+  },
+  {
+    "question": {
+      "code": "S017K",
+      "text": "Apakah Anda tidak melakukan kegiatan satu pun kegiatan di atas selama perjalanan ke ${S005} pada Bulan ${S007}?",
+      "type": "select",
+      "multiple": false,
+      "options": ["Ya", "Tidak"],
+      "system_guidelines": [
+        "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+      ],
+      "allow_other": false,
+      "instruction": "Pilih Ya atau Tidak.",
+      "validation": {
+        "required": true
+      }
+    },
+    "response": "Ya, saya hanya menemani keluarga tanpa ikut aktivitas wisata.",
+    "ground_truth": "Ya"
+  },
+  {
+    "question": {
+      "code": "S026",
+      "text": "Berapa rupiah total pengeluaran Anda untuk menggunakan jasa pemandu wisata atau tour guide selama perjalanan ini?",
+      "type": "text",
+      "unit": "Rp",
+      "multiple": false,
+      "options": [],
+      "system_guidelines": [],
+      "allow_other": false,
+      "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+      "validation": {
+        "required": true,
+        "input_type": "number",
+        "min": 0
+      }
+    },
+    "response": "Saya membayar Rp 150.000 untuk jasa tour guide.",
+    "ground_truth": 150000
+  },
+  {
+    "question": {
+      "code": "S026",
+      "text": "Berapa rupiah total pengeluaran Anda untuk menggunakan jasa pemandu wisata atau tour guide selama perjalanan ini?",
+      "type": "text",
+      "unit": "Rp",
+      "multiple": false,
+      "options": [],
+      "system_guidelines": [],
+      "allow_other": false,
+      "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+      "validation": {
+        "required": true,
+        "input_type": "number",
+        "min": 0
+      }
+    },
+    "response": "Tidak pakai tour guide, jadi pengeluarannya nol.",
+    "ground_truth": 0
+  },
+  {
+    "question": {
+      "code": "S029",
+      "text": "Berapa rupiah total pengeluaran Anda setelah perjalanan ini? Contohnya, biaya laundry pakaian atau perawatan kendaraan.",
+      "type": "text",
+      "unit": "Rp",
+      "multiple": false,
+      "options": [],
+      "system_guidelines": [
+        "Pastikan hanya menghitung pengeluaran setelah perjalanan saat sampai di rumah sehingga pengeluaran saat perjalanan tidak dihitung."
+      ],
+      "allow_other": false,
+      "additional_info": "Misalnya: laundry pakaian pada saat pulang, perawatan kendaraan setelah perjalanan, dll.",
+      "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+      "validation": {
+        "required": true,
+        "input_type": "number",
+        "min": 0
+      }
+    },
+    "response": "Setelah pulang, saya menghabiskan Rp 80.000 untuk laundry pakaian.",
+    "ground_truth": 80000
+  },
+  {
+    "question": {
+      "code": "S029",
+      "text": "Berapa rupiah total pengeluaran Anda setelah perjalanan ini? Contohnya, biaya laundry pakaian atau perawatan kendaraan.",
+      "type": "text",
+      "unit": "Rp",
+      "multiple": false,
+      "options": [],
+      "system_guidelines": [
+        "Pastikan hanya menghitung pengeluaran setelah perjalanan saat sampai di rumah sehingga pengeluaran saat perjalanan tidak dihitung."
+      ],
+      "allow_other": false,
+      "additional_info": "Misalnya: laundry pakaian pada saat pulang, perawatan kendaraan setelah perjalanan, dll.",
+      "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+      "validation": {
+        "required": true,
+        "input_type": "number",
+        "min": 0
+      }
+    },
+    "response": "Tidak ada pengeluaran tambahan setelah perjalanan.",
+    "ground_truth": 0
+  },
+  {
+    "question": {
+      "code": "KR004",
+      "text": "Apa pekerjaan utama atau aktivitas utama Anda?",
+      "type": "select",
+      "multiple": false,
+      "options": [
+        "Manajer/Pimpinan Organisasi",
+        "Profesional",
+        "Teknisi dan Asisten Profesional",
+        "Tenaga Tata Usaha",
+        "Tenaga Usaha Jasa dan Tenaga Penjualan",
+        "Pekerja Terampil Pertanian, Kehutanan, dan Perikanan",
+        "Operator dan Perakit Mesin",
+        "Pekerja Kasar",
+        "TNI dan Polri",
+        "Mengurus Rumah Tangga",
+        "Pensiunan",
+        "Tidak Bekerja"
+      ],
+      "system_guidelines": [
+        "Jika respons diklasifikasikan sebagai 'unexpected_answer' atau 'other', maka pastikan Anda jangan sekali-kali meminta pengguna memilih opsi jawaban pekerjaan utama pada properti 'clarification_reason' dan 'follow_up_question' karena opsi jawaban pertanyaan tidak untuk ditunjukkan dan dipilih oleh pengguna"
+      ],
+      "allow_other": false,
+      "additional_info": "Contoh kasus untuk ASN: - Manajer, yaitu Deputi, Direktur, Gubernur, Walikota, Bupati, Menteri. - Profesional, yaitu Dosen, Guru, Statistisi. - Teknisi, yaitu Pengawas perbatasan, Petugas imigrasi, Petugas bea cukai.",
+      "validation": {
+        "required": true
+      }
+    },
+    "response": "Saya bekerja sebagai kasir di toko swalayan.",
+    "ground_truth": "Tenaga Usaha Jasa dan Tenaga Penjualan"
+  },
+  {
+    "question": {
+      "code": "KR003",
+      "text": "Apa jenjang pendidikan tertinggi yang Anda tamatkan?",
+      "type": "select",
+      "multiple": false,
+      "options": [
+        "Tidak/Belum Sekolah/Tidak Tamat SD/MI",
+        "SD/MI",
+        "SMP/MTs",
+        "SMA/MA/SMK",
+        "D1/D2/D3",
+        "D4/S1",
+        "S2/S3"
+      ],
+      "system_guidelines": [],
+      "allow_other": false,
+      "validation": {
+        "required": true
+      }
+    },
+    "response": "Saya baru lulus SMP tahun lalu.",
+    "ground_truth": "SMP/MTs"
+  }
 ]

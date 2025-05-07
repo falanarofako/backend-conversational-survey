@@ -71,7 +71,12 @@ export const handleEvaluateInformationExtraction = async (
     }
 
     for (const item of evaluationData) {
-      if (!item.question || !item.response || !item.ground_truth) {
+      if (
+        !item.question ||
+        !item.response ||
+        item.ground_truth === undefined ||
+        item.ground_truth === null
+      ) {
         res.status(400).json({
           success: false,
           message:

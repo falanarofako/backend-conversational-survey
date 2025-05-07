@@ -1,0 +1,1183 @@
+{
+  "_id": {
+    "$oid": "676eeb60160955013d0ced7c"
+  },
+  "survey": {
+    "title": "Survei Wisatawan Nusantara 2024",
+    "description": "Survei yang mengumpulkan informasi tentang proﬁl wisatawan nusantara, maksud perjalanan, akomodasi yang digunakan, lama perjalanan, dan rata-rata pengeluaran terkait perjalanan yang dilakukan oleh penduduk Indonesia di dalam wilayah teritorial Indonesia.",
+    "categories": [
+      {
+        "name": "Karakteristik Responden",
+        "questions": [
+          {
+            "code": "KR001",
+            "text": "Apa jenis kelamin Anda?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Laki-laki", "Perempuan"],
+            "system_guidelines": [],
+            "allow_other": false,
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0ced80"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ced7f"
+            }
+          },
+          {
+            "code": "KR002",
+            "text": "Berapa usia Anda?",
+            "type": "text",
+            "unit": "tahun",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [],
+            "allow_other": false,
+            "additional_info": "Berdasarkan ulang tahun terakhir",
+            "validation": {
+              "required": true,
+              "input_type": "number",
+              "min": 0,
+              "max": 120,
+              "_id": {
+                "$oid": "676eeb60160955013d0ced82"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ced81"
+            }
+          },
+          {
+            "code": "KR003",
+            "text": "Apa jenjang pendidikan tertinggi yang Anda tamatkan?",
+            "type": "select",
+            "multiple": false,
+            "options": [
+              "Tidak/Belum Sekolah/Tidak Tamat SD/MI",
+              "SD/MI",
+              "SMP/MTs",
+              "SMA/MA/SMK",
+              "D1/D2/D3",
+              "D4/S1",
+              "S2/S3"
+            ],
+            "system_guidelines": [],
+            "allow_other": false,
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0ced84"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ced83"
+            }
+          },
+          {
+            "code": "KR004",
+            "text": "Apa pekerjaan utama atau aktivitas utama Anda?",
+            "type": "select",
+            "multiple": false,
+            "options": [
+              "Manajer/Pimpinan Organisasi",
+              "Profesional",
+              "Teknisi dan Asisten Profesional",
+              "Tenaga Tata Usaha",
+              "Tenaga Usaha Jasa dan Tenaga Penjualan",
+              "Pekerja Terampil Pertanian, Kehutanan, dan Perikanan",
+              "Operator dan Perakit Mesin",
+              "Pekerja Kasar",
+              "TNI dan Polri",
+              "Mengurus Rumah Tangga",
+              "Pensiunan",
+              "Tidak Bekerja"
+            ],
+            "system_guidelines": [
+              "Jika respons diklasifikasikan sebagai 'unexpected_answer' atau 'other', maka pastikan Anda jangan sekali-kali meminta pengguna memilih opsi jawaban pekerjaan utama pada properti 'clarification_reason' dan 'follow_up_question' karena opsi jawaban pertanyaan tidak untuk ditunjukkan dan dipilih oleh pengguna"
+            ],
+            "allow_other": false,
+            "additional_info": "Contoh kasus untuk ASN: - Manajer, yaitu Deputi, Direktur, Gubernur, Walikota, Bupati, Menteri. - Profesional, yaitu Dosen, Guru, Statistisi. - Teknisi, yaitu Pengawas perbatasan, Petugas imigrasi, Petugas bea cukai.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0ced86"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ced85"
+            }
+          },
+          {
+            "code": "KR005",
+            "text": "Deskripsikan pekerjaan Anda",
+            "type": "text",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [
+              "Terima semua deskripsi pekerjaan yang diberikan pengguna walaupun tidak dijelaskan dengan detail."
+            ],
+            "allow_other": false,
+            "additional_info": "Contoh: - Mengajar anak SD. - Sekretaris di Kantor kecamatan.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0ced88"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ced87"
+            }
+          },
+          {
+            "code": "KR006",
+            "text": "Apakah Anda menerapkan prinsip eco-friendly saat melakukan perjalanan? Misalnya: Mengurangi penggunaan plastik, bijak menggunakan energi, membuang sampah pada tempatnya, dll.",
+            "type": "select",
+            "multiple": false,
+            "options": [
+              "Ya",
+              "Tidak",
+              "Kadang-kadang",
+              "Tidak bersedia menjawab"
+            ],
+            "system_guidelines": [
+              "Pastikan bahwa jawaban pengguna benar-benar secara tegas mengarah ke salah satu opsi jawaban dan tidak ada ambiguitas sehingga dapat diklasifikasikan sebagai 'expected_answer' jika tidak klasifikasikan sebagai 'unexpected_answer'",
+              "Jika jawaban pengguna dapat dikategorikan eco-friendly tetapi tidak jelas dilakukan secara sering atau kadang-kadang maka klasifikasikan sebagai 'unexpected_answer' dan minta klarifikasi"
+            ],
+            "allow_other": false,
+            "additional_info": "Misalnya: Mengurangi penggunaan plastik, bijak menggunakan energi, membuang sampah pada tempatnya, dll.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0ced8a"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ced89"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "676eeb60160955013d0ced7e"
+        }
+      },
+      {
+        "name": "Survei",
+        "questions": [
+          {
+            "code": "S001",
+            "text": "Tuliskan nomor handphone Anda (misalnya: 08123456789)",
+            "type": "text",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [
+              "Pastikan nomor telepon di awali dengan '0' atau '+62'",
+              "Pastikan Anda hanya mengategorikan respons pengguna dalam 'expected_answer' ketika tidak ada validasi nomor telepon yang dilanggar."
+            ],
+            "allow_other": false,
+            "validation": {
+              "required": true,
+              "pattern": "^(0[0-9]{7,14}|\\+62[0-9]{7,12})$",
+              "_id": {
+                "$oid": "676eeb60160955013d0ced8d"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ced8c"
+            }
+          },
+          {
+            "code": "S002",
+            "text": "Di provinsi manakah Anda tinggal?",
+            "type": "select",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [
+              "Jika respons pengguna bukan termasuk 'expected_answer', pastikan Anda tidak meminta pengguna untuk memilih opsi provinsi yang tersedia karena opsi tersebut sengaja tidak ditunjukkan kepada pengguna."
+            ],
+            "allow_other": false,
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0ced8f"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ced8e"
+            }
+          },
+          {
+            "code": "S003",
+            "text": "Di Kabupaten/Kota manakah Anda tinggal?",
+            "type": "select",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [
+              "Jika nama daerah yang disebut ada dalam daftar kabupaten dan kota maka kategorikan sebagai 'unexpected_answer' dan klarifikasikan daerah yang dimaksud apakah kabupaten atau kota.",
+              "Jangan sampai Anda terjebak dalam logical fallacy di mana walaupun dalam riwayat pesan sebelumnya pengguna menyebutkan beberapa nama \"Kota\" bukan berarti jawaban yang diberikan saat ini termasuk daerah \"Kota\" begitupun dengan \"Kabupaten\". Oleh karena itu, Anda hanya boleh menerima jawaban yang pasti apakah \"Kota\" atau \"Kabupaten\".",
+              "Jika pengguna menyebutkan kabupaten/kota di luar opsi jawaban yang tersedia, klarifikasi dengan menjawab kabupaten/kota yang ada dalam provinsi ${choosenProvince} tetapi jangan minta pengguna memilih opsi karena opsi jawaban tidak ditampilkan ke pengguna."
+            ],
+            "allow_other": false,
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0ced91"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ced90"
+            }
+          },
+          {
+            "code": "S004",
+            "text": "Provinsi manakah yang Anda kunjungi pada periode Januari - ${currentMonth} 2025?",
+            "type": "select",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [
+              "Jika respons pengguna bukan termasuk 'expected_answer', pastikan Anda tidak meminta pengguna untuk memilih opsi provinsi yang tersedia karena opsi tersebut sengaja tidak ditunjukkan kepada pengguna."
+            ],
+            "allow_other": false,
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0ced93"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ced92"
+            }
+          },
+          {
+            "code": "S005",
+            "text": "Kabupaten/Kota mana yang Anda kunjungi pada perjalanan tersebut?",
+            "type": "select",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [
+              "Jika nama daerah yang disebut ada dalam kabupaten dan kota maka kategorikan sebagai 'unexpected_answer' dan klarifikasikan daerah yang dimaksud apakah kabupaten atau kota.",
+              "Jangan sampai Anda terjebak dalam logical fallacy di mana walaupun dalam riwayat pesan sebelumnya pengguna menyebutkan beberapa nama \"Kota\" bukan berarti jawaban yang diberikan saat ini termasuk daerah \"Kota\" begitupun dengan \"Kabupaten\". Oleh karena itu, Anda hanya boleh menerima jawaban yang pasti apakah \"Kota\" atau \"Kabupaten\".",
+              "Jika pengguna menyebutkan kabupaten/kota di luar opsi jawaban yang tersedia, klarifikasi dengan menjawab kabupaten/kota yang ada dalam provinsi ${choosenProvince} tetapi jangan minta pengguna memilih opsi karena opsi jawaban tidak ditampilkan ke pengguna."
+            ],
+            "allow_other": false,
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0ced95"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ced94"
+            }
+          },
+          {
+            "code": "S006",
+            "text": "Bulan apa saja Anda melakukan perjalanan ke ${S005}?",
+            "type": "select",
+            "multiple": true,
+            "options": [
+              "Januari 2025",
+              "Februari 2025",
+              "Maret 2025",
+              "April 2025",
+              "Mei 2025",
+              "Juni 2025",
+              "Juli 2025",
+              "Agustus 2025",
+              "September 2025",
+              "Oktober 2025",
+              "November 2025",
+              "Desember 2025"
+            ],
+            "system_guidelines": [
+              "Batasi pilihan bulan yang bisa dipilih pengguna hanya untuk bulan saat response pengguna dikirimkan atau bulan sebelumnya berdasarkan timestamp yang dikirim dalam response pengguna. Jika pengguna memilih bulan yang tidak sesuai dengan batasan tersebut, klasifikasikan sebagai 'unexpected_answer' dan minta klarifikasi.",
+              "Pastikan hasil ekstraksi informasi dalam properti 'extracted_information' berupa array of string."
+            ],
+            "allow_other": false,
+            "instruction": "Isian boleh lebih dari satu",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0ced97"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ced96"
+            }
+          },
+          {
+            "code": "S007",
+            "text": "Untuk menjawab pertanyaan berikutnya, pilihlah salah satu bulan perjalanan yang paling Anda ingat",
+            "type": "select",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [
+              "Batasi pilihan bulan yang bisa dipilih pengguna hanya untuk bulan yang ada dalam opsi jawaban. Jika pengguna memilih bulan yang tidak sesuai dengan batasan tersebut, klasifikasikan sebagai 'unexpected_answer' dan minta klarifikasi."
+            ],
+            "allow_other": false,
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0ced99"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ced98"
+            }
+          },
+          {
+            "code": "S008",
+            "text": "Pada perjalanan ke ${S005} pada Bulan ${S007}, apakah Anda melakukan perjalanan Pulang-Pergi di hari yang sama?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [],
+            "allow_other": false,
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0ced9b"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ced9a"
+            }
+          },
+          {
+            "code": "S009",
+            "text": "Berapa malam Anda melakukan perjalanan tersebut?",
+            "type": "text",
+            "unit": "malam",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [
+              "Kategorikan sebagai 'expected_answer' jika informasi dari pengguna relevan dan dapat dikonversi menjadi jumlah malam meskipun tidak dalam bentuk angka sehingga Anda harus menghitung total pergantian malam dalam waktu perjalanan secara tepat dan akurat"
+            ],
+            "allow_other": false,
+            "additional_info": "Ket: Dihitung sejak Anda meninggalkan rumah sampai kembali lagi ke rumah. Pertambahan malam ditandai dengan pergantian tanggal.",
+            "validation": {
+              "required": true,
+              "input_type": "number",
+              "min": 0,
+              "_id": {
+                "$oid": "676eeb60160955013d0ced9d"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ced9c"
+            }
+          },
+          {
+            "code": "S010",
+            "text": "Apa motivasi utama Anda melakukan perjalanan ke ${S005} pada Bulan ${S007}? Contoh: untuk keperluan sendiri atau mengikuti perjalanan orang lain.",
+            "type": "select",
+            "multiple": false,
+            "options": [
+              {
+                "text": "Untuk keperluan sendiri"
+              },
+              {
+                "text": "Mengikuti perjalanan orang lain",
+                "additional_info": "Misalnya: menemani orang tua berobat, mengantar anak kejuaraan, dll."
+              }
+            ],
+            "system_guidelines": [
+              "Jika jawaban motivasi perjalanan pengguna dapat dipetakan ke salah satu opsi jawaban dengan jelas maka klasifikasikan sebagai 'expected_answer'",
+              "klasifikasikan sebagai 'unexpected_answer' jika jawaban motivasi perjalanan pengguna ada ambiguitas untuk dipetakan ke dalam lebih dari satu opsi jawaban"
+            ],
+            "allow_other": false,
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0ced9f"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ced9e"
+            }
+          },
+          {
+            "code": "S011",
+            "text": "Apa maksud utama Anda melakukan perjalanan ke ${S005} pada Bulan ${S007}? Contoh: ada acara seminar, berlibur, keperluan bisnis, dll.",
+            "type": "select",
+            "multiple": false,
+            "options": [
+              "Profesi/Bisnis",
+              "Pertemuan/Kongres/Seminar",
+              "Training/Pelatihan/Diklat",
+              "Berlibur/Rekreasi",
+              "Kursus",
+              "Kesehatan/Berobat",
+              "Kecantikan/Estetika",
+              "Keagamaan (Termasuk Berziarah)",
+              "Mengunjungi Teman/Famili",
+              "Mudik/Pulkan Hari Raya",
+              "Olahraga",
+              "Kesenian",
+              "Belanja/Shopping"
+            ],
+            "system_guidelines": [],
+            "allow_other": true,
+            "additional_info": "Maksud atau tujuan utama melakukan perjalanan adalah motif atau tujuan utama atau yang menjadi sebab utama seseorang melakukan perjalanan.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0ceda1"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ceda0"
+            }
+          },
+          {
+            "code": "S012",
+            "text": "Apakah dalam perjalanan ke ${S005} pada Bulan ${S007} membeli paket perjalanan/liburan/tour?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [],
+            "allow_other": false,
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0ceda3"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ceda2"
+            }
+          },
+          {
+            "code": "S013A",
+            "text": "Apakah Anda menggunakan layanan transportasi dalam paket perjalanan/liburan/tour Anda?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [
+              "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+            ],
+            "allow_other": false,
+            "instruction": "Pilih Ya atau Tidak.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0ceda5"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ceda4"
+            }
+          },
+          {
+            "code": "S013B",
+            "text": "Apakah Anda menggunakan layanan akomodasi/penginapan dalam paket perjalanan/liburan/tour Anda?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [
+              "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+            ],
+            "allow_other": false,
+            "instruction": "Pilih Ya atau Tidak.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0ceda7"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ceda6"
+            }
+          },
+          {
+            "code": "S013C",
+            "text": "Apakah Anda menggunakan layanan makan & minum dalam paket perjalanan/liburan/tour Anda?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [
+              "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+            ],
+            "allow_other": false,
+            "instruction": "Pilih Ya atau Tidak.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0ceda9"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ceda8"
+            }
+          },
+          {
+            "code": "S013D",
+            "text": "Apakah Anda menggunakan layanan pemandu wisata/tour guide dalam paket perjalanan/liburan/tour Anda?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [
+              "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+            ],
+            "allow_other": false,
+            "instruction": "Pilih Ya atau Tidak.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedab"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedaa"
+            }
+          },
+          {
+            "code": "S013E",
+            "text": "Apakah Anda menggunakan layanan objek wisata dalam paket perjalanan/liburan/tour Anda?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [
+              "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+            ],
+            "allow_other": false,
+            "instruction": "Pilih Ya atau Tidak.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedad"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedac"
+            }
+          },
+          {
+            "code": "S013F",
+            "text": "Apakah Anda menggunakan layanan lainnya dalam paket perjalanan/liburan/tour Anda?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [
+              "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+            ],
+            "allow_other": false,
+            "instruction": "Pilih Ya atau Tidak.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedaf"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedae"
+            }
+          },
+          {
+            "code": "S014",
+            "text": "Berapa harga paket perjalanan/liburan/tour yang Anda beli per orang?",
+            "type": "text",
+            "unit": "Rupiah",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [],
+            "allow_other": false,
+            "validation": {
+              "required": true,
+              "input_type": "number",
+              "min": 0,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedb1"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedb0"
+            }
+          },
+          {
+            "code": "S015",
+            "text": "Selama melakukan perjalanan ke ${S005} pada Bulan ${S007}, apa akomodasi utama (paling lama) yang Anda gunakan? Contoh: Hotel Bintang 4 atau 5, Hotel Bintang 3, Penginapan lainnya, atau Rumah teman/keluarga.",
+            "type": "select",
+            "multiple": false,
+            "options": [
+              "Hotel Bintang 4 atau 5",
+              "Hotel Bintang 3",
+              "Penginapan lainnya",
+              "Rumah teman/keluarga"
+            ],
+            "system_guidelines": [],
+            "allow_other": false,
+            "additional_info": "Ket: Bermalam di kendaraan selama dalam perjalanan seperti di mobil, kapal, kereta api, dan sejenisnya, tidak dianggap menggunakan akomodasi.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedb3"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedb2"
+            }
+          },
+          {
+            "code": "S016",
+            "text": "Angkutan utama (paling jauh) apa yang Anda gunakan selama perjalanan ke ${S005} pada Bulan ${S007}? Contoh: pesawat, kapal laut, perahu kecil, kereta api, angkot, taksi online, mobil pribadi, dll.",
+            "type": "select",
+            "multiple": false,
+            "options": [
+              {
+                "text": "Angkutan udara",
+                "additional_info": "Misalnya pesawat"
+              },
+              {
+                "text": "Angkutan laut",
+                "additional_info": "Misalnya Kapal laut dengan rute jauh"
+              },
+              {
+                "text": "Angkutan sungai, danau, dan penyebrangan",
+                "additional_info": "Misalnya perahu kecil yang melayani rute di perairan sungai, danau, atau kapal feri penyebrangan selat"
+              },
+              {
+                "text": "Angkutan darat - kereta api/listrik",
+                "additional_info": "Misalnya kereta api jarak jauh, KRL, LRT, dan MRT"
+              },
+              {
+                "text": "Angkutan darat - umum",
+                "additional_info": "Misalnya angkot, bus, ojek online, taksi online, dll"
+              },
+              {
+                "text": "Angkutan darat - pribadi",
+                "additional_info": "Yaitu kendaraan milik pribadi yang dipakai sendiri atau bersama rombongan"
+              },
+              {
+                "text": "Angkutan darat - sewa tanpa sopir",
+                "additional_info": "Misalnya sewa motor atau sewa mobil tidak termasuk sopir"
+              }
+            ],
+            "system_guidelines": [
+              "Klasifikasikan sebagai 'unexpected_answer' jika pengguna menjawab angkutan darat tetapi tidak jelas atau tidak secara langsung menjelaskan kepemilikan angkutan darat tersebut",
+              "Klasifikasikan sebagai 'unexpected_answer' jika belum jelas apakah termasuk angkutan darat milik pribadi atau sewa",
+              "Klasifikasikan sebagai 'unexpected_answer' jika termasuk angkutan darat sewa tetapi belum jelas apakah termasuk sewa dengan sopir atau tanpa sopir kecuali sewa motor karena sewa motor tidak termasuk sopir"
+            ],
+            "allow_other": false,
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedb5"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedb4"
+            }
+          },
+          {
+            "code": "S017A",
+            "text": "Apakah Anda melakukan wisata bahari selama perjalanan ke ${S005} pada Bulan ${S007}?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [
+              "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+            ],
+            "allow_other": false,
+            "instruction": "Pilih Ya atau Tidak.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedb7"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedb6"
+            }
+          },
+          {
+            "code": "S017B",
+            "text": "Apakah Anda melakukan wisata petualangan selama perjalanan ke ${S005} pada Bulan ${S007}?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [
+              "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+            ],
+            "allow_other": false,
+            "instruction": "Pilih Ya atau Tidak.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedb9"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedb8"
+            }
+          },
+          {
+            "code": "S017C",
+            "text": "Apakah Anda melakukan wisata kesenian selama perjalanan ke ${S005} pada Bulan ${S007}?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [
+              "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+            ],
+            "allow_other": false,
+            "instruction": "Pilih Ya atau Tidak.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedbb"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedba"
+            }
+          },
+          {
+            "code": "S017D",
+            "text": "Apakah Anda melakukan wisata kota dan pedesaan selama perjalanan ke ${S005} pada Bulan ${S007}?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [
+              "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+            ],
+            "allow_other": false,
+            "instruction": "Pilih Ya atau Tidak.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedbd"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedbc"
+            }
+          },
+          {
+            "code": "S017E",
+            "text": "Apakah Anda melakukan wisata olahraga selama perjalanan ke ${S005} pada Bulan ${S007}?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [
+              "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+            ],
+            "allow_other": false,
+            "instruction": "Pilih Ya atau Tidak.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedbf"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedbe"
+            }
+          },
+          {
+            "code": "S017F",
+            "text": "Apakah Anda melakukan ekowisata selama perjalanan ke ${S005} pada Bulan ${S007}?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [
+              "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+            ],
+            "allow_other": false,
+            "instruction": "Pilih Ya atau Tidak.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedc1"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedc0"
+            }
+          },
+          {
+            "code": "S017G",
+            "text": "Apakah Anda melakukan wisata sejarah/religi selama perjalanan ke ${S005} pada Bulan ${S007}?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [
+              "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+            ],
+            "allow_other": false,
+            "instruction": "Pilih Ya atau Tidak.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedc3"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedc2"
+            }
+          },
+          {
+            "code": "S017H",
+            "text": "Apakah Anda melakukan wisata kuliner selama perjalanan ke ${S005} pada Bulan ${S007}?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [
+              "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+            ],
+            "allow_other": false,
+            "instruction": "Pilih Ya atau Tidak.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedc5"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedc4"
+            }
+          },
+          {
+            "code": "S017I",
+            "text": "Apakah Anda melakukan MICE (Meeting, Incentive, Conference, Exhibition) selama perjalanan ke ${S005} pada Bulan ${S007}?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [
+              "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+            ],
+            "allow_other": false,
+            "instruction": "Pilih Ya atau Tidak.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedc7"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedc6"
+            }
+          },
+          {
+            "code": "S017J",
+            "text": "Apakah Anda melakukan wisata kesehatan selama perjalanan ke ${S005} pada Bulan ${S007}?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [
+              "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+            ],
+            "allow_other": false,
+            "instruction": "Pilih Ya atau Tidak.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedc9"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedc8"
+            }
+          },
+          {
+            "code": "S017K",
+            "text": "Apakah Anda tidak melakukan kegiatan satu pun kegiatan di atas selama perjalanan ke ${S005} pada Bulan ${S007}?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak"],
+            "system_guidelines": [
+              "Hanya respons yang secara eksplisit mengarah pada jawaban 'Ya' atau 'Tidak' yang dikategorikan sebagai 'expected_answer'."
+            ],
+            "allow_other": false,
+            "instruction": "Pilih Ya atau Tidak.",
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedcb"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedca"
+            }
+          },
+          {
+            "code": "S018",
+            "text": "Apakah Anda berniat untuk mengulangi kembali perjalanan ke ${S005} di masa yang akan datang dengan alasan memiliki pengalaman yang positif selama berkunjung?",
+            "type": "select",
+            "multiple": false,
+            "options": ["Ya", "Tidak", "Belum Tahu"],
+            "system_guidelines": [],
+            "allow_other": false,
+            "validation": {
+              "required": true,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedcd"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedcc"
+            }
+          },
+          {
+            "code": "S019",
+            "text": "Berapa rupiah total pengeluaran Anda untuk akomodasi atau penginapan selama perjalanan ini?",
+            "type": "text",
+            "unit": "Rp",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [],
+            "allow_other": false,
+            "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0. Jika tidak tahu, mohon perkirakan.",
+            "validation": {
+              "required": true,
+              "input_type": "number",
+              "min": 0,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedcf"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedce"
+            }
+          },
+          {
+            "code": "S020",
+            "text": "Berapa rupiah total pengeluaran Anda untuk makanan dan minuman selama perjalanan ini?",
+            "type": "text",
+            "unit": "Rp",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [],
+            "allow_other": false,
+            "instruction": "Wajib diisi.",
+            "validation": {
+              "required": true,
+              "input_type": "number",
+              "min": 0,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedd1"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedd0"
+            }
+          },
+          {
+            "code": "S021",
+            "text": "Berapa rupiah total pengeluaran Anda untuk transportasi selama perjalanan ini? Termasuk biaya BBM dan tol jika menggunakan kendaraan pribadi.",
+            "type": "text",
+            "unit": "Rp",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [],
+            "allow_other": false,
+            "additional_info": "Total pengeluaran untuk transportasi selama perjalanan. Jika menggunakan angkutan pribadi, isikan pengeluaran pembelian BBM dan biaya tol.",
+            "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+            "validation": {
+              "required": true,
+              "input_type": "number",
+              "min": 0,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedd3"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedd2"
+            }
+          },
+          {
+            "code": "S022",
+            "text": "Berapa rupiah total pengeluaran Anda untuk membeli cinderamata, oleh-oleh, atau buah tangan selama perjalanan ini?",
+            "type": "text",
+            "unit": "Rp",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [],
+            "allow_other": false,
+            "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+            "validation": {
+              "required": true,
+              "input_type": "number",
+              "min": 0,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedd5"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedd4"
+            }
+          },
+          {
+            "code": "S023",
+            "text": "Berapa rupiah total pengeluaran Anda untuk belanja kebutuhan pribadi selama perjalanan ini? Contohnya seperti sabun, pasta gigi, atau tisu.",
+            "type": "text",
+            "unit": "Rp",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [],
+            "allow_other": false,
+            "additional_info": "Termasuk belanja untuk keperluan pribadi selama perjalanan, seperti sabun, pasta gigi, sikat gigi, tisu, dsb",
+            "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+            "validation": {
+              "required": true,
+              "input_type": "number",
+              "min": 0,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedd7"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedd6"
+            }
+          },
+          {
+            "code": "S024",
+            "text": "Berapa rupiah total pengeluaran Anda untuk hiburan atau rekreasi selama perjalanan ini? Termasuk tiket masuk ke objek wisata atau atraksi.",
+            "type": "text",
+            "unit": "Rp",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [],
+            "allow_other": false,
+            "additional_info": "Tiket masuk objek wisata atau atraksi, seperti museum, taman, kebun binatang, candi, pendakian gunung, tari-tarian, konser, pertunjukkan, diving, dll",
+            "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+            "validation": {
+              "required": true,
+              "input_type": "number",
+              "min": 0,
+              "_id": {
+                "$oid": "676eeb60160955013d0cedd9"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedd8"
+            }
+          },
+          {
+            "code": "S025",
+            "text": "Berapa rupiah total pengeluaran Anda untuk kesehatan, kecantikan, atau olahraga selama perjalanan ini?",
+            "type": "text",
+            "unit": "Rp",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [],
+            "allow_other": false,
+            "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+            "validation": {
+              "required": true,
+              "input_type": "number",
+              "min": 0,
+              "_id": {
+                "$oid": "676eeb60160955013d0ceddb"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedda"
+            }
+          },
+          {
+            "code": "S026",
+            "text": "Berapa rupiah total pengeluaran Anda untuk menggunakan jasa pemandu wisata atau tour guide selama perjalanan ini?",
+            "type": "text",
+            "unit": "Rp",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [],
+            "allow_other": false,
+            "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+            "validation": {
+              "required": true,
+              "input_type": "number",
+              "min": 0,
+              "_id": {
+                "$oid": "676eeb60160955013d0ceddd"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0ceddc"
+            }
+          },
+          {
+            "code": "S027",
+            "text": "Apakah ada biaya lain yang Anda keluarkan selama perjalanan ini? Jika ya, berapa totalnya?",
+            "type": "text",
+            "unit": "Rp",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [],
+            "allow_other": false,
+            "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+            "validation": {
+              "required": true,
+              "input_type": "number",
+              "min": 0,
+              "_id": {
+                "$oid": "676eeb60160955013d0ceddf"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cedde"
+            }
+          },
+          {
+            "code": "S028",
+            "text": "Berapa rupiah total pengeluaran Anda sebelum perjalanan ini? Misalnya, pembelian pakaian, makanan, atau perawatan kendaraan.",
+            "type": "text",
+            "unit": "Rp",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [],
+            "allow_other": false,
+            "additional_info": "Misalnya: pembelian pakaian dan makanan untuk keberangkatan wisata, buah tangan untuk teman/keluarga di daerah tujuan, stok obat, perawatan kendaraan sebelum perjalanan, dll.",
+            "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+            "validation": {
+              "required": true,
+              "input_type": "number",
+              "min": 0,
+              "_id": {
+                "$oid": "676eeb60160955013d0cede1"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cede0"
+            }
+          },
+          {
+            "code": "S029",
+            "text": "Berapa rupiah total pengeluaran Anda setelah perjalanan ini? Contohnya, biaya laundry pakaian atau perawatan kendaraan.",
+            "type": "text",
+            "unit": "Rp",
+            "multiple": false,
+            "options": [],
+            "system_guidelines": [
+              "Pastikan hanya menghitung pengeluaran setelah perjalanan saat sampai di rumah sehingga pengeluaran saat perjalanan tidak dihitung."
+            ],
+            "allow_other": false,
+            "additional_info": "Misalnya: laundry pakaian pada saat pulang, perawatan kendaraan setelah perjalanan, dll.",
+            "instruction": "Wajib diisi. Jika tidak ada pengeluaran, isikan 0.",
+            "validation": {
+              "required": true,
+              "input_type": "number",
+              "min": 0,
+              "_id": {
+                "$oid": "676eeb60160955013d0cede3"
+              }
+            },
+            "_id": {
+              "$oid": "676eeb60160955013d0cede2"
+            }
+          }
+        ],
+        "_id": {
+          "$oid": "676eeb60160955013d0ced8b"
+        }
+      }
+    ],
+    "_id": {
+      "$oid": "676eeb60160955013d0ced7d"
+    }
+  },
+  "__v": 0
+}

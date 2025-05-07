@@ -12,6 +12,9 @@ import { getLLMStatus, resetLLMState } from '../config/llmConfig';
 import { ClassificationContext, Question } from '../types/intentTypes';
 import fs from 'fs/promises';
 import path from 'path';
+import ClassificationEvaluationBundle from '../models/ClassificationEvaluationBundle';
+import EvaluationMetric from '../models/EvaluationMetric';
+import { calculateMetrics } from '../utils/calculateMetrics';
 
 interface ClassifyIntentRequest {
   question: Question;
@@ -83,23 +86,74 @@ export const handleClassifyIntent = async (
 
 export const handleStartEvaluation = async (req: Request, res: Response) => {
   try {
-    const datasetPath = path.join(__dirname, "../data/intent-classification-validation-lite.json");
+    const datasetPath = path.join(__dirname, "../data/intent-classification-validation.json");
     const rawData = await fs.readFile(datasetPath, "utf-8");
     const data = JSON.parse(rawData);
 
     const result = await evaluateIntentClassification(data.dataset);
 
     if (!result.success) {
-      res.status(500).json({ success: false, message: result.error });
+      res.status(500).json({ success: false, message: 'An error occurred during evaluation' });
       return;
     }
 
-    res.json(result);
+    res.json({
+      success: true,
+      bundle: result.data.bundle,
+      metrics: result.data.metrics,
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Error memulai evaluasi",
       error: (error as Error).message,
+    });
+  }
+};
+
+export const handleCalculateAndSaveMetrics = async (req: Request, res: Response) => {
+  try {
+    // Ambil bundle evaluasi terbaru
+    const bundle = await ClassificationEvaluationBundle.findOne({}, {}, { sort: { "metadata.created_at": -1 } });
+    if (!bundle) {
+      res.status(404).json({ success: false, message: "Bundle evaluasi tidak ditemukan" });
+      return;
+    }
+
+    // Ekstrak label dan prediksi
+    const actuals = bundle.items.map(item => item.actual_intent);
+    const predictions = bundle.items.map(item => item.predicted_intent);
+
+    // Hitung metrik (sudah termasuk confusion matrix)
+    const metrics = calculateMetrics(predictions, actuals);
+
+    // Simpan ke koleksi EvaluationMetric
+    const metricDoc = new EvaluationMetric({
+      accuracy: metrics.accuracy,
+      precision: metrics.precision,
+      recall: metrics.recall,
+      f1Score: metrics.f1Score,
+      confusionMatrix: metrics.confusionMatrix,
+      timestamp: new Date()
+    });
+    await metricDoc.save();
+
+    res.json({
+      success: true,
+      message: "Metrik evaluasi berhasil dihitung dan disimpan",
+      metrics: {
+        accuracy: metrics.accuracy,
+        precision: metrics.precision,
+        recall: metrics.recall,
+        f1Score: metrics.f1Score,
+        confusionMatrix: metrics.confusionMatrix
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Gagal menghitung/simpan metrik evaluasi",
+      error: error instanceof Error ? error.message : "Unknown error"
     });
   }
 };
@@ -289,7 +343,8 @@ export default {
   handleGetEvaluationProgress,
   handleResetEvaluation,
   handleGetSystemStatus,
-  handleResetSystem
+  handleResetSystem,
+  handleCalculateAndSaveMetrics,
 };
 
 // import { Request, Response } from 'express';

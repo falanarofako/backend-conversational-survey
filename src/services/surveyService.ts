@@ -16,6 +16,8 @@ import SurveyMessage from "../models/SurveyMessage";
 import QuestionnaireModel from "../models/Questionnaire";
 import { analyzeSurveyIntent } from "./surveyIntentService";
 import { classifyIntentWithContext } from "./enhancedIntentClassificationService";
+import { classifyOtherResponseClassification } from "./otherResponseClassificationService";
+import { response } from "express";
 
 // Start a new survey session for a user
 export const startSurveySession = async (userId: string, survey: any) => {
@@ -108,7 +110,36 @@ export const completeSurveySession = async (
       throw new Error("Survey session not found");
     }
 
+    // Hitung metrik respons
+    const totalQuestions = surveySession.responses.length;
+    const item_nonresponse = surveySession.responses.filter(
+      (r) =>
+        r.valid_response === "" ||
+        r.valid_response === null ||
+        r.valid_response === undefined
+    ).length;
+    const dont_know_response = surveySession.responses.filter(
+      (r) =>
+        typeof r.valid_response === "string" &&
+        r.valid_response.toLowerCase() === "tidak tahu"
+    ).length;
+    const response_times = surveySession.responses
+      .map((r) => (typeof r.response_time === "number" ? r.response_time : 0))
+      .filter((rt) => rt > 0);
+    const avg_response_time =
+      response_times.length > 0
+        ? response_times.reduce((a, b) => a + b, 0) / response_times.length
+        : 0;
+    const is_breakoff = item_nonresponse > 0;
+
     surveySession.status = "COMPLETED";
+    surveySession.metrics = {
+      is_breakoff,
+      avg_response_time,
+      item_nonresponse,
+      dont_know_response,
+    }
+    
     await surveySession.save({ session });
 
     // Remove the active session reference from the user
@@ -380,6 +411,7 @@ export const processSurveyResponse = async (
         next_question: survey.categories[0].questions[0],
       };
     } else {
+      console.log("Test aja");
       // User doesn't want to start survey
       system_response = {
         info: "not_ready_for_survey",
@@ -441,6 +473,87 @@ export const processSurveyResponse = async (
     const intent = classificationResult.data?.intent;
 
     if (intent === "unexpected_answer" || intent === "other") {
+      // Tambahan: klasifikasi lebih lanjut untuk intent "other"
+      // if (intent === "other") {
+      const otherClassResult = await classifyOtherResponseClassification({
+        question: currentQuestion,
+        response: processedUserResponse,
+      });
+
+      if (otherClassResult.success && otherClassResult.data) {
+        const { category } = otherClassResult.data;
+
+        if (category === "tidak_tahu") {
+          // Simpan valid_response dengan nilai "Tidak tahu"
+          session.responses.push({
+            question_code: currentQuestion.code,
+            valid_response: "Tidak tahu",
+          });
+
+          // Lanjutkan ke pertanyaan berikutnya
+          session.current_question_index += 1;
+          await session.save();
+
+          let nextQuestion = survey.categories.flatMap(
+            (cat: any) => cat.questions
+          )[session.current_question_index];
+          nextQuestion = await replacePlaceholders(nextQuestion, sessionId);
+
+          system_response = {
+            info: "expected_answer",
+            next_question: nextQuestion || null,
+            improved_response: "Tidak tahu",
+          };
+          // Return response
+          await SurveyMessage.create({
+            user_id: userId,
+            session_id: sessionId,
+            user_message: userResponse,
+            mode: "survey",
+            system_response: system_response,
+          });
+          return {
+            ...system_response,
+            session_id: sessionId,
+          };
+        } else if (category === "tidak_mau_menjawab") {
+          // Simpan valid_response dengan nilai kosong
+          session.responses.push({
+            question_code: currentQuestion.code,
+            valid_response: "",
+          });
+
+          // Lanjutkan ke pertanyaan berikutnya
+          session.current_question_index += 1;
+          await session.save();
+
+          let nextQuestion = survey.categories.flatMap(
+            (cat: any) => cat.questions
+          )[session.current_question_index];
+          nextQuestion = await replacePlaceholders(nextQuestion, sessionId);
+
+          system_response = {
+            info: "expected_answer",
+            next_question: nextQuestion || null,
+            improved_response: "",
+          };
+          // Return response
+          await SurveyMessage.create({
+            user_id: userId,
+            session_id: sessionId,
+            user_message: userResponse,
+            mode: "survey",
+            system_response: system_response,
+          });
+          return {
+            ...system_response,
+            session_id: sessionId,
+          };
+        }
+        // Jika "lainnya", teruskan ke flow sebelumnya (default di bawah)
+      }
+      // }
+      // Default/flow sebelumnya untuk "unexpected_answer" atau "other" (lainnya)
       system_response = {
         info: "unexpected_answer_or_other",
         currentQuestion: currentQuestion,
@@ -455,6 +568,8 @@ export const processSurveyResponse = async (
         if (!ragApiUrl) {
           throw new Error("RAG API URL is not configured");
         }
+
+        console.log("ragApiUrl", ragApiUrl);
 
         // Call RAG API - use improved_response if available
         const questionToAsk =
@@ -583,7 +698,14 @@ export const processSurveyResponse = async (
   });
 
   if (!session) {
-    throw new Error("Survey session not found");
+    if (!sessionId) {
+      return {
+        ...system_response,
+        session_id: "",
+      };
+    } else {
+      throw new Error("Survey session not found");
+    }
   }
 
   if (session.current_question_index === 5) {

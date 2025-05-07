@@ -4,7 +4,7 @@ import { handleEvaluateInformationExtraction, handleInformationExtraction } from
 const router = Router();
 
 /**
- * @route   POST /api/information-extraction
+ * @route   POST /api/information
  * @desc    Extract information from response
  * @access  Public
  * @body    {
@@ -15,7 +15,7 @@ const router = Router();
 router.post("/extract", handleInformationExtraction);
 
 /**
- * @route   POST /api/information-extraction/evaluate
+ * @route   POST /api/information/evaluate
  * @desc    Evaluate information extraction
  * @access  Public
  */

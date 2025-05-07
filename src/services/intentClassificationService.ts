@@ -25,6 +25,7 @@ import EvaluationData from "../models/EvaluationData";
 import mongoose from "mongoose";
 import ClassificationResultData from "../models/ClassificationResultData";
 import EvaluationMetric from "../models/EvaluationMetric";
+import ClassificationEvaluationBundle, { IntentClassificationEvaluationItem } from "../models/ClassificationEvaluationBundle";
 
 // Constants
 const PROGRESS_FILE = path.join(
@@ -288,31 +289,21 @@ const initializeProgress = (dataset: any[]): EvaluationProgress => {
   };
 };
 
-// Calculate evaluation metrics
-const calculateMetrics = (
-  predictions: string[],
-  actuals: string[]
-): EvaluationMetrics => {
-  const uniqueIntents = [
-    "expected_answer",
-    "unexpected_answer",
-    "question",
-    "other",
-  ];
+/**
+ * Hitung metrik evaluasi (accuracy, precision, recall, f1, confusion matrix, macro/micro average)
+ */
+function calculateMetrics(predictions: string[], actuals: string[]) {
+  const uniqueIntents = ["expected_answer", "unexpected_answer", "question", "other"];
+  const matrix = Array(uniqueIntents.length).fill(0).map(() => Array(uniqueIntents.length).fill(0));
 
-  // Initialize confusion matrix
-  const matrix = Array(uniqueIntents.length)
-    .fill(0)
-    .map(() => Array(uniqueIntents.length).fill(0));
-
-  // Fill confusion matrix
   for (let i = 0; i < predictions.length; i++) {
     const actualIndex = uniqueIntents.indexOf(actuals[i]);
     const predictedIndex = uniqueIntents.indexOf(predictions[i]);
-    matrix[actualIndex][predictedIndex]++;
+    if (actualIndex >= 0 && predictedIndex >= 0) {
+      matrix[actualIndex][predictedIndex]++;
+    }
   }
 
-  // Calculate per-class metrics
   const precision: { [key: string]: number } = {};
   const recall: { [key: string]: number } = {};
   const f1Score: { [key: string]: number } = {};
@@ -320,133 +311,126 @@ const calculateMetrics = (
   uniqueIntents.forEach((intent, i) => {
     const tp = matrix[i][i];
     const fp = matrix.reduce((sum, row, j) => sum + (j !== i ? row[i] : 0), 0);
-    const fn = matrix[i].reduce(
-      (sum, cell, j) => sum + (j !== i ? cell : 0),
-      0
-    );
+    const fn = matrix[i].reduce((sum, cell, j) => sum + (j !== i ? cell : 0), 0);
 
     precision[intent] = tp / (tp + fp) || 0;
     recall[intent] = tp / (tp + fn) || 0;
-    f1Score[intent] =
-      2 *
-        ((precision[intent] * recall[intent]) /
-          (precision[intent] + recall[intent])) || 0;
+    f1Score[intent] = 2 * ((precision[intent] * recall[intent]) / (precision[intent] + recall[intent]) || 0);
   });
 
-  // Calculate averages
-  const classCounts = uniqueIntents.map(
-    (intent) => actuals.filter((a) => a === intent).length
-  );
-  const totalSamples = classCounts.reduce((a, b) => a + b);
+  const classCounts = uniqueIntents.map(intent => actuals.filter(a => a === intent).length);
+  const totalSamples = classCounts.reduce((a, b) => a + b, 0);
 
   const averageMetrics = {
-    macroAveragePrecision:
-      Object.values(precision).reduce((a, b) => a + b) / uniqueIntents.length,
-    macroAverageRecall:
-      Object.values(recall).reduce((a, b) => a + b) / uniqueIntents.length,
-    macroAverageF1:
-      Object.values(f1Score).reduce((a, b) => a + b) / uniqueIntents.length,
-    weightedAveragePrecision: uniqueIntents.reduce(
-      (sum, intent, i) =>
-        sum + (precision[intent] * classCounts[i]) / totalSamples,
-      0
-    ),
-    weightedAverageRecall: uniqueIntents.reduce(
-      (sum, intent, i) =>
-        sum + (recall[intent] * classCounts[i]) / totalSamples,
-      0
-    ),
-    weightedAverageF1: uniqueIntents.reduce(
-      (sum, intent, i) =>
-        sum + (f1Score[intent] * classCounts[i]) / totalSamples,
-      0
-    ),
+    macroAveragePrecision: Object.values(precision).reduce((a, b) => a + b, 0) / uniqueIntents.length,
+    macroAverageRecall: Object.values(recall).reduce((a, b) => a + b, 0) / uniqueIntents.length,
+    macroAverageF1: Object.values(f1Score).reduce((a, b) => a + b, 0) / uniqueIntents.length,
+    weightedAveragePrecision: uniqueIntents.reduce((sum, intent, i) => sum + (precision[intent] * classCounts[i]) / totalSamples, 0),
+    weightedAverageRecall: uniqueIntents.reduce((sum, intent, i) => sum + (recall[intent] * classCounts[i]) / totalSamples, 0),
+    weightedAverageF1: uniqueIntents.reduce((sum, intent, i) => sum + (f1Score[intent] * classCounts[i]) / totalSamples, 0),
   };
 
   return {
-    accuracy:
-      predictions.reduce(
-        (correct, pred, i) => correct + (pred === actuals[i] ? 1 : 0),
-        0
-      ) / predictions.length,
+    accuracy: predictions.filter((pred, i) => pred === actuals[i]).length / predictions.length,
     precision,
     recall,
     f1Score,
     confusionMatrix: { matrix, labels: uniqueIntents },
     averageMetrics,
   };
-};
+}
 
-// Evaluate intent classification
-// Perbarui logika evaluasi
+/**
+ * Evaluasi intent classification dan simpan hasil dalam bentuk bundle
+ */
 export const evaluateIntentClassification = async (dataset: any[]) => {
-  const errors: string[] = [];
+  const items: IntentClassificationEvaluationItem[] = [];
+  let correct = 0;
   const predictions: string[] = [];
   const actuals: string[] = [];
 
-  try {
-    for (const sample of dataset) {
-      // Simpan data evaluasi ke database
-      const evaluationData = await saveEvaluationData(sample.question, sample.response, sample.intent);
+  for (let i = 0; i < dataset.length; i++) {
+    const sample = dataset[i];
+    const context: ClassificationContext = {
+      question: sample.question,
+      response: sample.response,
+    };
 
-      try {
-        const context: ClassificationContext = {
+    try {
+      const result = await classifyIntent(context);
+      if (result.success && result.data) {
+        const predicted = result.data.intent;
+        const actual = sample.intent;
+        predictions.push(predicted);
+        actuals.push(actual);
+
+        if (predicted === actual) correct++;
+
+        items.push({
+          evaluation_item_index: i,
           question: sample.question,
-          response: sample.response
-        };
-
-        // Lakukan klasifikasi intent
-        const result = await classifyIntent(context);
-
-        if (result.success && result.data) {
-          predictions.push(result.data.intent);
-          actuals.push(sample.intent);
-
-          // Simpan hasil klasifikasi ke database
-          await saveClassificationResult(
-            evaluationData._id as mongoose.Types.ObjectId,
-            result.data.intent,
-            result.data.confidence,
-            result.data.explanation,
-            result.data.clarification_reason,
-            result.data.follow_up_question
-          );
-        } else {
-          throw new Error(result.error || "Klasifikasi gagal");
-        }
-      } catch (error) {
-        errors.push(`Error klasifikasi untuk data ID ${evaluationData._id}: ${(error as Error).message}`);
-        predictions.push("error");
+          response: sample.response,
+          actual_intent: actual,
+          predicted_intent: predicted,
+          confidence: result.data.confidence,
+          explanation: result.data.explanation,
+          clarification_reason: result.data.clarification_reason,
+          follow_up_question: result.data.follow_up_question,
+          timestamp: new Date(),
+        });
+      } else {
+        predictions.push("other");
         actuals.push(sample.intent);
+        items.push({
+          evaluation_item_index: i,
+          question: sample.question,
+          response: sample.response,
+          actual_intent: sample.intent,
+          predicted_intent: "other",
+          confidence: 0,
+          explanation: result.error || "Klasifikasi gagal",
+          timestamp: new Date(),
+        });
       }
+    } catch (err) {
+      predictions.push("other");
+      actuals.push(sample.intent);
+      items.push({
+        evaluation_item_index: i,
+        question: sample.question,
+        response: sample.response,
+        actual_intent: sample.intent,
+        predicted_intent: "other",
+        confidence: 0,
+        explanation: (err as Error).message || "Klasifikasi gagal",
+        timestamp: new Date(),
+      });
     }
-
-    // Hitung metrik evaluasi
-    const metrics = calculateMetrics(predictions, actuals);
-
-    // Simpan metrik evaluasi ke database
-    const evaluationMetric = new EvaluationMetric({
-      accuracy: metrics.accuracy,
-      precision: metrics.precision,
-      recall: metrics.recall,
-      f1Score: metrics.f1Score,
-    });
-    await evaluationMetric.save();
-
-    return {
-      success: true,
-      data: {
-        metrics,
-        totalSamples: dataset.length,
-        errors,
-      },
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: (error as Error).message,
-    };
   }
+
+  // Hitung metrik
+  const metrics = calculateMetrics(predictions, actuals);
+
+  // Simpan bundle ke database
+  const bundle = new ClassificationEvaluationBundle({
+    items,
+    metadata: {
+      total_items: items.length,
+      correct,
+      // accuracy: correct / items.length,
+      created_at: new Date(),
+      ...metrics,
+    },
+  });
+  await bundle.save();
+
+  return {
+    success: true,
+    data: {
+      bundle,
+      metrics,
+    },
+  };
 };
 
 // Get evaluation progress
