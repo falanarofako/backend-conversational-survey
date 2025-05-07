@@ -38,7 +38,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(
   cors({
     origin: [
-      'https://your-frontend-domain.vercel.app', 
       'http://localhost:3000'
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
