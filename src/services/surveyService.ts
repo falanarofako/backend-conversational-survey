@@ -69,7 +69,7 @@ export const startSurveySession = async (userId: string, survey: any) => {
 
     const system_response = {
       initial_message:
-        "Selamat datang! Survei ini bertujuan untuk mengumpulkan informasi tentang proﬁl wisatawan nusantara, maksud perjalanan, akomodasi yang digunakan, lama perjalanan, dan rata-rata pengeluaran terkait perjalanan yang dilakukan oleh penduduk Indonesia di dalam wilayah teritorial Indonesia. Apakah Anda siap memulai?",
+        "Terima kasih sudah bersedia mengikuti survei ini! Silakan jawab pertanyaan berikut dengan jujur dan sesuai pengalaman Anda. Apakah Anda siap memulai?",
       first_question: latestQuestionnaire.survey.categories[0].questions[0],
     };
 
@@ -407,7 +407,7 @@ export const processSurveyResponse = async (
           confidence: intentResult.data.confidence,
           explanation: intentResult.data.explanation,
         },
-        additional_info: `Selamat datang! Survei ini bertujuan untuk mengumpulkan informasi tentang proﬁl wisatawan nusantara, maksud perjalanan, akomodasi yang digunakan, lama perjalanan, dan rata-rata pengeluaran terkait perjalanan yang dilakukan oleh penduduk Indonesia di dalam wilayah teritorial Indonesia.`,
+        additional_info: `Terima kasih sudah bersedia mengikuti survei ini! Silakan jawab pertanyaan berikut dengan jujur dan sesuai pengalaman Anda.`,
         next_question: survey.categories[0].questions[0],
       };
     } else {

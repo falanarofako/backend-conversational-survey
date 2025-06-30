@@ -13,6 +13,7 @@ import surveyRoutes from "./routes/surveyRoutes";
 import authRoutes from "./routes/authRoutes";
 import evaluationRoutes from "./routes/evaluationRoutes";
 import geographicRoutes from "./routes/geographicRoutes";
+import uniqueSurveyCodeRoutes from "./routes/uniqueSurveyCodeRoutes";
 
 dotenv.config();
 
@@ -38,7 +39,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use(
   cors({
     origin: [
-      'http://localhost:3000'
+      'http://localhost:3000',
+      'https://wisnus-web-survey.vercel.app'
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"]
@@ -80,6 +82,7 @@ app.use("/api/questionnaire", questionnaireRoutes);
 app.use("/api/survey", surveyRoutes);
 app.use("/api/evaluation", evaluationRoutes); 
 app.use("/api/geographic", geographicRoutes);
+app.use("/api/unique-codes", uniqueSurveyCodeRoutes);
 
 // Basic route
 app.get("/", (req: Request, res: Response) => {

@@ -70,7 +70,7 @@ export const handleStartSurvey = async (
 
     res.status(201).json({
       success: true,
-      additional_info: `Selamat datang! Survei ini bertujuan untuk mengumpulkan informasi tentang proﬁl wisatawan nusantara, maksud perjalanan, akomodasi yang digunakan, lama perjalanan, dan rata-rata pengeluaran terkait perjalanan yang dilakukan oleh penduduk Indonesia di dalam wilayah teritorial Indonesia.`,
+      additional_info: `Terima kasih sudah bersedia mengikuti survei ini! Silakan jawab pertanyaan berikut dengan jujur dan sesuai pengalaman Anda.`,
       next_question: latestQuestionnaire.survey.categories[0].questions[0].text,
       session_id: session._id,
     });
