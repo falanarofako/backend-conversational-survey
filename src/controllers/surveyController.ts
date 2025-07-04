@@ -17,6 +17,7 @@ import {
 import QuestionnaireModel from "../models/Questionnaire";
 import { IUser } from "../models/User";
 import mongoose from "mongoose";
+import SurveySession from "../models/SurveySession";
 
 export const handleStartSurvey = async (
   req: Request,
@@ -392,5 +393,53 @@ export const handleGetCurrentQuestion = async (
       message: "Error retrieving current question",
       error: error instanceof Error ? error.message : "Unknown error",
     });
+  }
+};
+
+// Endpoint: GET /api/survey/answered
+export const handleGetAnsweredQuestions = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = req.user._id;
+    // Find all survey sessions for this user (regardless of status)
+    const sessions = await SurveySession.find({ user_id: userId });
+    if (!sessions.length) {
+      res.json({ success: true, data: [] });
+      return;
+    }
+
+    // Get the latest questionnaire (assume structure is stable)
+    const questionnaire = await QuestionnaireModel.findOne().sort({ createdAt: -1 });
+    if (!questionnaire) {
+      res.status(404).json({ success: false, message: "Questionnaire not found" });
+      return;
+    }
+    // Flatten all questions by code
+    const allQuestions: Record<string, { text: string }> = {};
+    questionnaire.survey.categories.forEach(cat => {
+      cat.questions.forEach(q => {
+        allQuestions[q.code] = { text: q.text };
+      });
+    });
+
+    // Collect all answered questions from all sessions
+    const answered: { question_code: string; question_text: string; answer: any }[] = [];
+    sessions.forEach(session => {
+      session.responses.forEach(resp => {
+        if (resp.valid_response !== undefined && resp.valid_response !== null && resp.valid_response !== "") {
+          answered.push({
+            question_code: resp.question_code,
+            question_text: allQuestions[resp.question_code]?.text || resp.question_code,
+            answer: resp.valid_response,
+          });
+        }
+      });
+    });
+
+    res.json({ success: true, data: answered });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error instanceof Error ? error.message : "Unknown error" });
   }
 };

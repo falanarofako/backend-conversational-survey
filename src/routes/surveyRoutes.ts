@@ -9,6 +9,7 @@ import {
   handleGetSurveyMessages,
   handleAddSurveyMessage,
   handleGetCurrentQuestion,
+  handleGetAnsweredQuestions,
 } from "../controllers/surveyController";
 import { analyzeSurveyIntentController } from "../controllers/surveyIntentController";
 import { protect } from "../middleware/authMiddleware";
@@ -70,5 +71,12 @@ router.post("/respond", protect, handleProcessSurveyResponse);
  * @access  Private
  */
 router.post("/complete", protect, handleCompleteSurvey);
+
+/**
+ * @route   GET /api/survey/answered
+ * @desc    Get all answered questions and their answers for the logged-in user
+ * @access  Private
+ */
+router.get("/answered", protect, handleGetAnsweredQuestions);
 
 export default router;
