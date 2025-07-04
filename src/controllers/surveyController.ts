@@ -12,10 +12,10 @@ import {
   updateQuestionOptions,
   // updateQuestionOptions,
   // replacePlaceholders,
+  addSurveyMessage,
 } from "../services/surveyService";
 import QuestionnaireModel from "../models/Questionnaire";
 import { IUser } from "../models/User";
-import SurveyMessage from "../models/SurveyMessage";
 import mongoose from "mongoose";
 
 export const handleStartSurvey = async (
@@ -280,14 +280,14 @@ export const handleAddSurveyMessage = async (
       return;
     }
 
-    // Create a new survey message
-    const surveyMessage = await SurveyMessage.create({
-      user_id: userId,
-      session_id: session_id || undefined,
-      user_message,
+    // Create a new survey message via service
+    const surveyMessage = await addSurveyMessage(
+      userId,
+      user_message ?? null,
       system_response,
-      mode: mode || "survey", // Default to survey mode
-    });
+      session_id,
+      mode || "survey"
+    );
 
     res.status(201).json({
       success: true,

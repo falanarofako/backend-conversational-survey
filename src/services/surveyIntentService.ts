@@ -72,7 +72,7 @@ export const analyzeSurveyIntent = async (
       };
     } catch (error) {
       // Handle error and retry if needed
-      await handleLLMError(error);
+      await handleLLMError(String(llmResponse.metadata?.api_key_used ?? ''), error);
 
       if (attempt < MAX_RETRIES) {
         console.log(`Retrying survey intent analysis (attempt ${attempt + 1}/${MAX_RETRIES})`);

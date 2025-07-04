@@ -10,7 +10,7 @@ import {
   ServiceResponse,
 } from "../types/intentTypes";
 import { getCurrentLLM, handleLLMError, createCustomLLM } from "../config/llmConfig";
-import SurveyMessage from "../models/SurveyMessage";
+import SurveyMessageBundle from "../models/SurveyMessageBundle";
 import SurveySession from "../models/SurveySession";
 import { z } from "zod";
 
@@ -153,7 +153,7 @@ const determineModelForQuestion = (question: Question | string): string => {
   }
   
   // Default to flash model for simpler questions
-  return "gemini-1.5-flash";
+  return "gemini-2.0-flash-lite";
 };
 
 // Enhanced classification prompt template
@@ -234,7 +234,7 @@ export const classifyIntentWithContext = async (
     const modelToUse = determineModelForQuestion(params.question);
     
     // Get LLM instance with appropriate model
-    const llmResponse = modelToUse === "gemini-1.5-flash"
+    const llmResponse = modelToUse === "gemini-2.0-flash-lite"
       ? await getCurrentLLM() // Use Flash model for simple questions 
       : await createCustomLLM({ model: "gemini-2.5-pro-exp-03-25" }); // Default to Pro model
 
@@ -254,17 +254,21 @@ export const classifyIntentWithContext = async (
           ? params.question
           : JSON.stringify(params.question, null, 2);
 
-      // Get conversation history if sessionId is provided
+      // Fetch the survey session to obtain user_id
+      const sessionDoc = await SurveySession.findById(params.sessionId);
+      let messages: any[] = [];
+      if (sessionDoc) {
+        const bundle = await SurveyMessageBundle.findOne({
+          user_id: sessionDoc.user_id,
+        });
+        messages = bundle ? bundle.messages : [];
+      }
+
       let conversationHistory = "Tidak ada riwayat percakapan.";
       let previousAnswers = "Tidak ada jawaban sebelumnya.";
 
+      conversationHistory = formatPreviousMessages(messages);
       if (params.sessionId) {
-        // Get previous messages for this session
-        const messages = await SurveyMessage.find({
-          session_id: params.sessionId,
-        }).sort({ timestamp: 1 });
-
-        conversationHistory = formatPreviousMessages(messages);
         previousAnswers = await getPreviousAnswers(params.sessionId);
       }
 
@@ -305,7 +309,12 @@ export const classifyIntentWithContext = async (
       };
     } catch (error) {
       // Handle API errors and retry if needed
-      await handleLLMError(error);
+      await handleLLMError(
+        typeof llmResponse.metadata?.api_key_used === "string"
+          ? llmResponse.metadata.api_key_used
+          : "",
+        error
+      );
 
       if (attempt < MAX_RETRIES) {
         console.log(

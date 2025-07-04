@@ -3,8 +3,9 @@
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { z } from "zod";
 import dotenv from "dotenv";
-import { getKeyManager } from "../utils/apiKeyRotation";
+import { apiKeyManager } from '../services/apiKeyManager';
 import { ServiceResponse } from "../types/intentTypes";
+import { getKeyManager } from '../utils/apiKeyRotation';
 
 dotenv.config();
 
@@ -74,7 +75,7 @@ interface LLMConfig {
 }
 
 const defaultConfig: LLMConfig = {
-  model: "gemini-1.5-flash",
+  model: "gemini-2.0-flash-lite",
   temperature: 0,
   maxRetries: 2,
   timeout: 30000,
@@ -98,7 +99,7 @@ export const initializeLLM = async (): Promise<ServiceResponse<void>> => {
     }
 
     // Initialize key manager (will throw if no keys are configured)
-    getKeyManager();
+    await apiKeyManager.initialize();
     isInitialized = true;
 
     return {
@@ -133,17 +134,9 @@ export const getCurrentLLM = async (
       }
     }
 
-    // Get API key
-    const keyManager = getKeyManager();
-    const keyResponse = keyManager.getCurrentKey();
-    
-    if (!keyResponse.success || !keyResponse.data) {
-      throw new Error(keyResponse.error || "Failed to get API key");
-    }
-
-    const apiKey = keyResponse.data;
-    const keyIndex = keyResponse.metadata?.api_key_used || 0;
-
+    // Get best API key from DB
+    const bestKey = await apiKeyManager.getBestKey();
+    const apiKey = bestKey.apiKey;
     // Create LLM instance
     const llmConfig = { ...defaultConfig, ...config };
     const llm = new ChatGoogleGenerativeAI({
@@ -152,13 +145,13 @@ export const getCurrentLLM = async (
       maxRetries: llmConfig.maxRetries,
       apiKey: apiKey,
     });
-
+    // Usage will be updated after request (should be called by the caller)
     return {
       success: true,
       data: llm,
       metadata: {
         processing_time: 0,
-        api_key_used: keyIndex,
+        api_key_used: -1,
         timestamp: new Date().toISOString(),
       },
     };
@@ -173,17 +166,18 @@ export const getCurrentLLM = async (
   }
 };
 
+// Usage update function to be called after each Gemini request
+export const updateLLMUsage = async (apiKey: string, tokensUsed: number) => {
+  await apiKeyManager.useKey(apiKey, tokensUsed);
+};
+
 // Handle LLM errors
-export const handleLLMError = async (error: any): Promise<ServiceResponse<void>> => {
+export const handleLLMError = async (apiKey: string, error: any): Promise<ServiceResponse<void>> => {
   try {
     if (!isInitialized) {
       throw new Error("LLM system not initialized");
     }
-
-    // Simply rotate the key on error
-    const keyManager = getKeyManager();
-    keyManager.handleError();
-
+    await apiKeyManager.reportError(apiKey);
     return {
       success: true,
       metadata: {
@@ -199,6 +193,11 @@ export const handleLLMError = async (error: any): Promise<ServiceResponse<void>>
         err instanceof Error
           ? err.message
           : "Unknown error handling LLM error",
+      metadata: {
+        processing_time: 0,
+        api_key_used: -1,
+        timestamp: new Date().toISOString(),
+      },
     };
   }
 };

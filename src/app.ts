@@ -14,6 +14,7 @@ import authRoutes from "./routes/authRoutes";
 import evaluationRoutes from "./routes/evaluationRoutes";
 import geographicRoutes from "./routes/geographicRoutes";
 import uniqueSurveyCodeRoutes from "./routes/uniqueSurveyCodeRoutes";
+import apiKeyRoutes from "./routes/apiKeyRoutes";
 
 dotenv.config();
 
@@ -83,6 +84,7 @@ app.use("/api/survey", surveyRoutes);
 app.use("/api/evaluation", evaluationRoutes); 
 app.use("/api/geographic", geographicRoutes);
 app.use("/api/unique-codes", uniqueSurveyCodeRoutes);
+app.use("/api/keys", apiKeyRoutes);
 
 // Basic route
 app.get("/", (req: Request, res: Response) => {

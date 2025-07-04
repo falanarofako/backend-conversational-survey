@@ -30,11 +30,11 @@ router.get("/current-question", protect, handleGetCurrentQuestion);
 router.get("/status/:id", protect, handleGetSurveyStatus);
 
 /**
- * @route   GET /api/survey/messages/:id
+ * @route   GET /api/survey/messages
  * @desc    Get all messages for a survey session
  * @access  Private
  */
-router.get("/messages/:id", protect, handleGetSurveyMessages);
+router.get("/messages", protect, handleGetSurveyMessages);
 
 /**
  * @route   POST /api/survey/messages

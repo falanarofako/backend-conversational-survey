@@ -120,7 +120,7 @@ export const extractInformation = async (
       };
     } catch (error) {
       // Tangani error dan lakukan retry jika diperlukan
-      await handleLLMError(error);
+      await handleLLMError(String(llmResponse.metadata?.api_key_used ?? ''), error);
 
       if (attempt < MAX_RETRIES) {
         console.log(

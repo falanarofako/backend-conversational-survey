@@ -11,8 +11,8 @@ import {
   getProvinceNames,
   getRegencyNamesByProvinceName,
 } from "./provincesAndRegenciesService";
-import mongoose, { set } from "mongoose";
-import SurveyMessage from "../models/SurveyMessage";
+import mongoose from "mongoose";
+import SurveyMessageBundle from "../models/SurveyMessageBundle";
 import QuestionnaireModel from "../models/Questionnaire";
 import { analyzeSurveyIntent } from "./surveyIntentService";
 import { classifyIntentWithContext } from "./enhancedIntentClassificationService";
@@ -73,15 +73,12 @@ export const startSurveySession = async (userId: string, survey: any) => {
       first_question: latestQuestionnaire.survey.categories[0].questions[0],
     };
 
-    await SurveyMessage.create(
-      [
-        {
-          session_id: newSession._id,
-          user_message: null,
-          system_response: system_response,
-        },
-      ],
-      { session } // Use the same session for this operation
+    await addSurveyMessage(
+      userId,
+      null,
+      system_response,
+      (newSession._id as mongoose.Types.ObjectId).toString(),
+      "survey"
     );
 
     await session.commitTransaction();
@@ -505,13 +502,13 @@ export const processSurveyResponse = async (
             improved_response: "Tidak tahu",
           };
           // Return response
-          await SurveyMessage.create({
-            user_id: userId,
-            session_id: sessionId,
-            user_message: userResponse,
-            mode: "survey",
-            system_response: system_response,
-          });
+          await addSurveyMessage(
+            userId,
+            userResponse,
+            system_response,
+            sessionId,
+            "survey"
+          );
           return {
             ...system_response,
             session_id: sessionId,
@@ -538,13 +535,13 @@ export const processSurveyResponse = async (
             improved_response: "",
           };
           // Return response
-          await SurveyMessage.create({
-            user_id: userId,
-            session_id: sessionId,
-            user_message: userResponse,
-            mode: "survey",
-            system_response: system_response,
-          });
+          await addSurveyMessage(
+            userId,
+            userResponse,
+            system_response,
+            sessionId,
+            "survey"
+          );
           return {
             ...system_response,
             session_id: sessionId,
@@ -689,13 +686,13 @@ export const processSurveyResponse = async (
   }
 
   // Store message with user_id directly - include improved_response in the system_response
-  await SurveyMessage.create({
-    user_id: userId,
-    session_id: sessionId,
-    user_message: userResponse,
-    mode: "survey",
-    system_response: system_response,
-  });
+  await addSurveyMessage(
+    userId,
+    userResponse,
+    system_response,
+    sessionId,
+    "survey"
+  );
 
   if (!session) {
     if (!sessionId) {
@@ -832,10 +829,9 @@ export const getSurveySessionStatus = async (sessionId: string) => {
       currentQuestion = allQuestions[session.current_question_index];
     }
 
-    // Get all messages for this session
-    const messages = await SurveyMessage.find({
-      session_id: sessionId,
-    }).sort({ timestamp: 1 });
+    // Get bundle for the user (all messages across sessions)
+    const userBundle = await SurveyMessageBundle.findOne({ user_id: session.user_id });
+    const messages = userBundle ? userBundle.messages : [];
 
     // Get response statistics
     const answeredQuestions = session.responses.length;
@@ -876,12 +872,13 @@ export const getSurveySessionStatus = async (sessionId: string) => {
 
 export const getSurveySessionMessages = async (userId: string) => {
   try {
-    // Fetch all messages for this user, sorted by timestamp
-    const messages = await SurveyMessage.find({
-      user_id: userId,
-    }).sort({ timestamp: 1 });
+    // Fetch all bundles for the user and flatten messages
+    const bundles = await SurveyMessageBundle.find({ user_id: userId });
+    const allMessages = bundles
+      .flatMap((b) => b.messages)
+      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 
-    return messages;
+    return allMessages;
   } catch (error) {
     console.error("Error getting survey session messages:", error);
     throw error;
@@ -890,24 +887,32 @@ export const getSurveySessionMessages = async (userId: string) => {
 
 export const addSurveyMessage = async (
   userId: string,
-  userMessage: string,
+  userMessage: string | null,
   systemResponse: any,
   sessionId?: string,
   mode: "survey" | "qa" = "survey"
 ) => {
   try {
-    // Create a new survey message
-    const message = await SurveyMessage.create({
+    const filter = {
       user_id: new mongoose.Types.ObjectId(userId),
-      session_id: sessionId
-        ? new mongoose.Types.ObjectId(sessionId)
-        : undefined,
-      user_message: userMessage,
-      system_response: systemResponse,
-      mode,
-    });
+    } as any;
 
-    return message;
+    const update = {
+      $push: {
+        messages: {
+          user_message: userMessage,
+          system_response: systemResponse,
+          mode,
+          timestamp: new Date(),
+        },
+      },
+    };
+
+    const options = { upsert: true, new: true } as any;
+
+    const bundle = await SurveyMessageBundle.findOneAndUpdate(filter, update, options);
+
+    return bundle;
   } catch (error) {
     console.error("Error adding survey message:", error);
     throw error;

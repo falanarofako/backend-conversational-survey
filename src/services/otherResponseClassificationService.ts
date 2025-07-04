@@ -101,7 +101,7 @@ export const classifyOtherResponseClassification = async (
         },
       };
     } catch (error) {
-      await handleLLMError(error);
+      await handleLLMError(String(llmResponse.metadata?.api_key_used ?? ''), error);
       if (attempt < 2) {
         return classifyOtherResponseClassification(params, attempt + 1);
       }
