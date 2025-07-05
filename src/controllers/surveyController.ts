@@ -18,6 +18,9 @@ import QuestionnaireModel from "../models/Questionnaire";
 import { IUser } from "../models/User";
 import mongoose from "mongoose";
 import SurveySession from "../models/SurveySession";
+import { classifyIntentWithContext } from "../services/enhancedIntentClassificationService";
+import { classifyOtherResponseClassification } from "../services/otherResponseClassificationService";
+import { extractInformation } from "../services/informationExtractionService";
 
 export const handleStartSurvey = async (
   req: Request,
@@ -447,5 +450,233 @@ export const handleGetAnsweredQuestions = async (
     res.json({ success: true, data: answered });
   } catch (error) {
     res.status(500).json({ success: false, message: error instanceof Error ? error.message : "Unknown error" });
+  }
+};
+
+// Endpoint: PUT /api/survey/answer/:questionCode
+export const handleUpdateAnswer = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { questionCode } = req.params;
+    const { answer } = req.body;
+    const userId = req.user._id;
+
+    if (!questionCode) {
+      res.status(400).json({
+        success: false,
+        message: "Question code is required",
+      });
+      return;
+    }
+
+    if (answer === undefined || answer === null) {
+      res.status(400).json({
+        success: false,
+        message: "Answer is required",
+      });
+      return;
+    }
+
+    // Get user's active session
+    const session = await getUserActiveSurveySession(userId);
+    if (!session) {
+      res.status(404).json({
+        success: false,
+        message: "No active survey session found",
+      });
+      return;
+    }
+
+    // Get the latest questionnaire
+    const latestQuestionnaire = await QuestionnaireModel.findOne().sort({
+      createdAt: -1,
+    });
+    if (!latestQuestionnaire) {
+      res.status(404).json({
+        success: false,
+        message: "Questionnaire not found",
+      });
+      return;
+    }
+
+    // Find the question by questionCode
+    const allQuestions = latestQuestionnaire.survey.categories.flatMap(
+      (category: any) => category.questions
+    );
+    const targetQuestion = allQuestions.find(q => q.code === questionCode);
+
+    if (!targetQuestion) {
+      res.status(404).json({
+        success: false,
+        message: `Question with code ${questionCode} not found`,
+      });
+      return;
+    }
+
+    const sessionId = (session._id as mongoose.Types.ObjectId).toString();
+
+    // Process the question (same as in processSurveyResponse)
+    let currentQuestion = targetQuestion;
+    if (["S002", "S004", "S003", "S005", "S007"].includes(currentQuestion.code)) {
+      currentQuestion = await updateQuestionOptions(currentQuestion, sessionId);
+    }
+    currentQuestion = await replacePlaceholders(currentQuestion, sessionId);
+
+    // Special handling for S006 (timestamp)
+    const processedUserResponse =
+      currentQuestion.code === "S006"
+        ? `${answer} (Dikirim pada ${new Date().toLocaleString()})`
+        : answer;
+
+    // Use enhanced context-aware classification (same as processSurveyResponse)
+    const classificationResult = await classifyIntentWithContext({
+      question: currentQuestion,
+      response: processedUserResponse,
+      sessionId: sessionId,
+    });
+
+    if (!classificationResult.success) {
+      throw new Error(classificationResult.error);
+    }
+
+    // Handle different intent types (same logic as processSurveyResponse)
+    const intent = classificationResult.data?.intent;
+    let system_response: any = {};
+
+    if (intent === "unexpected_answer" || intent === "other") {
+      const otherClassResult = await classifyOtherResponseClassification({
+        question: currentQuestion,
+        response: processedUserResponse,
+      });
+
+      if (otherClassResult.success && otherClassResult.data) {
+        const { category } = otherClassResult.data;
+
+        if (category === "tidak_tahu") {
+          // Remove previous response for this question_code if exists
+          session.responses = session.responses.filter(r => r.question_code !== currentQuestion.code);
+          session.responses.push({
+            question_code: currentQuestion.code,
+            valid_response: "Tidak tahu",
+          });
+
+          system_response = {
+            info: "answer_updated",
+            question_code: questionCode,
+            improved_response: "Tidak tahu",
+            message: "Jawaban berhasil diperbarui",
+          };
+        } else if (category === "tidak_mau_menjawab") {
+          // Remove previous response for this question_code if exists
+          session.responses = session.responses.filter(r => r.question_code !== currentQuestion.code);
+          session.responses.push({
+            question_code: currentQuestion.code,
+            valid_response: "",
+          });
+
+          system_response = {
+            info: "answer_updated",
+            question_code: questionCode,
+            improved_response: "",
+            message: "Jawaban berhasil diperbarui",
+          };
+        } else {
+          // Default for "lainnya"
+          system_response = {
+            info: "unexpected_answer_or_other",
+            question_code: questionCode,
+            clarification_reason: classificationResult.data?.clarification_reason,
+            follow_up_question: classificationResult.data?.follow_up_question,
+            improved_response: classificationResult.data?.improved_response,
+            message: "Jawaban memerlukan klarifikasi",
+          };
+        }
+      }
+    } else if (intent === "question") {
+      try {
+        const ragApiUrl = process.env.RAG_API_URL || "";
+        if (!ragApiUrl) {
+          throw new Error("RAG API URL is not configured");
+        }
+
+        const questionToAsk =
+          classificationResult.data?.improved_response || processedUserResponse;
+        const response = await fetch(`${ragApiUrl}/api/rag/ask`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: questionToAsk }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`RAG API responded with status: ${response.status}`);
+        }
+
+        const ragResult = await response.json();
+        system_response = {
+          info: "question",
+          question_code: questionCode,
+          answer: ragResult.answer || ragResult,
+          improved_response: classificationResult.data?.improved_response,
+          message: "Pertanyaan Anda telah dijawab",
+        };
+      } catch (error) {
+        console.error("Error calling RAG API:", error);
+        system_response = {
+          info: "error",
+          question_code: questionCode,
+          additional_info: "Maaf, sistem belum dapat menjawab pertanyaan Anda.",
+          improved_response: classificationResult.data?.improved_response,
+          message: "Terjadi kesalahan saat memproses pertanyaan",
+        };
+      }
+    } else if (intent === "expected_answer") {
+      // Use the improved response for extraction
+      const improvedResponse =
+        classificationResult.data?.improved_response || processedUserResponse;
+
+      // Process the answer with improved response
+      const extractionResult = await extractInformation({
+        question: currentQuestion,
+        response: improvedResponse,
+      });
+
+      if (!extractionResult.success) {
+        throw new Error(extractionResult.error);
+      }
+
+      // Prepare response data
+      const extractedInfo = extractionResult.data?.extracted_information ?? "";
+
+      // Remove previous response for this question_code if exists
+      session.responses = session.responses.filter(r => r.question_code !== currentQuestion.code);
+      session.responses.push({
+        question_code: currentQuestion.code,
+        valid_response: extractedInfo,
+      });
+
+      system_response = {
+        info: "answer_updated",
+        question_code: questionCode,
+        improved_response: classificationResult.data?.improved_response,
+        extracted_answer: extractedInfo,
+        message: "Jawaban berhasil diperbarui",
+      };
+    }
+
+    // Save session
+    await session.save();
+
+    res.json({
+      success: true,
+      ...system_response,
+      session_id: sessionId,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 };

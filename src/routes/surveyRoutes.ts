@@ -10,6 +10,7 @@ import {
   handleAddSurveyMessage,
   handleGetCurrentQuestion,
   handleGetAnsweredQuestions,
+  handleUpdateAnswer,
 } from "../controllers/surveyController";
 import { analyzeSurveyIntentController } from "../controllers/surveyIntentController";
 import { protect } from "../middleware/authMiddleware";
@@ -78,5 +79,12 @@ router.post("/complete", protect, handleCompleteSurvey);
  * @access  Private
  */
 router.get("/answered", protect, handleGetAnsweredQuestions);
+
+/**
+ * @route   PUT /api/survey/answer/:questionCode
+ * @desc    Update an answer for a specific question in the active survey session
+ * @access  Private
+ */
+router.put("/answer/:questionCode", protect, handleUpdateAnswer);
 
 export default router;
