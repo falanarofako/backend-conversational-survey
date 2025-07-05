@@ -149,7 +149,7 @@ const determineModelForQuestion = (question: Question | string): string => {
   
   // Use Pro model for complex questions
   if (advancedQuestionCodes.includes(questionCode)) {
-    return "gemini-2.5-pro-exp-03-25";
+    return "gemini-2.5-pro";
   }
   
   // Default to flash model for simpler questions
@@ -236,7 +236,7 @@ export const classifyIntentWithContext = async (
     // Get LLM instance with appropriate model
     const llmResponse = modelToUse === "gemini-2.0-flash-lite"
       ? await getCurrentLLM() // Use Flash model for simple questions 
-      : await createCustomLLM({ model: "gemini-2.5-pro-exp-03-25" }); // Default to Pro model
+      : await createCustomLLM({ model: "gemini-2.5-pro" }); // Default to Pro model
 
     if (!llmResponse.success || !llmResponse.data) {
       throw new Error(llmResponse.error || "Failed to get LLM instance");

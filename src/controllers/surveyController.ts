@@ -424,20 +424,26 @@ export const handleGetAnsweredQuestions = async (
       });
     });
 
-    // Collect all answered questions from all sessions
-    const answered: { question_code: string; question_text: string; answer: any }[] = [];
+    // Collect only the latest answer for each question_code (no duplicates)
+    const latestAnswers: Record<string, { question_code: string; question_text: string; answer: any; updatedAt: Date }> = {};
     sessions.forEach(session => {
       session.responses.forEach(resp => {
         if (resp.valid_response !== undefined && resp.valid_response !== null && resp.valid_response !== "") {
-          answered.push({
-            question_code: resp.question_code,
-            question_text: allQuestions[resp.question_code]?.text || resp.question_code,
-            answer: resp.valid_response,
-          });
+          // Use session.updatedAt as the timestamp for the answer
+          const key = resp.question_code;
+          if (!latestAnswers[key] || session.updatedAt > latestAnswers[key].updatedAt) {
+            latestAnswers[key] = {
+              question_code: resp.question_code,
+              question_text: allQuestions[resp.question_code]?.text || resp.question_code,
+              answer: resp.valid_response,
+              updatedAt: session.updatedAt,
+            };
+          }
         }
       });
     });
-
+    // Return as array, sorted by question_code or updatedAt if needed
+    const answered = Object.values(latestAnswers).map(({ updatedAt, ...rest }) => rest);
     res.json({ success: true, data: answered });
   } catch (error) {
     res.status(500).json({ success: false, message: error instanceof Error ? error.message : "Unknown error" });

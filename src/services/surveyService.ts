@@ -481,7 +481,8 @@ export const processSurveyResponse = async (
         const { category } = otherClassResult.data;
 
         if (category === "tidak_tahu") {
-          // Simpan valid_response dengan nilai "Tidak tahu"
+          // Remove previous response for this question_code if exists
+          session.responses = session.responses.filter(r => r.question_code !== currentQuestion.code);
           session.responses.push({
             question_code: currentQuestion.code,
             valid_response: "Tidak tahu",
@@ -514,7 +515,8 @@ export const processSurveyResponse = async (
             session_id: sessionId,
           };
         } else if (category === "tidak_mau_menjawab") {
-          // Simpan valid_response dengan nilai kosong
+          // Remove previous response for this question_code if exists
+          session.responses = session.responses.filter(r => r.question_code !== currentQuestion.code);
           session.responses.push({
             question_code: currentQuestion.code,
             valid_response: "",
@@ -616,7 +618,8 @@ export const processSurveyResponse = async (
       // Prepare response data
       const extractedInfo = extractionResult.data?.extracted_information ?? "";
 
-      // Update session data
+      // Remove previous response for this question_code if exists
+      session.responses = session.responses.filter(r => r.question_code !== currentQuestion.code);
       session.responses.push({
         question_code: currentQuestion.code,
         valid_response: extractedInfo,
