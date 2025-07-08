@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import UniqueSurveyCode from "../models/UniqueSurveyCode";
 import SurveySession from "../models/SurveySession";
 import mongoose from "mongoose";
+import User from "../models/User";
 
 // Tambah satu kode unik
 export const createUniqueSurveyCode = async (req: Request, res: Response): Promise<void> => {
@@ -117,5 +118,51 @@ export const validateAndSubmitUCODE = async (req: Request, res: Response): Promi
     res.json({ success: true, data: code });
   } catch (err) {
     res.status(500).json({ message: "Gagal validasi/submit kode unik", error: err });
+  }
+};
+
+// Assign a unique survey code to the current user
+export const assignUniqueSurveyCodeToUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.id || req.user?._id;
+    const { kode_unik } = req.body;
+    if (!kode_unik) {
+      res.status(400).json({ message: "kode_unik wajib diisi" });
+      return;
+    }
+    // Validate code exists
+    const code = await UniqueSurveyCode.findOne({ kode_unik });
+    if (!code) {
+      res.status(404).json({ message: "Kode unik tidak valid" });
+      return;
+    }
+    // Update user
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { activeSurveyUniqueCode: kode_unik },
+      { new: true }
+    );
+    if (!user) {
+      res.status(404).json({ message: "User tidak ditemukan" });
+      return;
+    }
+    res.json({ success: true, kode_unik });
+  } catch (err) {
+    res.status(500).json({ message: "Gagal assign kode unik ke user", error: err });
+  }
+};
+
+// Get the current user's unique survey code
+export const getUserUniqueSurveyCode = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.id || req.user?._id;
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).json({ message: "User tidak ditemukan" });
+      return;
+    }
+    res.json({ kode_unik: user.activeSurveyUniqueCode || null });
+  } catch (err) {
+    res.status(500).json({ message: "Gagal mengambil kode unik user", error: err });
   }
 }; 

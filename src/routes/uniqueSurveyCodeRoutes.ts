@@ -5,6 +5,8 @@ import {
   validateUniqueSurveyCode,
   deleteUniqueSurveyCode,
   validateAndSubmitUCODE,
+  assignUniqueSurveyCodeToUser,
+  getUserUniqueSurveyCode,
 } from "../controllers/uniqueSurveyCodeController";
 import { protect } from "../middleware/authMiddleware";
 
@@ -20,5 +22,9 @@ router.get("/validate/:kode_unik", validateUniqueSurveyCode);
 router.delete("/:kode_unik", protect, deleteUniqueSurveyCode);
 // GET /validate-and-submit/:kode_unik
 router.get("/validate-and-submit/:kode_unik", protect, validateAndSubmitUCODE);
+// POST /assign-to-user
+router.post("/assign-to-user", protect, assignUniqueSurveyCodeToUser);
+// GET /user
+router.get("/user", protect, getUserUniqueSurveyCode);
 
 export default router; 
