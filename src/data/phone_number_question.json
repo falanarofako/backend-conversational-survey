@@ -1,0 +1,22 @@
+{
+  "code": "S001",
+  "text": "Tuliskan nomor handphone Anda (misalnya: 08123456789)",
+  "type": "text",
+  "multiple": false,
+  "options": [],
+  "system_guidelines": [
+    "Pastikan nomor telepon di awali dengan '0' atau '+62'",
+    "Pastikan Anda hanya mengategorikan respons pengguna dalam 'expected_answer' ketika tidak ada validasi nomor telepon yang dilanggar."
+  ],
+  "allow_other": false,
+  "validation": {
+    "required": true,
+    "pattern": "^(0[0-9]{7,14}|\\+62[0-9]{7,12})$",
+    "_id": {
+      "$oid": "676eeb60160955013d0ced8d"
+    }
+  },
+  "_id": {
+    "$oid": "676eeb60160955013d0ced8c"
+  }
+}

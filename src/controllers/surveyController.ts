@@ -564,7 +564,7 @@ export const handleUpdateAnswer = async (
 
           system_response = {
             info: "answer_updated",
-            question_code: questionCode,
+            currentQuestion: targetQuestion,
             improved_response: "Tidak tahu",
             message: "Jawaban berhasil diperbarui",
           };
@@ -578,7 +578,7 @@ export const handleUpdateAnswer = async (
 
           system_response = {
             info: "answer_updated",
-            question_code: questionCode,
+            currentQuestion: targetQuestion,
             improved_response: "",
             message: "Jawaban berhasil diperbarui",
           };
@@ -586,7 +586,7 @@ export const handleUpdateAnswer = async (
           // Default for "lainnya"
           system_response = {
             info: "unexpected_answer_or_other",
-            question_code: questionCode,
+            currentQuestion: targetQuestion,
             clarification_reason: classificationResult.data?.clarification_reason,
             follow_up_question: classificationResult.data?.follow_up_question,
             improved_response: classificationResult.data?.improved_response,
@@ -616,7 +616,7 @@ export const handleUpdateAnswer = async (
         const ragResult = await response.json();
         system_response = {
           info: "question",
-          question_code: questionCode,
+          currentQuestion: targetQuestion,
           answer: ragResult.answer || ragResult,
           improved_response: classificationResult.data?.improved_response,
           message: "Pertanyaan Anda telah dijawab",
@@ -625,7 +625,7 @@ export const handleUpdateAnswer = async (
         console.error("Error calling RAG API:", error);
         system_response = {
           info: "error",
-          question_code: questionCode,
+          currentQuestion: targetQuestion,
           additional_info: "Maaf, sistem belum dapat menjawab pertanyaan Anda.",
           improved_response: classificationResult.data?.improved_response,
           message: "Terjadi kesalahan saat memproses pertanyaan",
@@ -658,7 +658,7 @@ export const handleUpdateAnswer = async (
 
       system_response = {
         info: "answer_updated",
-        question_code: questionCode,
+        currentQuestion: targetQuestion,
         improved_response: classificationResult.data?.improved_response,
         extracted_answer: extractedInfo,
         message: "Jawaban berhasil diperbarui",

@@ -207,6 +207,7 @@ const enhancedClassificationPrompt = ChatPromptTemplate.fromTemplate(`
   9. PENTING: Gunakan riwayat percakapan dan jawaban sebelumnya untuk memahami konteks dan kesinambungan respons pengguna.
   
   TAMBAHAN PENTING:
+  - Pastikan Anda menggunakan bahasa yang sopan untuk responden dalam follow_up_question yang Anda buat.
   - Jika intent adalah "expected_answer", buat 'improved_response' dengan format yang sesuai dengan tipe pertanyaan (contoh: hanya angka untuk pertanyaan numerik, sesuaikan dengan pilihan yang tersedia untuk pertanyaan pilihan ganda, dll).
   - Jika jawaban ambigu atau tersirat, gunakan konteks dari jawaban sebelumnya untuk menyusun jawaban yang lebih lengkap dan presisi.
   - Untuk "question" atau tipe lain, 'improved_response' sebaiknya berupa reformulasi yang lebih jelas dari pertanyaan/respons pengguna.

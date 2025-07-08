@@ -430,15 +430,14 @@ export const processSurveyResponse = async (
 
     // Di fungsi processSurveyResponse, tambahkan logging
     console.log("Current responses in session:", session.responses);
-
+    
+    if (!sessionId) {
+      throw new Error("Session ID not found");
+    }
     // Get current question
     let currentQuestion = survey.categories.flatMap(
       (category: any) => category.questions
     )[session.current_question_index];
-
-    if (!sessionId) {
-      throw new Error("Session ID not found");
-    }
 
     // Process the question
     if (
