@@ -182,40 +182,24 @@ export function updateSessionMetrics(session: any) {
   };
 }
 
-// Get valid response for a question from a session
-async function getValidResponse(
-  sessionId: string,
+// Helper diubah menjadi sinkron dan menerima objek session, bukan sessionId
+function getValidResponse(
+  session: ISurveySession,
   questionCode: string
-): Promise<any | null> {
-  try {
-    // Find the SurveySession by sessionId
-    const session = await SurveySession.findById(sessionId);
-
-    if (!session) {
-      throw new Error("Survey session not found");
-    }
-
-    // Find response by question_code
-    const response = session.responses.find(
-      (resp: IResponse) => resp.question_code === questionCode
-    );
-
-    if (response) {
-      return response.valid_response;
-    }
-
-    // If response not found
+): any | null {
+  if (!session) {
     return null;
-  } catch (error) {
-    console.error("Error fetching valid response:", error);
-    throw error;
   }
+  const response = session.responses.find(
+    (resp: IResponse) => resp.question_code === questionCode
+  );
+  return response ? response.valid_response : null;
 }
 
 // Update question options based on previous responses
 export const updateQuestionOptions = async (
   currentQuestion: any,
-  sessionId: string
+  session: ISurveySession
 ): Promise<any> => {
   try {
     // Handle province questions (S002, S004)
@@ -226,7 +210,7 @@ export const updateQuestionOptions = async (
     }
     // Handle regency questions based on selected province (S003)
     else if (currentQuestion.code === "S003") {
-      const provinceName = await getValidResponse(sessionId, "S002");
+      const provinceName = getValidResponse(session, "S002");
       if (provinceName) {
         // Get regency names from database - async call
         const regencyNames = await getRegencyNamesByProvinceName(provinceName);
@@ -260,7 +244,7 @@ export const updateQuestionOptions = async (
     }
     // Handle regency questions based on selected province (S005)
     else if (currentQuestion.code === "S005") {
-      const provinceName = await getValidResponse(sessionId, "S004");
+      const provinceName = getValidResponse(session, "S004");
       if (provinceName) {
         // Get regency names from database - async call
         const regencyNames = await getRegencyNamesByProvinceName(provinceName);
@@ -294,7 +278,7 @@ export const updateQuestionOptions = async (
     }
     // Handle month selection (S007)
     else if (currentQuestion.code === "S007") {
-      const monthNamesChosen = await getValidResponse(sessionId, "S006");
+      const monthNamesChosen = getValidResponse(session, "S006");
       if (monthNamesChosen) {
         currentQuestion.options = monthNamesChosen;
       } else {
@@ -337,19 +321,15 @@ const getCurrentMonthName = (): string => {
   return months[currentMonth];
 };
 
-// Replace placeholders in question text
-export const replacePlaceholders = async (
+// Replace placeholders in question text (diubah menjadi sinkron)
+export const replacePlaceholders = (
   currentQuestion: any,
-  sessionId: string
-): Promise<any> => {
+  session: ISurveySession
+): any => {
   const placeholders = ["${S005}", "${S007}", "${currentMonth}"];
 
   for (const placeholder of placeholders) {
     if (currentQuestion.text.includes(placeholder)) {
-      console.log(
-        "Current question text before replacement:",
-        currentQuestion.text
-      );
       if (placeholder === "${currentMonth}") {
         const currentMonthName = getCurrentMonthName();
         currentQuestion.text = currentQuestion.text.replace(
@@ -358,22 +338,17 @@ export const replacePlaceholders = async (
         );
       } else {
         const questionCode = placeholder === "${S005}" ? "S005" : "S007";
-        const validResponse = await getValidResponse(sessionId, questionCode);
+        const validResponse = getValidResponse(session, questionCode);
 
         if (validResponse) {
           currentQuestion.text = currentQuestion.text.replace(
             placeholder,
             validResponse
           );
-          console.log(
-            "Current question text after replacement:",
-            currentQuestion.text
-          );
         }
       }
     }
   }
-
   return currentQuestion;
 };
 
@@ -422,6 +397,10 @@ export const processSurveyResponse = async (
       session = await startSurveySessionInternal(userId, survey);
       sessionId = (session._id as mongoose.Types.ObjectId).toString();
 
+      // Get first question and replace placeholders like ${currentMonth}
+      let firstQuestion = survey.categories[0].questions[0];
+      firstQuestion = replacePlaceholders(firstQuestion, session);
+
       // Prepare response
       system_response = {
         info: "survey_started",
@@ -431,14 +410,13 @@ export const processSurveyResponse = async (
           explanation: intentResult.data.explanation,
         },
         additional_info: `Terima kasih sudah bersedia mengikuti survei ini! Silakan jawab pertanyaan berikut dengan jujur dan sesuai pengalaman Anda.`,
-        next_question: survey.categories[0].questions[0],
+        next_question: firstQuestion,
       };
       // Set timestamp untuk pertanyaan pertama
       session.last_question_timestamp = new Date();
       await session.save();
 
     } else {
-      console.log("Test aja");
       // User doesn't want to start survey
       system_response = {
         info: "not_ready_for_survey",
@@ -473,10 +451,10 @@ export const processSurveyResponse = async (
     if (
       ["S002", "S004", "S003", "S005", "S007"].includes(currentQuestion.code)
     ) {
-      currentQuestion = await updateQuestionOptions(currentQuestion, sessionId);
+      currentQuestion = await updateQuestionOptions(currentQuestion, session);
     }
 
-    currentQuestion = await replacePlaceholders(currentQuestion, sessionId);
+    currentQuestion = replacePlaceholders(currentQuestion, session);
 
     // Special handling for S006 (timestamp)
     const processedUserResponse =
@@ -525,15 +503,18 @@ export const processSurveyResponse = async (
           updateSessionMetrics(session);
           // Lanjutkan ke pertanyaan berikutnya
           session.current_question_index += 1;
+          
           let nextQuestion = survey.categories.flatMap(
             (cat: any) => cat.questions
           )[session.current_question_index];
-          nextQuestion = await replacePlaceholders(nextQuestion, sessionId);
-          // Set timestamp untuk pertanyaan berikutnya (hanya jika nextQuestion ada)
+
+          // Jalankan replace placeholder di sini menggunakan session dari memori
+          nextQuestion = replacePlaceholders(nextQuestion, session);
+          
           if (nextQuestion) {
             session.last_question_timestamp = new Date();
-            await session.save();
           }
+          await session.save();
 
           system_response = {
             info: "expected_answer",
@@ -568,14 +549,18 @@ export const processSurveyResponse = async (
           updateSessionMetrics(session);
           // Lanjutkan ke pertanyaan berikutnya
           session.current_question_index += 1;
+          
           let nextQuestion = survey.categories.flatMap(
             (cat: any) => cat.questions
           )[session.current_question_index];
-          nextQuestion = await replacePlaceholders(nextQuestion, sessionId);
+          
+          // Jalankan replace placeholder di sini menggunakan session dari memori
+          nextQuestion = replacePlaceholders(nextQuestion, session);
+          
           if (nextQuestion) {
             session.last_question_timestamp = new Date();
-            await session.save();
           }
+          await session.save();
 
           system_response = {
             info: "expected_answer",
@@ -724,10 +709,14 @@ export const processSurveyResponse = async (
         let nextQuestion = survey.categories.flatMap(
           (cat: any) => cat.questions
         )[session.current_question_index];
-        nextQuestion = await replacePlaceholders(nextQuestion, sessionId);
+        
+        // JALANKAN REPLACE PLACEHOLDER SEBELUM SAVE
+        nextQuestion = replacePlaceholders(nextQuestion, session);
+        
         // Set timestamp untuk pertanyaan berikutnya
         session.last_question_timestamp = new Date();
         await session.save();
+        
         system_response = {
           info: "expected_answer",
           next_question: nextQuestion || null,

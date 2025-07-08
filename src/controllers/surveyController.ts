@@ -371,9 +371,9 @@ export const handleGetCurrentQuestion = async (
     if (
       ["S002", "S004", "S003", "S005", "S007"].includes(currentQuestion.code)
     ) {
-      currentQuestion = await updateQuestionOptions(currentQuestion, sessionId);
+      currentQuestion = await updateQuestionOptions(currentQuestion, session);
     }
-    currentQuestion = await replacePlaceholders(currentQuestion, sessionId);
+    currentQuestion = replacePlaceholders(currentQuestion, session);
 
     res.status(200).json({
       success: true,
@@ -521,9 +521,9 @@ export const handleUpdateAnswer = async (
     // Process the question (same as in processSurveyResponse)
     let currentQuestion = targetQuestion;
     if (["S002", "S004", "S003", "S005", "S007"].includes(currentQuestion.code)) {
-      currentQuestion = await updateQuestionOptions(currentQuestion, sessionId);
+      currentQuestion = await updateQuestionOptions(currentQuestion, session);
     }
-    currentQuestion = await replacePlaceholders(currentQuestion, sessionId);
+    currentQuestion = replacePlaceholders(currentQuestion, session);
 
     // Special handling for S006 (timestamp)
     const processedUserResponse =
