@@ -48,6 +48,7 @@ export const startSurveySession = async (userId: string, survey: any) => {
     const newSession = new SurveySession({
       user_id: new mongoose.Types.ObjectId(userId),
       responses: [],
+      metrics: { is_breakoff: true }
     });
 
     // Save the new session
@@ -130,12 +131,7 @@ export const completeSurveySession = async (
     const is_breakoff = item_nonresponse > 0;
 
     surveySession.status = "COMPLETED";
-    surveySession.metrics = {
-      is_breakoff,
-      avg_response_time,
-      item_nonresponse,
-      dont_know_response,
-    }
+    updateSessionMetrics(surveySession);
     
     await surveySession.save({ session });
 
@@ -155,6 +151,35 @@ export const completeSurveySession = async (
     throw error;
   }
 };
+
+// Helper to update metrics on a session
+export function updateSessionMetrics(session: any) {
+  const dont_know_response = session.responses.filter(
+    (r: any) =>
+      typeof r.valid_response === "string" &&
+      r.valid_response.toLowerCase() === "tidak tahu"
+  ).length;
+  const response_times = session.responses
+    .map((r: any) => (typeof r.response_time === "number" ? r.response_time : 0))
+    .filter((rt: number) => rt > 0);
+  const avg_response_time =
+    response_times.length > 0
+      ? response_times.reduce((a: number, b: number) => a + b, 0) / response_times.length
+      : 0;
+  // is_breakoff true jika status session bukan COMPLETED
+  const is_breakoff = session.status !== "COMPLETED";
+  session.metrics = {
+    is_breakoff,
+    avg_response_time,
+    item_nonresponse: session.responses.filter(
+      (r: any) =>
+        r.valid_response === "" ||
+        r.valid_response === null ||
+        r.valid_response === undefined
+    ).length,
+    dont_know_response,
+  };
+}
 
 // Get valid response for a question from a session
 async function getValidResponse(
@@ -487,6 +512,7 @@ export const processSurveyResponse = async (
             valid_response: "Tidak tahu",
           });
 
+          updateSessionMetrics(session);
           // Lanjutkan ke pertanyaan berikutnya
           session.current_question_index += 1;
           await session.save();
@@ -521,6 +547,7 @@ export const processSurveyResponse = async (
             valid_response: "",
           });
 
+          updateSessionMetrics(session);
           // Lanjutkan ke pertanyaan berikutnya
           session.current_question_index += 1;
           await session.save();
@@ -624,6 +651,7 @@ export const processSurveyResponse = async (
         valid_response: extractedInfo,
       });
 
+      updateSessionMetrics(session);
       // Handle skiplogic
       const skipMapping: Record<string, Record<string, number>> = {
         S008: { Ya: 14, Tidak: 15 },

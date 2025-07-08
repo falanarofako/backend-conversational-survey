@@ -13,6 +13,7 @@ import {
   // updateQuestionOptions,
   // replacePlaceholders,
   addSurveyMessage,
+  updateSessionMetrics,
 } from "../services/surveyService";
 import QuestionnaireModel from "../models/Questionnaire";
 import { IUser } from "../models/User";
@@ -666,6 +667,7 @@ export const handleUpdateAnswer = async (
     }
 
     // Save session
+    updateSessionMetrics(session);
     await session.save();
 
     res.json({
