@@ -23,6 +23,7 @@ export interface ISurveySession extends Document {
   metrics?: IResponseMetrics;
   createdAt: Date;
   updatedAt: Date;
+  last_question_timestamp?: Date;
 }
 
 const ResponseSchema = new Schema({
@@ -54,6 +55,10 @@ const SurveySessionSchema = new Schema(
       avg_response_time: { type: Number, default: 0 },
       item_nonresponse: { type: Number, default: 0 },
       dont_know_response: { type: Number, default: 0 },
+    },
+    last_question_timestamp: {
+      type: Date,
+      default: null,
     },
   },
   {

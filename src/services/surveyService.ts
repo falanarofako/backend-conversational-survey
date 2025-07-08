@@ -48,7 +48,8 @@ export const startSurveySession = async (userId: string, survey: any) => {
     const newSession = new SurveySession({
       user_id: new mongoose.Types.ObjectId(userId),
       responses: [],
-      metrics: { is_breakoff: true }
+      metrics: { is_breakoff: true },
+      last_question_timestamp: new Date(),
     });
 
     // Save the new session
@@ -432,6 +433,10 @@ export const processSurveyResponse = async (
         additional_info: `Terima kasih sudah bersedia mengikuti survei ini! Silakan jawab pertanyaan berikut dengan jujur dan sesuai pengalaman Anda.`,
         next_question: survey.categories[0].questions[0],
       };
+      // Set timestamp untuk pertanyaan pertama
+      session.last_question_timestamp = new Date();
+      await session.save();
+
     } else {
       console.log("Test aja");
       // User doesn't want to start survey
@@ -507,20 +512,28 @@ export const processSurveyResponse = async (
         if (category === "tidak_tahu") {
           // Remove previous response for this question_code if exists
           session.responses = session.responses.filter(r => r.question_code !== currentQuestion.code);
+          let response_time = undefined;
+          if (session.last_question_timestamp) {
+            response_time = Date.now() - new Date(session.last_question_timestamp).getTime(); // ms
+          }
           session.responses.push({
             question_code: currentQuestion.code,
             valid_response: "Tidak tahu",
+            ...(response_time !== undefined ? { response_time } : {}),
           });
 
           updateSessionMetrics(session);
           // Lanjutkan ke pertanyaan berikutnya
           session.current_question_index += 1;
-          await session.save();
-
           let nextQuestion = survey.categories.flatMap(
             (cat: any) => cat.questions
           )[session.current_question_index];
           nextQuestion = await replacePlaceholders(nextQuestion, sessionId);
+          // Set timestamp untuk pertanyaan berikutnya (hanya jika nextQuestion ada)
+          if (nextQuestion) {
+            session.last_question_timestamp = new Date();
+            await session.save();
+          }
 
           system_response = {
             info: "expected_answer",
@@ -542,20 +555,27 @@ export const processSurveyResponse = async (
         } else if (category === "tidak_mau_menjawab") {
           // Remove previous response for this question_code if exists
           session.responses = session.responses.filter(r => r.question_code !== currentQuestion.code);
+          let response_time = undefined;
+          if (session.last_question_timestamp) {
+            response_time = Date.now() - new Date(session.last_question_timestamp).getTime(); // ms
+          }
           session.responses.push({
             question_code: currentQuestion.code,
             valid_response: "",
+            ...(response_time !== undefined ? { response_time } : {}),
           });
 
           updateSessionMetrics(session);
           // Lanjutkan ke pertanyaan berikutnya
           session.current_question_index += 1;
-          await session.save();
-
           let nextQuestion = survey.categories.flatMap(
             (cat: any) => cat.questions
           )[session.current_question_index];
           nextQuestion = await replacePlaceholders(nextQuestion, sessionId);
+          if (nextQuestion) {
+            session.last_question_timestamp = new Date();
+            await session.save();
+          }
 
           system_response = {
             info: "expected_answer",
@@ -646,9 +666,14 @@ export const processSurveyResponse = async (
 
       // Remove previous response for this question_code if exists
       session.responses = session.responses.filter(r => r.question_code !== currentQuestion.code);
+      let response_time = undefined;
+      if (session.last_question_timestamp) {
+        response_time = Date.now() - new Date(session.last_question_timestamp).getTime(); // ms
+      }
       session.responses.push({
         question_code: currentQuestion.code,
         valid_response: extractedInfo,
+        ...(response_time !== undefined ? { response_time } : {}),
       });
 
       updateSessionMetrics(session);
@@ -683,27 +708,26 @@ export const processSurveyResponse = async (
 
       if (session.current_question_index >= totalQuestions) {
         session.status = "COMPLETED";
-
-        // Remove active session reference
         await User.findByIdAndUpdate(userId, {
           $unset: { activeSurveySessionId: 1 },
         });
-
+        updateSessionMetrics(session);
+        await session.save();
         system_response = {
           info: "survey_completed",
           additional_info:
             "Survei telah berakhir, terima kasih telah menyelesaikan survei!",
           improved_response: classificationResult.data?.improved_response,
         };
-        await session.save();
       } else {
-        await session.save();
         // Get next question
         let nextQuestion = survey.categories.flatMap(
           (cat: any) => cat.questions
         )[session.current_question_index];
         nextQuestion = await replacePlaceholders(nextQuestion, sessionId);
-
+        // Set timestamp untuk pertanyaan berikutnya
+        session.last_question_timestamp = new Date();
+        await session.save();
         system_response = {
           info: "expected_answer",
           next_question: nextQuestion || null,
@@ -787,6 +811,8 @@ async function startSurveySessionInternal(userId: string, survey: any) {
     const newSession = new SurveySession({
       user_id: new mongoose.Types.ObjectId(userId),
       responses: [],
+      metrics: { is_breakoff: true },
+      last_question_timestamp: new Date(),
     });
 
     await newSession.save({ session });
