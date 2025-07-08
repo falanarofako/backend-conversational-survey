@@ -431,7 +431,7 @@ export const handleGetAnsweredQuestions = async (
     const latestAnswers: Record<string, { question_code: string; question_text: string; answer: any; updatedAt: Date }> = {};
     sessions.forEach(session => {
       session.responses.forEach(resp => {
-        if (resp.valid_response !== undefined && resp.valid_response !== null && resp.valid_response !== "") {
+        if (resp.valid_response !== undefined && resp.valid_response !== null) {
           // Use session.updatedAt as the timestamp for the answer
           const key = resp.question_code;
           if (!latestAnswers[key] || session.updatedAt > latestAnswers[key].updatedAt) {
