@@ -138,7 +138,7 @@ const getPreviousAnswers = async (sessionId: string): Promise<string> => {
  * @returns Model name to use
  */
 const determineModelForQuestion = (question: Question | string): string => {
-  // Complex questions that require advanced reasoning use gemini-2.5-pro
+  // Complex questions that require advanced reasoning use gemini-2.5-flash
   const advancedQuestionCodes = ["S002", "S003", "S004", "S005", "S010"];
   
   // Extract question code if it's an object
@@ -149,7 +149,7 @@ const determineModelForQuestion = (question: Question | string): string => {
   
   // Use Pro model for complex questions
   if (advancedQuestionCodes.includes(questionCode)) {
-    return "gemini-2.5-pro";
+    return "gemini-2.5-flash";
   }
   
   // Default to flash model for simpler questions
@@ -237,7 +237,7 @@ export const classifyIntentWithContext = async (
     // Get LLM instance with appropriate model
     const llmResponse = modelToUse === "gemini-2.0-flash-lite"
       ? await getCurrentLLM() // Use Flash model for simple questions 
-      : await createCustomLLM({ model: "gemini-2.5-pro" }); // Default to Pro model
+      : await createCustomLLM({ model: "gemini-2.5-flash" }); // Default to Pro model
 
     if (!llmResponse.success || !llmResponse.data) {
       throw new Error(llmResponse.error || "Failed to get LLM instance");

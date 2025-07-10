@@ -127,7 +127,7 @@ export const completeSurveySession = async (
       .filter((rt) => rt > 0);
     const avg_response_time =
       response_times.length > 0
-        ? response_times.reduce((a, b) => a + b, 0) / response_times.length
+        ? Math.round((response_times.reduce((a: number, b: number) => a + b, 0) / response_times.length) * 100) / 100
         : 0;
     const is_breakoff = item_nonresponse > 0;
 
@@ -165,7 +165,7 @@ export function updateSessionMetrics(session: any) {
     .filter((rt: number) => rt > 0);
   const avg_response_time =
     response_times.length > 0
-      ? response_times.reduce((a: number, b: number) => a + b, 0) / response_times.length
+      ? Math.round((response_times.reduce((a: number, b: number) => a + b, 0) / response_times.length) * 100) / 100
       : 0;
   // is_breakoff true jika status session bukan COMPLETED
   const is_breakoff = session.status !== "COMPLETED";
