@@ -35,6 +35,46 @@ export const handleInitializeEvaluation = async (
       data: evaluation
     });
   } catch (error) {
+    // Handle specific validation errors with appropriate status codes
+    if (error instanceof Error) {
+      if (error.message.includes('Survey session not found')) {
+        res.status(404).json({
+          success: false,
+          message: 'Survey session not found',
+          error: error.message
+        });
+        return;
+      }
+      
+      if (error.message.includes('Survey session does not belong to this user')) {
+        res.status(403).json({
+          success: false,
+          message: 'Survey session does not belong to this user',
+          error: error.message
+        });
+        return;
+      }
+      
+      if (error.message.includes('User must have at least one survey session')) {
+        res.status(400).json({
+          success: false,
+          message: 'Cannot create evaluation: User must have at least one survey session before creating an evaluation',
+          error: error.message
+        });
+        return;
+      }
+      
+      if (error.message.includes('User not found')) {
+        res.status(404).json({
+          success: false,
+          message: 'User not found',
+          error: error.message
+        });
+        return;
+      }
+    }
+    
+    // Default error response
     res.status(500).json({
       success: false,
       message: 'Error initializing evaluation',

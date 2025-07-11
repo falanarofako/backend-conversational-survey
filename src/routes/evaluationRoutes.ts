@@ -19,6 +19,14 @@ const router = Router();
  * @body    {
  *            session_id?: string  // Optional survey session ID to link with
  *          }
+ * @note    User must have at least one survey session (IN_PROGRESS or COMPLETED) 
+ *          before creating an evaluation. If session_id is provided, it must exist 
+ *          and belong to the authenticated user.
+ * @returns 201: Evaluation created successfully
+ *          400: User has no survey sessions
+ *          403: Survey session does not belong to user
+ *          404: Survey session not found
+ *          500: Server error
  */
 router.post('/initialize', protect, handleInitializeEvaluation);
 

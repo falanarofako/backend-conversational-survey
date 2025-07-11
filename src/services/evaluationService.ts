@@ -2,6 +2,7 @@
 
 import SurveyEvaluation, { ISurveyEvaluation } from '../models/SurveyEvaluation';
 import User from '../models/User';
+import SurveySession from '../models/SurveySession';
 import mongoose from 'mongoose';
 
 /**
@@ -23,6 +24,31 @@ export const initializeEvaluation = async (
     const user = await User.findById(userId).session(session);
     if (!user) {
       throw new Error('User not found');
+    }
+
+    // VALIDASI: Pastikan user memiliki setidaknya satu sesi survei
+    let surveySessionExists = false;
+    
+    if (sessionId) {
+      // Jika sessionId diberikan, validasi bahwa sesi survei tersebut ada
+      const surveySession = await SurveySession.findById(sessionId).session(session);
+      if (!surveySession) {
+        throw new Error('Survey session not found');
+      }
+      if (surveySession.user_id.toString() !== userId) {
+        throw new Error('Survey session does not belong to this user');
+      }
+      surveySessionExists = true;
+    } else {
+      // Jika tidak ada sessionId, cek apakah user memiliki sesi survei apapun
+      const surveySessionCount = await SurveySession.countDocuments({
+        user_id: new mongoose.Types.ObjectId(userId)
+      }).session(session);
+      
+      if (surveySessionCount === 0) {
+        throw new Error('Cannot create evaluation: User must have at least one survey session before creating an evaluation');
+      }
+      surveySessionExists = true;
     }
 
     // Check if the user already has an active evaluation in their reference
