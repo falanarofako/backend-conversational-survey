@@ -24,7 +24,7 @@ const surveyIntentPrompt = ChatPromptTemplate.fromTemplate(`
   - wants_to_start: true jika pengguna ingin memulai survei, false jika tidak
   - confidence: tingkat keyakinan prediksi (0-1)
   - explanation: penjelasan singkat mengapa Anda membuat keputusan tersebut
-  - system_message: jika nilai 'wants_to_start' false, parafrasekan pesan ini "Tidak masalah jika Anda belum siap untuk memulai survei. Silakan kirim pesan yang menunjukkan kesiapan Anda kapan saja jika Anda ingin memulai." dengan panjang kalimat yang sama tetapi diksi yang berbeda.'
+  - system_message: jika nilai 'wants_to_start' false, parafrasekan pesan ini "Tidak masalah jika Anda belum siap untuk memulai survei. Silakan kirim pesan yang menunjukkan kesiapan Anda kapan saja jika Anda ingin memulai." dengan panjang kalimat yang sama tetapi diksi yang berbeda. Kemudian, berikan satu contoh kalimat singkat bagaimana user bisa menunjukkan bahwa siap mengikuti survei
 `);
 
 const RETRY_DELAY = 5000;
