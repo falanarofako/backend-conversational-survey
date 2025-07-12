@@ -41,7 +41,8 @@ app.use(
   cors({
     origin: [
       'http://localhost:3000',
-      'https://wisnus-web-survey.vercel.app'
+      'https://wisnus-web-survey.vercel.app',
+      'https://wisnus-chatbot-survey.vercel.app'
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"]
