@@ -564,10 +564,20 @@ export const handleUpdateAnswer = async (
 
         if (category === "tidak_tahu") {
           // Remove previous response for this question_code if exists
+          const prevResponse = session.responses.find(r => r.question_code === currentQuestion.code);
+          let prevResponseTime = 0;
+          if (prevResponse && typeof prevResponse.response_time === 'number') {
+            prevResponseTime = prevResponse.response_time;
+          }
           session.responses = session.responses.filter(r => r.question_code !== currentQuestion.code);
+          let response_time = 0;
+          if (session.last_question_timestamp) {
+            response_time = Date.now() - new Date(session.last_question_timestamp).getTime(); // ms
+          }
           session.responses.push({
             question_code: currentQuestion.code,
             valid_response: "Tidak tahu",
+            response_time: prevResponseTime + response_time,
           });
 
           system_response = {
@@ -578,10 +588,20 @@ export const handleUpdateAnswer = async (
           };
         } else if (category === "tidak_mau_menjawab") {
           // Remove previous response for this question_code if exists
+          const prevResponse = session.responses.find(r => r.question_code === currentQuestion.code);
+          let prevResponseTime = 0;
+          if (prevResponse && typeof prevResponse.response_time === 'number') {
+            prevResponseTime = prevResponse.response_time;
+          }
           session.responses = session.responses.filter(r => r.question_code !== currentQuestion.code);
+          let response_time = 0;
+          if (session.last_question_timestamp) {
+            response_time = Date.now() - new Date(session.last_question_timestamp).getTime(); // ms
+          }
           session.responses.push({
             question_code: currentQuestion.code,
             valid_response: "",
+            response_time: prevResponseTime + response_time,
           });
 
           system_response = {
@@ -658,10 +678,20 @@ export const handleUpdateAnswer = async (
       const extractedInfo = extractionResult.data?.extracted_information ?? "";
 
       // Remove previous response for this question_code if exists
+      const prevResponse = session.responses.find(r => r.question_code === currentQuestion.code);
+      let prevResponseTime = 0;
+      if (prevResponse && typeof prevResponse.response_time === 'number') {
+        prevResponseTime = prevResponse.response_time;
+      }
       session.responses = session.responses.filter(r => r.question_code !== currentQuestion.code);
+      let response_time = 0;
+      if (session.last_question_timestamp) {
+        response_time = Date.now() - new Date(session.last_question_timestamp).getTime(); // ms
+      }
       session.responses.push({
         question_code: currentQuestion.code,
         valid_response: extractedInfo,
+        response_time: prevResponseTime + response_time,
       });
 
       system_response = {
@@ -675,6 +705,7 @@ export const handleUpdateAnswer = async (
 
     // Save session
     updateSessionMetrics(session);
+    session.last_question_timestamp = new Date();
     await session.save();
 
     res.json({
