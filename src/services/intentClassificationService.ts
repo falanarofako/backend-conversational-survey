@@ -9,6 +9,7 @@ import {
   classificationSchema,
   getCurrentLLM,
   handleLLMError,
+  updateLLMUsage,
 } from "../config/llmConfig";
 import {
   ClassificationContext,
@@ -202,6 +203,7 @@ export const classifyIntent = async (
       throw new Error(llmResponse.error || "Failed to get LLM instance");
     }
     const llm = llmResponse.data;
+    const apiKey = llmResponse.metadata?.api_key_used as string;
 
     try {
       // Format question context
@@ -222,18 +224,22 @@ export const classifyIntent = async (
       // Validate result matches expected schema
       const validatedResult = classificationSchema.parse(result);
 
+      // Update usage after successful request (estimate tokens)
+      const estimatedTokens = Math.ceil((params.response.length + JSON.stringify(questionContext).length) / 4);
+      await updateLLMUsage(apiKey, estimatedTokens);
+
       return {
         success: true,
         data: validatedResult,
         metadata: {
           processing_time: Date.now() - startTime,
-          api_key_used: llmResponse.metadata?.api_key_used ?? -1,
+          api_key_used: apiKey,
           timestamp: new Date().toISOString(),
         },
       };
     } catch (error) {
       // Handle API errors and retry if needed
-      await handleLLMError(String(llmResponse.metadata?.api_key_used ?? ''), error);
+      await handleLLMError(apiKey, error);
 
       if (attempt < MAX_RETRIES) {
         console.log(
@@ -253,7 +259,7 @@ export const classifyIntent = async (
       }`,
       metadata: {
         processing_time: 0,
-        api_key_used: -1,
+        api_key_used: "system",
         timestamp: new Date().toISOString(),
       },
     };
@@ -446,7 +452,7 @@ export const getEvaluationProgress = async (): Promise<
         data: null,
         metadata: {
           processing_time: 0,
-          api_key_used: -1,
+          api_key_used: "system",
           timestamp: new Date().toISOString(),
         },
       };
@@ -507,7 +513,7 @@ export const getEvaluationProgress = async (): Promise<
       data: enrichedProgress,
       metadata: {
         processing_time: 0,
-        api_key_used: -1,
+        api_key_used: "system",
         timestamp: new Date().toISOString(),
       },
     };
@@ -519,7 +525,7 @@ export const getEvaluationProgress = async (): Promise<
       }`,
       metadata: {
         processing_time: 0,
-        api_key_used: -1,
+        api_key_used: "system",
         timestamp: new Date().toISOString(),
       },
     };
@@ -559,7 +565,7 @@ export const resetEvaluationProgress = async (): Promise<
       success: true,
       metadata: {
         processing_time: 0,
-        api_key_used: -1,
+        api_key_used: "system",
         timestamp: new Date().toISOString(),
       },
     };
@@ -571,7 +577,7 @@ export const resetEvaluationProgress = async (): Promise<
       }`,
       metadata: {
         processing_time: 0,
-        api_key_used: -1,
+        api_key_used: "system",
         timestamp: new Date().toISOString(),
       },
     };

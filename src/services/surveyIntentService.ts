@@ -1,7 +1,7 @@
 // src/services/surveyIntentService.ts
 
 import { z } from "zod";
-import { getCurrentLLM, handleLLMError } from "../config/llmConfig";
+import { getCurrentLLM, handleLLMError, updateLLMUsage } from "../config/llmConfig";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { ServiceResponse } from "../types/intentTypes";
 
@@ -50,6 +50,7 @@ export const analyzeSurveyIntent = async (
     }
     
     const llm = llmResponse.data;
+    const apiKey = llmResponse.metadata?.api_key_used as string;
 
     try {
       // Create LLM chain with structured output
@@ -61,18 +62,22 @@ export const analyzeSurveyIntent = async (
       const chain = surveyIntentPrompt.pipe(llmWithStructuredOutput);
       const result = await chain.invoke({ message });
 
+      // Update usage after successful request (estimate tokens)
+      const estimatedTokens = Math.ceil(message.length / 4);
+      await updateLLMUsage(apiKey, estimatedTokens);
+
       return {
         success: true,
         data: result,
         metadata: {
           processing_time: Date.now() - startTime,
-          api_key_used: llmResponse.metadata?.api_key_used || -1,
+          api_key_used: apiKey,
           timestamp: new Date().toISOString()
         }
       };
     } catch (error) {
       // Handle error and retry if needed
-      await handleLLMError(String(llmResponse.metadata?.api_key_used ?? ''), error);
+      await handleLLMError(apiKey, error);
 
       if (attempt < MAX_RETRIES) {
         console.log(`Retrying survey intent analysis (attempt ${attempt + 1}/${MAX_RETRIES})`);
@@ -88,7 +93,7 @@ export const analyzeSurveyIntent = async (
       error: `Error analyzing survey intent: ${error instanceof Error ? error.message : "Unknown error"}`,
       metadata: {
         processing_time: 0,
-        api_key_used: -1,
+        api_key_used: "system",
         timestamp: new Date().toISOString()
       }
     };

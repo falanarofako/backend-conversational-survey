@@ -5,6 +5,7 @@ import {
   getCurrentLLM,
   handleLLMError,
   informationExtractionSchema,
+  updateLLMUsage,
 } from "../config/llmConfig";
 import {
   InformationExtractionInput,
@@ -63,6 +64,7 @@ export const extractInformation = async (
       throw new Error(llmResponse.error || "Failed to get LLM instance");
     }
     const llm = llmResponse.data;
+    const apiKey = llmResponse.metadata?.api_key_used as string;
 
     try {
       // Membuat chain untuk ekstraksi informasi
@@ -109,18 +111,25 @@ export const extractInformation = async (
         explanation: parsedResult.explanation,
       };
 
+      // Update usage after successful request (estimate tokens)
+      const estimatedTokens = Math.ceil((
+        JSON.stringify(input.question).length + 
+        input.response.length
+      ) / 4);
+      await updateLLMUsage(apiKey, estimatedTokens);
+
       return {
         success: true,
         data: validatedResult,
         metadata: {
           processing_time: Date.now() - startTime,
-          api_key_used: llmResponse.metadata?.api_key_used || -1,
+          api_key_used: apiKey,
           timestamp: new Date().toISOString(),
         },
       };
     } catch (error) {
       // Tangani error dan lakukan retry jika diperlukan
-      await handleLLMError(String(llmResponse.metadata?.api_key_used ?? ''), error);
+      await handleLLMError(apiKey, error);
 
       if (attempt < MAX_RETRIES) {
         console.log(
@@ -140,7 +149,7 @@ export const extractInformation = async (
       }`,
       metadata: {
         processing_time: 0,
-        api_key_used: -1,
+        api_key_used: "system",
         timestamp: new Date().toISOString(),
       },
     };

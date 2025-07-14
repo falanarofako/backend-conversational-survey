@@ -5,7 +5,6 @@ import { z } from "zod";
 import dotenv from "dotenv";
 import { apiKeyManager } from '../services/apiKeyManager';
 import { ServiceResponse } from "../types/intentTypes";
-import { getKeyManager } from '../utils/apiKeyRotation';
 
 dotenv.config();
 
@@ -92,7 +91,7 @@ export const initializeLLM = async (): Promise<ServiceResponse<void>> => {
         success: true,
         metadata: {
           processing_time: 0,
-          api_key_used: -1,
+          api_key_used: "system",
           timestamp: new Date().toISOString(),
         },
       };
@@ -106,7 +105,7 @@ export const initializeLLM = async (): Promise<ServiceResponse<void>> => {
       success: true,
       metadata: {
         processing_time: 0,
-        api_key_used: -1,
+        api_key_used: "system",
         timestamp: new Date().toISOString(),
       },
     };
@@ -137,6 +136,7 @@ export const getCurrentLLM = async (
     // Get best API key from DB
     const bestKey = await apiKeyManager.getBestKey();
     const apiKey = bestKey.apiKey;
+    
     // Create LLM instance
     const llmConfig = { ...defaultConfig, ...config };
     const llm = new ChatGoogleGenerativeAI({
@@ -145,13 +145,14 @@ export const getCurrentLLM = async (
       maxRetries: llmConfig.maxRetries,
       apiKey: apiKey,
     });
-    // Usage will be updated after request (should be called by the caller)
+    
+    // Return with API key info for tracking
     return {
       success: true,
       data: llm,
       metadata: {
         processing_time: 0,
-        api_key_used: -1,
+        api_key_used: apiKey, // Store the actual API key for tracking
         timestamp: new Date().toISOString(),
       },
     };
@@ -177,12 +178,17 @@ export const handleLLMError = async (apiKey: string, error: any): Promise<Servic
     if (!isInitialized) {
       throw new Error("LLM system not initialized");
     }
+    
+    // Report error to the API key manager
     await apiKeyManager.reportError(apiKey);
+    
+    console.log(`Reported error for API key: ${apiKey.substring(0, 10)}...`);
+    
     return {
       success: true,
       metadata: {
         processing_time: 0,
-        api_key_used: -1,
+        api_key_used: apiKey,
         timestamp: new Date().toISOString(),
       },
     };
@@ -195,7 +201,7 @@ export const handleLLMError = async (apiKey: string, error: any): Promise<Servic
           : "Unknown error handling LLM error",
       metadata: {
         processing_time: 0,
-        api_key_used: -1,
+        api_key_used: apiKey,
         timestamp: new Date().toISOString(),
       },
     };
@@ -209,18 +215,17 @@ export const resetLLMState = async (): Promise<ServiceResponse<void>> => {
       throw new Error("LLM system not initialized");
     }
 
-    const keyManager = getKeyManager();
-    const resetResponse = keyManager.resetCounters();
-    
-    if (!resetResponse.success) {
-      throw new Error(resetResponse.error || "Failed to reset counters");
+    // Reset all API keys usage
+    const keys = await apiKeyManager.getAllKeys();
+    for (const key of keys) {
+      await apiKeyManager.reactivateKey(key.apiKey);
     }
 
     return {
       success: true,
       metadata: {
         processing_time: 0,
-        api_key_used: -1,
+        api_key_used: "system",
         timestamp: new Date().toISOString(),
       },
     };
@@ -240,10 +245,9 @@ export const getLLMStatus = (): ServiceResponse<{
   initialized: boolean;
   currentConfig: LLMConfig;
   keyStatus?: {
-    currentKeyIndex: number;
     totalKeys: number;
-    usageCounts: number[];
-    timeSinceLastRotation: number;
+    activeKeys: number;
+    deactivatedKeys: number;
   };
 }> => {
   try {
@@ -253,23 +257,38 @@ export const getLLMStatus = (): ServiceResponse<{
     };
 
     if (isInitialized) {
-      const keyManager = getKeyManager();
-      const keyStatus = keyManager.getStatus();
-      
-      if (keyStatus.success && keyStatus.data) {
+      // Get key status from database
+      apiKeyManager.getAllKeys().then(keys => {
+        const activeKeys = keys.filter(k => k.isActive).length;
+        const deactivatedKeys = keys.filter(k => !k.isActive).length;
+        
         return {
           success: true,
           data: {
             ...status,
-            keyStatus: keyStatus.data,
+            keyStatus: {
+              totalKeys: keys.length,
+              activeKeys,
+              deactivatedKeys,
+            },
           },
           metadata: {
             processing_time: 0,
-            api_key_used: keyStatus.data.currentKeyIndex,
+            api_key_used: "system",
             timestamp: new Date().toISOString(),
           },
         };
-      }
+      }).catch(() => {
+        return {
+          success: true,
+          data: status,
+          metadata: {
+            processing_time: 0,
+            api_key_used: "system",
+            timestamp: new Date().toISOString(),
+          },
+        };
+      });
     }
 
     return {
@@ -277,7 +296,7 @@ export const getLLMStatus = (): ServiceResponse<{
       data: status,
       metadata: {
         processing_time: 0,
-        api_key_used: -1,
+        api_key_used: "system",
         timestamp: new Date().toISOString(),
       },
     };
@@ -290,7 +309,7 @@ export const getLLMStatus = (): ServiceResponse<{
       },
       metadata: {
         processing_time: 0,
-        api_key_used: -1,
+        api_key_used: "system",
         timestamp: new Date().toISOString(),
       },
     };

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { getCurrentLLM, handleLLMError } from "../config/llmConfig";
+import { getCurrentLLM, handleLLMError, updateLLMUsage } from "../config/llmConfig";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { Question, ServiceResponse } from "../types/intentTypes";
 
@@ -65,6 +65,7 @@ export const classifyOtherResponseClassification = async (
       throw new Error(llmResponse.error || "Failed to get LLM instance");
     }
     const llm = llmResponse.data;
+    const apiKey = llmResponse.metadata?.api_key_used as string;
 
     try {
       // Format question context
@@ -91,17 +92,21 @@ export const classifyOtherResponseClassification = async (
       // Validate result
       const validatedResult = otherResponseClassificationSchema.parse(result);
 
+      // Update usage after successful request (estimate tokens)
+      const estimatedTokens = Math.ceil((params.response.length + questionContext.length) / 4);
+      await updateLLMUsage(apiKey, estimatedTokens);
+
       return {
         success: true,
         data: validatedResult,
         metadata: {
           processing_time: Date.now() - startTime,
-          api_key_used: llmResponse.metadata?.api_key_used ?? -1,
+          api_key_used: apiKey,
           timestamp: new Date().toISOString(),
         },
       };
     } catch (error) {
-      await handleLLMError(String(llmResponse.metadata?.api_key_used ?? ''), error);
+      await handleLLMError(apiKey, error);
       if (attempt < 2) {
         return classifyOtherResponseClassification(params, attempt + 1);
       }
@@ -115,7 +120,7 @@ export const classifyOtherResponseClassification = async (
       }`,
       metadata: {
         processing_time: 0,
-        api_key_used: -1,
+        api_key_used: "system",
         timestamp: new Date().toISOString(),
       },
     };

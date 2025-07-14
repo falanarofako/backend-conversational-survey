@@ -35,9 +35,9 @@ export const initializeEvaluation = async (
       if (!surveySession) {
         throw new Error('Survey session not found');
       }
-      if (surveySession.user_id.toString() !== userId) {
-        throw new Error('Survey session does not belong to this user');
-      }
+      // if (surveySession.user_id.toString() !== userId) {
+      //   throw new Error('Survey session does not belong to this user');
+      // }
       surveySessionExists = true;
     } else {
       // Jika tidak ada sessionId, cek apakah user memiliki sesi survei apapun

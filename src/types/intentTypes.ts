@@ -117,7 +117,7 @@ export interface ClassificationProgress {
   processed: boolean;
   timestamp: string;
   processing_time?: number;
-  api_key_used?: number;
+  api_key_used?: string;
   error?: string;
 }
 
@@ -159,7 +159,7 @@ export interface ServiceResponse<T> {
   error?: string;
   metadata?: {
     processing_time: number;
-    api_key_used: number;
+    api_key_used: string;
     timestamp: string;
   };
 }

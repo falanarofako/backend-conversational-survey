@@ -14,6 +14,7 @@ import {
   // replacePlaceholders,
   addSurveyMessage,
   updateSessionMetrics,
+  calculateAccurateProgress,
 } from "../services/surveyService";
 import QuestionnaireModel from "../models/Questionnaire";
 import { IUser } from "../models/User";
@@ -204,7 +205,13 @@ export const handleGetSurveyStatus = async (
     const userId = req.user._id;
     const userSession = await getUserActiveSurveySession(userId);
 
-    if (!userSession || (userSession as any)._id.toString() !== sessionId) {
+    console.log("userSession", userSession);
+    console.log("sessionId", sessionId);
+
+    if (!userSession || (userSession as any)._id.toString() !== sessionId.toString()) {
+
+      console.log("Tidak sama");
+
       res.status(403).json({
         success: false,
         message:
@@ -674,6 +681,61 @@ export const handleUpdateAnswer = async (
       success: true,
       ...system_response,
       session_id: sessionId,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+};
+
+// Get accurate survey progress considering skipping logic and N/A answers
+export const handleGetAccurateProgress = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { session_id } = req.params;
+    const userId = req.user._id;
+
+    if (!session_id) {
+      res.status(400).json({
+        success: false,
+        message: "Session ID is required",
+      });
+      return;
+    }
+
+    
+    // Ambil session langsung dari DB
+    const session = await SurveySession.findById(session_id);
+    console.log("userId", userId);
+    console.log("user_id session_id", session?.user_id);
+    if (!session) {
+      res.status(404).json({
+        success: false,
+        message: "Survey session not found",
+      });
+      return;
+    }
+
+    // Cek apakah session milik user yang sedang login
+    if (session.user_id.toString() !== userId.toString()) {
+      console.log("TIDAK SAMA");
+      res.status(403).json({
+        success: false,
+        message: "Unauthorized: This survey session does not belong to the authenticated user",
+      });
+      return;
+    }
+
+    // Calculate accurate progress
+    const progressData = await calculateAccurateProgress(session_id);
+
+    res.json({
+      success: true,
+      data: progressData,
     });
   } catch (error) {
     res.status(500).json({

@@ -9,7 +9,7 @@ import {
   Question,
   ServiceResponse,
 } from "../types/intentTypes";
-import { getCurrentLLM, handleLLMError, createCustomLLM } from "../config/llmConfig";
+import { getCurrentLLM, handleLLMError, createCustomLLM, updateLLMUsage } from "../config/llmConfig";
 import SurveyMessageBundle from "../models/SurveyMessageBundle";
 import SurveySession from "../models/SurveySession";
 import { z } from "zod";
@@ -244,6 +244,7 @@ export const classifyIntentWithContext = async (
     }
 
     const llm = llmResponse.data;
+    const apiKey = llmResponse.metadata?.api_key_used as string;
     
     // Log which model is being used for transparency
     console.log(`Using model ${modelToUse} for question`, params.question.code || "unknown");
@@ -299,23 +300,28 @@ export const classifyIntentWithContext = async (
       // Validate result
       const validatedResult = enhancedClassificationSchema.parse(result);
 
+      // Update usage after successful request (estimate tokens)
+      const estimatedTokens = Math.ceil((
+        params.response.length + 
+        questionContext.length + 
+        conversationHistory.length + 
+        previousAnswers.length + 
+        currentQuestion.length
+      ) / 4);
+      await updateLLMUsage(apiKey, estimatedTokens);
+
       return {
         success: true,
         data: validatedResult,
         metadata: {
           processing_time: Date.now() - startTime,
-          api_key_used: llmResponse.metadata?.api_key_used ?? -1,
+          api_key_used: apiKey,
           timestamp: new Date().toISOString(),
         },
       };
     } catch (error) {
       // Handle API errors and retry if needed
-      await handleLLMError(
-        typeof llmResponse.metadata?.api_key_used === "string"
-          ? llmResponse.metadata.api_key_used
-          : "",
-        error
-      );
+      await handleLLMError(apiKey, error);
 
       if (attempt < MAX_RETRIES) {
         console.log(
@@ -337,7 +343,7 @@ export const classifyIntentWithContext = async (
       }`,
       metadata: {
         processing_time: 0,
-        api_key_used: -1,
+        api_key_used: "system",
         timestamp: new Date().toISOString(),
       },
     };

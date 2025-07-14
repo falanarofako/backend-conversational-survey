@@ -11,6 +11,7 @@ import {
   handleGetCurrentQuestion,
   handleGetAnsweredQuestions,
   handleUpdateAnswer,
+  handleGetAccurateProgress,
 } from "../controllers/surveyController";
 import { analyzeSurveyIntentController } from "../controllers/surveyIntentController";
 import { protect } from "../middleware/authMiddleware";
@@ -30,6 +31,13 @@ router.get("/current-question", protect, handleGetCurrentQuestion);
  * @access  Private
  */
 router.get("/status/:id", protect, handleGetSurveyStatus);
+
+/**
+ * @route   GET /api/survey/accurate-progress/:session_id
+ * @desc    Get accurate survey progress considering skipping logic and N/A answers
+ * @access  Private
+ */
+router.get("/accurate-progress/:session_id", protect, handleGetAccurateProgress);
 
 /**
  * @route   GET /api/survey/messages

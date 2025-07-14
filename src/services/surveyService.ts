@@ -134,14 +134,17 @@ export const completeSurveySession = async (
     surveySession.status = "COMPLETED";
     updateSessionMetrics(surveySession);
     
+    // Ensure all skipped questions are filled with "N/A" before completing
+    await ensureSkippedQuestionsFilled(surveySession);
+    
     await surveySession.save({ session });
 
     // Remove the active session reference from the user
-    await User.findByIdAndUpdate(
-      surveySession.user_id,
-      { $unset: { activeSurveySessionId: 1 } },
-      { session }
-    );
+    // await User.findByIdAndUpdate(
+    //   surveySession.user_id,
+    //   { $unset: { activeSurveySessionId: 1 } },
+    //   { session }
+    // );
 
     await session.commitTransaction();
     session.endSession();
@@ -202,6 +205,11 @@ export const updateQuestionOptions = async (
   session: ISurveySession
 ): Promise<any> => {
   try {
+    // Add validation to prevent errors when currentQuestion is undefined
+    if (!currentQuestion || !currentQuestion.code) {
+      return currentQuestion;
+    }
+    
     // Handle province questions (S002, S004)
     if (currentQuestion.code === "S002" || currentQuestion.code === "S004") {
       // Get province names from database - async call
@@ -326,6 +334,11 @@ export const replacePlaceholders = (
   currentQuestion: any,
   session: ISurveySession
 ): any => {
+  // Add validation to prevent errors when currentQuestion is undefined
+  if (!currentQuestion || !currentQuestion.text) {
+    return currentQuestion;
+  }
+
   const placeholders = ["${S005}", "${S007}", "${currentMonth}"];
 
   for (const placeholder of placeholders) {
@@ -442,13 +455,40 @@ export const processSurveyResponse = async (
     if (!sessionId) {
       throw new Error("Session ID not found");
     }
-    // Get current question
-    let currentQuestion = survey.categories.flatMap(
+    
+    // Get all questions from survey
+    const allQuestions = survey.categories.flatMap(
       (category: any) => category.questions
-    )[session.current_question_index];
+    );
+    
+    // Check if current question index is valid
+    if (session.current_question_index >= allQuestions.length) {
+      // Survey is already completed
+      system_response = {
+        info: "survey_completed",
+        additional_info: "Survei telah selesai. Tidak ada pertanyaan lagi yang perlu dijawab.",
+      };
+      
+      await addSurveyMessage(
+        userId,
+        userResponse,
+        system_response,
+        sessionId,
+        "survey"
+      );
+      
+      return {
+        ...system_response,
+        session_id: sessionId,
+      };
+    }
+    
+    // Get current question
+    let currentQuestion = allQuestions[session.current_question_index];
 
     // Process the question
     if (
+      currentQuestion &&
       ["S002", "S004", "S003", "S005", "S007"].includes(currentQuestion.code)
     ) {
       currentQuestion = await updateQuestionOptions(currentQuestion, session);
@@ -458,7 +498,7 @@ export const processSurveyResponse = async (
 
     // Special handling for S006 (timestamp)
     const processedUserResponse =
-      currentQuestion.code === "S006"
+      currentQuestion && currentQuestion.code === "S006"
         ? `${userResponse} (Dikirim pada ${new Date().toLocaleString()})`
         : userResponse;
 
@@ -487,7 +527,7 @@ export const processSurveyResponse = async (
       if (otherClassResult.success && otherClassResult.data) {
         const { category } = otherClassResult.data;
 
-        if (category === "tidak_tahu") {
+        if (category === "tidak_tahu" && currentQuestion) {
           // Remove previous response for this question_code if exists
           session.responses = session.responses.filter(r => r.question_code !== currentQuestion.code);
           let response_time = undefined;
@@ -504,12 +544,12 @@ export const processSurveyResponse = async (
           // Lanjutkan ke pertanyaan berikutnya
           session.current_question_index += 1;
           
-          let nextQuestion = survey.categories.flatMap(
-            (cat: any) => cat.questions
-          )[session.current_question_index];
+          let nextQuestion = allQuestions[session.current_question_index];
 
           // Jalankan replace placeholder di sini menggunakan session dari memori
-          nextQuestion = replacePlaceholders(nextQuestion, session);
+          if (nextQuestion) {
+            nextQuestion = replacePlaceholders(nextQuestion, session);
+          }
           
           if (nextQuestion) {
             session.last_question_timestamp = new Date();
@@ -533,7 +573,7 @@ export const processSurveyResponse = async (
             ...system_response,
             session_id: sessionId,
           };
-        } else if (category === "tidak_mau_menjawab") {
+        } else if (category === "tidak_mau_menjawab" && currentQuestion) {
           // Remove previous response for this question_code if exists
           session.responses = session.responses.filter(r => r.question_code !== currentQuestion.code);
           let response_time = undefined;
@@ -550,12 +590,12 @@ export const processSurveyResponse = async (
           // Lanjutkan ke pertanyaan berikutnya
           session.current_question_index += 1;
           
-          let nextQuestion = survey.categories.flatMap(
-            (cat: any) => cat.questions
-          )[session.current_question_index];
+          let nextQuestion = allQuestions[session.current_question_index];
           
           // Jalankan replace placeholder di sini menggunakan session dari memori
-          nextQuestion = replacePlaceholders(nextQuestion, session);
+          if (nextQuestion) {
+            nextQuestion = replacePlaceholders(nextQuestion, session);
+          }
           
           if (nextQuestion) {
             session.last_question_timestamp = new Date();
@@ -586,7 +626,7 @@ export const processSurveyResponse = async (
       // Default/flow sebelumnya untuk "unexpected_answer" atau "other" (lainnya)
       system_response = {
         info: "unexpected_answer_or_other",
-        currentQuestion: currentQuestion,
+        currentQuestion: currentQuestion || null,
         clarification_reason: classificationResult.data?.clarification_reason,
         follow_up_question: classificationResult.data?.follow_up_question,
         improved_response: classificationResult.data?.improved_response,
@@ -617,7 +657,7 @@ export const processSurveyResponse = async (
         const ragResult = await response.json();
         system_response = {
           info: "question",
-          currentQuestion: currentQuestion,
+          currentQuestion: currentQuestion || null,
           answer: ragResult.answer || ragResult,
           improved_response: classificationResult.data?.improved_response,
         };
@@ -627,7 +667,7 @@ export const processSurveyResponse = async (
           info: "error",
           additional_info:
             "Maaf, sistem belum dapat menjawab pertanyaan Anda. Mohon jawab pertanyaan sebelumnya.",
-          currentQuestion: currentQuestion,
+          currentQuestion: currentQuestion || null,
           improved_response: classificationResult.data?.improved_response,
         };
       }
@@ -650,36 +690,73 @@ export const processSurveyResponse = async (
       const extractedInfo = extractionResult.data?.extracted_information ?? "";
 
       // Remove previous response for this question_code if exists
-      session.responses = session.responses.filter(r => r.question_code !== currentQuestion.code);
-      let response_time = undefined;
-      if (session.last_question_timestamp) {
-        response_time = Date.now() - new Date(session.last_question_timestamp).getTime(); // ms
+      if (currentQuestion) {
+        session.responses = session.responses.filter(r => r.question_code !== currentQuestion.code);
+        let response_time = undefined;
+        if (session.last_question_timestamp) {
+          response_time = Date.now() - new Date(session.last_question_timestamp).getTime(); // ms
+        }
+        session.responses.push({
+          question_code: currentQuestion.code,
+          valid_response: extractedInfo,
+          ...(response_time !== undefined ? { response_time } : {}),
+        });
       }
-      session.responses.push({
-        question_code: currentQuestion.code,
-        valid_response: extractedInfo,
-        ...(response_time !== undefined ? { response_time } : {}),
-      });
 
       updateSessionMetrics(session);
       // Handle skiplogic
       const skipMapping: Record<string, Record<string, number>> = {
-        S008: { Ya: 14, Tidak: 15 },
-        S012: { Ya: 18, Tidak: 25 },
+        S008: { Ya: 14, Tidak: 13 }, // S008 = "Ya" skip S009, langsung ke S010 (index 10)
+        S012: { Ya: 17, Tidak: 24 }, // S012 = "Tidak" skip S013A-S014, langsung ke S015 (index 22)
       };
 
       if (
+        currentQuestion &&
         skipMapping[currentQuestion.code] &&
         typeof extractedInfo === "string" &&
         skipMapping[currentQuestion.code][extractedInfo]
       ) {
+        // Auto-fill skipped questions with "N/A" before jumping to next index
+        if (currentQuestion.code === "S008" && extractedInfo === "Ya") {
+          // S008 = "Ya" → skip S009, fill with "N/A"
+          const existingS009 = session.responses.find(r => r.question_code === "S009");
+          if (!existingS009) {
+            session.responses.push({
+              question_code: "S009",
+              valid_response: "N/A",
+            });
+          }
+        } else if (currentQuestion.code === "S012" && extractedInfo === "Tidak") {
+          // S012 = "Tidak" → skip S013A-S014, fill with "N/A"
+          const skippedQuestions = ["S013A", "S013B", "S013C", "S013D", "S013E", "S013F", "S014"];
+          for (const questionCode of skippedQuestions) {
+            const existingResponse = session.responses.find(r => r.question_code === questionCode);
+            if (!existingResponse) {
+              session.responses.push({
+                question_code: questionCode,
+                valid_response: "N/A",
+              });
+            }
+          }
+        }
+        
         session.current_question_index =
           skipMapping[currentQuestion.code][extractedInfo];
       } else {
         if (
+          currentQuestion &&
           currentQuestion.code === "KR004" &&
           extractedInfo === "Tidak Bekerja"
         ) {
+          // KR004 = "Tidak Bekerja" skip KR005, langsung ke KR006
+          // Auto-fill KR005 with "N/A" before jumping
+          const existingKR005 = session.responses.find(r => r.question_code === "KR005");
+          if (!existingKR005) {
+            session.responses.push({
+              question_code: "KR005",
+              valid_response: "N/A",
+            });
+          }
           session.current_question_index += 2;
         } else {
           session.current_question_index += 1;
@@ -687,16 +764,18 @@ export const processSurveyResponse = async (
       }
 
       // Check if survey is complete
-      const totalQuestions = survey.categories.flatMap(
-        (cat: any) => cat.questions
-      ).length;
+      const totalQuestions = allQuestions.length;
 
       if (session.current_question_index >= totalQuestions) {
         session.status = "COMPLETED";
-        await User.findByIdAndUpdate(userId, {
-          $unset: { activeSurveySessionId: 1 },
-        });
+        // await User.findByIdAndUpdate(userId, {
+        //   $unset: { activeSurveySessionId: 1 },
+        // });
         updateSessionMetrics(session);
+        
+        // Ensure all skipped questions are filled with "N/A" before completing
+        await ensureSkippedQuestionsFilled(session);
+        
         await session.save();
         system_response = {
           info: "survey_completed",
@@ -706,12 +785,12 @@ export const processSurveyResponse = async (
         };
       } else {
         // Get next question
-        let nextQuestion = survey.categories.flatMap(
-          (cat: any) => cat.questions
-        )[session.current_question_index];
+        let nextQuestion = allQuestions[session.current_question_index];
         
         // JALANKAN REPLACE PLACEHOLDER SEBELUM SAVE
-        nextQuestion = replacePlaceholders(nextQuestion, session);
+        if (nextQuestion) {
+          nextQuestion = replacePlaceholders(nextQuestion, session);
+        }
         
         // Set timestamp untuk pertanyaan berikutnya
         session.last_question_timestamp = new Date();
@@ -748,27 +827,60 @@ export const processSurveyResponse = async (
     }
   }
 
-  if (session.current_question_index === 5) {
-    const kr004Response = session.responses.find(
-      (response) => response.question_code === "KR004"
-    );
-
-    if (kr004Response && kr004Response.valid_response === "Tidak Bekerja") {
-      // Update session data
-      session.responses.push({
-        question_code: "KR005",
-        valid_response: "N/A",
-      });
-      const newSession = await session.save();
-      console.log("new session: ", newSession);
-    }
-  }
+  // Ensure all skipped questions are filled with "N/A" (backup check)
+  await ensureSkippedQuestionsFilled(session);
 
   // Return appropriate response
   return {
     ...system_response,
     session_id: sessionId,
   };
+};
+
+// Helper function to ensure all skipped questions are filled with "N/A"
+const ensureSkippedQuestionsFilled = async (session: ISurveySession) => {
+  const responses = session.responses;
+  
+  // Check KR004 = "Tidak Bekerja" → auto-fill KR005 with "N/A"
+  const kr004Response = responses.find(r => r.question_code === "KR004");
+  if (kr004Response && Array.isArray(kr004Response.valid_response) && kr004Response.valid_response.includes("Tidak Bekerja")) {
+    const existingKR005 = responses.find(r => r.question_code === "KR005");
+    if (!existingKR005) {
+      session.responses.push({
+        question_code: "KR005",
+        valid_response: "N/A",
+      });
+    }
+  }
+  
+  // Check S008 = "Ya" → auto-fill S009 with "N/A"
+  const s008Response = responses.find(r => r.question_code === "S008");
+  if (s008Response && Array.isArray(s008Response.valid_response) && s008Response.valid_response.includes("Ya")) {
+    const existingS009 = responses.find(r => r.question_code === "S009");
+    if (!existingS009) {
+      session.responses.push({
+        question_code: "S009",
+        valid_response: "N/A",
+      });
+    }
+  }
+  
+  // Check S012 = "Tidak" → auto-fill S013A-S014 with "N/A"
+  const s012Response = responses.find(r => r.question_code === "S012");
+  if (s012Response && Array.isArray(s012Response.valid_response) && s012Response.valid_response.includes("Tidak")) {
+    const skippedQuestions = ["S013A", "S013B", "S013C", "S013D", "S013E", "S013F", "S014"];
+    for (const questionCode of skippedQuestions) {
+      const existingResponse = responses.find(r => r.question_code === questionCode);
+      if (!existingResponse) {
+        session.responses.push({
+          question_code: questionCode,
+          valid_response: "N/A",
+        });
+      }
+    }
+  }
+  
+  await session.save();
 };
 
 // Internal function for starting survey session without creating a welcome message
@@ -963,3 +1075,155 @@ export const addSurveyMessage = async (
     throw error;
   }
 };
+
+// Calculate accurate survey progress considering skipping logic and N/A answers
+export const calculateAccurateProgress = async (sessionId: string) => {
+  try {
+    // Find the survey session
+    const session = await SurveySession.findById(sessionId);
+    if (!session) {
+      throw new Error("Survey session not found");
+    }
+
+    // Get the latest questionnaire
+    const latestQuestionnaire = await QuestionnaireModel.findOne().sort({
+      createdAt: -1,
+    });
+    if (!latestQuestionnaire) {
+      throw new Error("Questionnaire not found");
+    }
+
+    const survey = latestQuestionnaire.survey;
+    const allQuestions = survey.categories.flatMap(
+      (category: any) => category.questions
+    );
+
+    // Track which questions are actually applicable for this user
+    const applicableQuestions: number[] = [];
+    const skippedQuestions: Array<{questionCode: string, reason: string}> = [];
+    const naQuestions: Array<{questionCode: string, reason: string}> = [];
+
+    let currentIndex = 0;
+    const responses = session.responses;
+
+    while (currentIndex < allQuestions.length) {
+      const currentQuestion = allQuestions[currentIndex];
+      if (!currentQuestion) break;
+
+      // KR004 = Tidak Bekerja: skip KR005, set N/A, go to KR006
+      if (currentQuestion.code === "KR004") {
+        const kr004Response = responses.find(r => r.question_code === "KR004");
+        if (kr004Response && Array.isArray(kr004Response.valid_response) && kr004Response.valid_response.includes("Tidak Bekerja")) {
+          // Skip KR005
+          naQuestions.push({ questionCode: "KR005", reason: "Auto-filled N/A karena KR004 = Tidak Bekerja" });
+          skippedQuestions.push({ questionCode: "KR005", reason: "Skipped karena KR004 = Tidak Bekerja" });
+          currentIndex += 2; // skip to KR006
+          continue;
+        }
+      }
+
+      // S008 = Ya: skip S009, set N/A, go to S010
+      if (currentQuestion.code === "S008") {
+        const s008Response = responses.find(r => r.question_code === "S008");
+        if (s008Response && Array.isArray(s008Response.valid_response) && s008Response.valid_response.includes("Ya")) {
+          // Skip S009
+          naQuestions.push({ questionCode: "S009", reason: "Auto-filled N/A karena S008 = Ya" });
+          skippedQuestions.push({ questionCode: "S009", reason: "Skipped karena S008 = Ya" });
+          currentIndex += 2; // skip to S010
+          continue;
+        }
+      }
+
+      // S012 = Tidak: skip S013A-S013F, S014, set N/A, go to S015
+      if (currentQuestion.code === "S012") {
+        const s012Response = responses.find(r => r.question_code === "S012");
+        if (s012Response && Array.isArray(s012Response.valid_response) && s012Response.valid_response.includes("Tidak")) {
+          // Skip S013A-S013F, S014
+          const skipCodes = ["S013A","S013B","S013C","S013D","S013E","S013F","S014"];
+          for (const code of skipCodes) {
+            naQuestions.push({ questionCode: code, reason: "Auto-filled N/A karena S012 = Tidak" });
+            skippedQuestions.push({ questionCode: code, reason: "Skipped karena S012 = Tidak" });
+          }
+          currentIndex = allQuestions.findIndex(q => q.code === "S015");
+          continue;
+        }
+      }
+
+      // If not skipped, mark as applicable
+      applicableQuestions.push(currentIndex);
+      currentIndex += 1;
+    }
+
+    // Calculate progress based on applicable questions
+    const answeredQuestions = responses.length;
+    
+    // Count questions that are actually answered (excluding auto-filled N/A)
+    const actuallyAnsweredQuestions = responses.filter(response => {
+      // Don't count auto-filled N/A answers as progress
+      if (["KR005","S009","S013A","S013B","S013C","S013D","S013E","S013F","S014"].includes(response.question_code) && response.valid_response === "N/A") {
+        return false;
+      }
+      return true;
+    }).length;
+    
+    // New formula: total_applicable_questions = responses yang bukan "N/A" + (total_questions - answered_questions)
+    const nonNAResponses = responses.filter(response => response.valid_response !== "N/A").length;
+    const totalApplicableQuestions = nonNAResponses + (allQuestions.length - answeredQuestions);
+
+    // Calculate accurate progress percentage
+    const accurateProgressPercentage = totalApplicableQuestions > 0 
+      ? Math.round((actuallyAnsweredQuestions / totalApplicableQuestions) * 100)
+      : 0;
+
+    // Get current question info
+    let currentQuestion = null;
+    if (session.current_question_index < allQuestions.length) {
+      currentQuestion = allQuestions[session.current_question_index];
+    }
+
+    // Get detailed question status
+    const questionStatus = allQuestions.map((question: any, index: number) => {
+      const response = responses.find(r => r.question_code === question.code);
+      const isApplicable = applicableQuestions.includes(index);
+      const isSkipped = skippedQuestions.some(sq => sq.questionCode === question.code);
+      const isNA = naQuestions.some(nq => nq.questionCode === question.code);
+      return {
+        question_code: question.code,
+        question_text: question.text,
+        index: index,
+        is_applicable: isApplicable,
+        is_answered: !!response,
+        is_skipped: isSkipped,
+        is_na: isNA,
+        answer: response ? response.valid_response : null,
+        skip_reason: skippedQuestions.find(sq => sq.questionCode === question.code)?.reason || null,
+        na_reason: naQuestions.find(nq => nq.questionCode === question.code)?.reason || null
+      };
+    });
+
+    return {
+      session_id: sessionId,
+      status: session.status,
+      current_question_index: session.current_question_index,
+      current_question: currentQuestion,
+      total_questions: allQuestions.length,
+      total_applicable_questions: totalApplicableQuestions,
+      answered_questions: answeredQuestions,
+      actually_answered_questions: actuallyAnsweredQuestions,
+      skipped_questions: skippedQuestions.length,
+      na_questions: naQuestions.length,
+      basic_progress_percentage: Math.round((answeredQuestions / allQuestions.length) * 100),
+      accurate_progress_percentage: accurateProgressPercentage,
+      skipped_questions_detail: skippedQuestions,
+      na_questions_detail: naQuestions,
+      question_status: questionStatus,
+      responses_count: responses.length,
+      metrics: session.metrics
+    };
+  } catch (error) {
+    console.error("Error calculating accurate progress:", error);
+    throw error;
+  }
+};
+
+
