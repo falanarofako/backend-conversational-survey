@@ -153,7 +153,7 @@ const determineModelForQuestion = (question: Question | string): string => {
   }
   
   // Default to flash model for simpler questions
-  return "gemini-2.0-flash-lite";
+  return "gemini-2.0-flash";
 };
 
 // Enhanced classification prompt template
@@ -235,7 +235,7 @@ export const classifyIntentWithContext = async (
     const modelToUse = determineModelForQuestion(params.question);
     
     // Get LLM instance with appropriate model
-    const llmResponse = modelToUse === "gemini-2.0-flash-lite"
+    const llmResponse = modelToUse === "gemini-2.0-flash"
       ? await getCurrentLLM() // Use Flash model for simple questions 
       : await createCustomLLM({ model: "gemini-2.5-flash" }); // Default to Pro model
 
