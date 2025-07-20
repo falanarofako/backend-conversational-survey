@@ -15,6 +15,8 @@ import {
   addSurveyMessage,
   updateSessionMetrics,
   calculateAccurateProgress,
+  getSessionsWithOutlierResponseTime,
+  getMergedUserSurveyEvaluationData,
 } from "../services/surveyService";
 import QuestionnaireModel from "../models/Questionnaire";
 import { IUser } from "../models/User";
@@ -773,5 +775,33 @@ export const handleGetAccurateProgress = async (
       success: false,
       message: error instanceof Error ? error.message : "Unknown error",
     });
+  }
+};
+
+// Endpoint: GET /api/survey/outlier-response-time
+export const handleGetOutlierResponseTimeSessions = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    // Bisa tambahkan query param minResponses jika ingin
+    const minResponses = req.query.minResponses ? parseInt(req.query.minResponses as string, 10) : 3;
+    const data = await getSessionsWithOutlierResponseTime(minResponses);
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, message: (error as Error).message });
+  }
+};
+
+// Endpoint: GET /api/survey/merged-report
+export const handleGetMergedUserSurveyEvaluationData = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const data = await getMergedUserSurveyEvaluationData();
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, message: (error as Error).message });
   }
 };

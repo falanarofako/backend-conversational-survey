@@ -18,6 +18,7 @@ import { analyzeSurveyIntent } from "./surveyIntentService";
 import { classifyIntentWithContext } from "./enhancedIntentClassificationService";
 import { classifyOtherResponseClassification } from "./otherResponseClassificationService";
 import { response } from "express";
+import SurveyEvaluation from "../models/SurveyEvaluation";
 
 // Start a new survey session for a user
 export const startSurveySession = async (userId: string, survey: any) => {
@@ -1224,6 +1225,119 @@ export const calculateAccurateProgress = async (sessionId: string) => {
     console.error("Error calculating accurate progress:", error);
     throw error;
   }
+};
+
+/**
+ * Mendapatkan sesi survei yang memiliki response time outlier pada salah satu pertanyaannya.
+ * Outlier didefinisikan sebagai response_time > Q3 + 1.5*IQR dalam satu sesi.
+ * @param {number} [minResponses=3] - Minimal jumlah response dalam satu sesi agar dicek outliernya.
+ * @returns {Promise<Array<{ sessionId: string, user_id: any, outlierResponses: Array<{ question_code: string, response_time: number }> }>>}
+ */
+export const getSessionsWithOutlierResponseTime = async (minResponses = 3) => {
+  // Ambil semua sesi yang sudah selesai
+  const sessions = await SurveySession.find({ status: "COMPLETED" });
+  const result = [];
+
+  for (const session of sessions) {
+    // Ambil response time untuk semua pertanyaan dalam sesi ini
+    const responseTimesRaw = session.responses
+      .map((r) => (typeof r.response_time === "number" ? r.response_time : null));
+    const responseTimes: number[] = responseTimesRaw.filter((rt): rt is number => rt !== null && rt > 0);
+    if (responseTimes.length < minResponses) continue;
+
+    // Hitung IQR dan threshold outlier untuk sesi ini
+    const sorted: number[] = responseTimes.slice().sort((a, b) => a - b);
+    if (sorted.length < minResponses) continue;
+    const q1Idx = Math.floor(sorted.length / 4);
+    const q3Idx = Math.floor((sorted.length * 3) / 4);
+    const q1 = sorted[q1Idx];
+    const q3 = sorted[q3Idx];
+    if (typeof q1 !== "number" || typeof q3 !== "number") continue;
+    const iqr = q3 - q1;
+    const threshold = q3 + 1.5 * iqr;
+    const avg = responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length;
+
+    // Deteksi pertanyaan yang response time-nya outlier dibanding pertanyaan lain di sesi ini
+    const outlierResponses = session.responses
+      .filter((r) => typeof r.response_time === "number" && r.response_time > threshold)
+      .map((r) => ({
+        question_code: r.question_code,
+        response_time: r.response_time as number,
+      }));
+
+    if (outlierResponses.length > 0) {
+      result.push({
+        sessionId: session._id,
+        user_id: session.user_id,
+        avg_response_time: avg,
+        threshold,
+        all_response_times: session.responses.map((r) => ({
+          question_code: r.question_code,
+          response_time: typeof r.response_time === "number" ? r.response_time : null,
+        })),
+        outlierResponses,
+      });
+    }
+  }
+  return result;
+};
+
+/**
+ * Menggabungkan data user, survey session, dan survey evaluation dalam satu dokumen JSON per user.
+ * Struktur output sesuai permintaan user.
+ */
+export const getMergedUserSurveyEvaluationData = async () => {
+  // Ambil semua user
+  const users = await User.find({});
+  // Ambil semua session (IN_PROGRESS maupun COMPLETED)
+  const sessions = await SurveySession.find({});
+  // Index session by user_id, ambil yang terbaru jika ada lebih dari satu
+  const sessionByUser: Record<string, typeof sessions[0] | undefined> = {};
+  sessions.forEach((s) => {
+    const uid = (s.user_id as any).toString();
+    if (!sessionByUser[uid] || (s.createdAt > sessionByUser[uid]!.createdAt)) {
+      sessionByUser[uid] = s;
+    }
+  });
+  // Ambil semua evaluation
+  const evaluations = await SurveyEvaluation.find({});
+
+  // Index session dan evaluation by user_id
+  const evalByUser: Record<string, typeof evaluations[0] | undefined> = {};
+  evaluations.forEach((e) => {
+    evalByUser[e.user_id.toString()] = e;
+  });
+
+  // Gabungkan data
+  const result = users.map((user) => {
+    const userIdStr = (user._id as any).toString();
+    const session = sessionByUser[userIdStr];
+    const evaluation = evalByUser[userIdStr];
+    const obj: Record<string, any> = {
+      id: userIdStr,
+      email: user.email,
+      name: user.name,
+      UCODE: user.activeSurveyUniqueCode ?? null,
+    };
+    // Tambahkan responses (Q1, RQ1, dst)
+    if (session && Array.isArray(session.responses)) {
+      session.responses.forEach((resp, idx) => {
+        const qKey = resp.question_code || `Q${idx + 1}`;
+        obj[qKey] = resp.valid_response;
+        obj[`RQ${qKey.replace(/^Q/,"")}`] = typeof resp.response_time === "number" ? resp.response_time : null;
+      });
+      // Tambahkan metrics
+      if (session.metrics) {
+        Object.assign(obj, session.metrics);
+      }
+    }
+    // Tambahkan answers dari evaluation
+    if (evaluation && evaluation.answers) {
+      Object.assign(obj, evaluation.answers);
+    }
+    return obj;
+  });
+  return result;
 };
 
 

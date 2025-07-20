@@ -12,6 +12,8 @@ import {
   handleGetAnsweredQuestions,
   handleUpdateAnswer,
   handleGetAccurateProgress,
+  handleGetOutlierResponseTimeSessions,
+  handleGetMergedUserSurveyEvaluationData,
 } from "../controllers/surveyController";
 import { analyzeSurveyIntentController } from "../controllers/surveyIntentController";
 import { protect } from "../middleware/authMiddleware";
@@ -94,5 +96,19 @@ router.get("/answered", protect, handleGetAnsweredQuestions);
  * @access  Private
  */
 router.put("/answer/:questionCode", protect, handleUpdateAnswer);
+
+/**
+ * @route   GET /api/survey/outlier-response-time
+ * @desc    Get survey sessions with outlier response time(s)
+ * @access  Private (bisa diubah ke Public jika perlu)
+ */
+router.get("/outlier-response-time", handleGetOutlierResponseTimeSessions);
+
+/**
+ * @route   GET /api/survey/merged-report
+ * @desc    Get merged user, survey session, and evaluation data
+ * @access  Private
+ */
+router.get("/merged-report", handleGetMergedUserSurveyEvaluationData);
 
 export default router;
