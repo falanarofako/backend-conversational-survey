@@ -140,7 +140,7 @@ export const submitAnswer = async (
     // Validate the question ID
     const validQuestionIds = [
       'ease_of_use', 
-      'participation_ease', 
+      'usefulness', 
       'enjoyment', 
       'data_security', 
       'privacy_safety',
