@@ -218,7 +218,7 @@ export const completeEvaluation = async (
     // Verify all questions are answered
     const requiredQuestions = [
       'ease_of_use', 
-      'participation_ease', 
+      'usefulness', 
       'enjoyment', 
       'data_security', 
       'privacy_safety',

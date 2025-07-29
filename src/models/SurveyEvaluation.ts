@@ -7,7 +7,7 @@ export interface ISurveyEvaluation extends Document {
   session_id?: mongoose.Types.ObjectId;
   answers: {
     ease_of_use?: number;
-    participation_ease?: number;
+    usefulness?: number;
     enjoyment?: number;
     data_security?: number;
     privacy_safety?: number;
@@ -33,7 +33,7 @@ const SurveyEvaluationSchema = new Schema({
   },
   answers: {
     ease_of_use: { type: Number, min: 1, max: 7 },
-    participation_ease: { type: Number, min: 1, max: 7 },
+    usefulness: { type: Number, min: 1, max: 7 },
     enjoyment: { type: Number, min: 1, max: 7 },
     data_security: { type: Number, min: 1, max: 7 },
     privacy_safety: { type: Number, min: 1, max: 7 },
