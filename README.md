@@ -1,346 +1,125 @@
-# Backend Conversational Survey
+# Backend Survei Konversasional
 
-## Recent Changes - Evaluation Session Validation
+Repositori ini berisi kode sumber untuk layanan backend dari aplikasi Survei Konversasional. Sistem ini dirancang untuk menyajikan survei kepada pengguna secara dinamis dan interaktif, layaknya sebuah percakapan. Backend ini mengelola alur survei, otentikasi pengguna, penyimpanan data, serta analisis respons.
 
-### Overview
-Modified the evaluation system to ensure that users can only create evaluation sessions if they have at least one survey session (either IN_PROGRESS or COMPLETED).
+## ✨ Fitur Utama
 
-### Changes Made
+- **Alur Survei Dinamis**: Pertanyaan disajikan satu per satu, dengan logika percabangan (skipping logic) yang kompleks berdasarkan jawaban pengguna sebelumnya.
+- **Otentikasi & Manajemen Sesi**: Menggunakan JWT (JSON Web Tokens) untuk mengamankan endpoint dan mengelola sesi survei per pengguna.
+- **Kalkulasi Progres Akurat**: Menghitung progres penyelesaian survei secara akurat dengan memperhitungkan pertanyaan yang dilewati (skipped) dan yang tidak berlaku (N/A).
+- **Manajemen Data**: Terhubung dengan database MongoDB untuk menyimpan data pengguna, sesi survei, dan jawaban.
+- **Evaluasi Hasil Survei**: Menyediakan modul untuk mengevaluasi hasil survei yang telah diselesaikan oleh pengguna.
+- **Integrasi AI (LangChain)**: Memanfaatkan kemampuan model bahasa (LLM) melalui LangChain untuk fitur-fitur pemrosesan bahasa alami di masa depan.
+- **Logging dan Monitoring**: Dilengkapi dengan `morgan` untuk logging permintaan HTTP, membantu dalam proses debugging.
 
-#### 1. Service Layer (`src/services/evaluationService.ts`)
-- Added import for `SurveySession` model
-- Added validation logic in `initializeEvaluation` function:
-  - If `sessionId` is provided: validates that the survey session exists and belongs to the user
-  - If no `sessionId` is provided: checks if user has any survey sessions at all
-  - Throws appropriate error messages if validation fails
+## 🛠️ Teknologi yang Digunakan
 
-#### 2. Controller Layer (`src/controllers/evaluationController.ts`)
-- Enhanced error handling in `handleInitializeEvaluation`:
-  - Added specific HTTP status codes for different validation errors
-  - 400: User has no survey sessions
-  - 403: Survey session does not belong to user
-  - 404: Survey session not found or user not found
-  - 500: Server error
+- **Runtime**: Node.js
+- **Bahasa**: TypeScript
+- **Framework**: Express.js
+- **Database**: MongoDB dengan Mongoose ODM
+- **Otentikasi**: JSON Web Token (JWT)
+- **Validasi**: Zod
+- **Testing**: Jest & ts-jest
+- **AI/LLM**: LangChain, Google Gemini
+- **Lainnya**: Helmet (keamanan), Cors (CORS handling), dotenv (environment variables), bcryptjs (hashing password).
 
-#### 3. Routes Documentation (`src/routes/evaluationRoutes.ts`)
-- Updated API documentation to reflect new validation requirements
-- Added detailed error response codes
+## 🚀 Instalasi dan Menjalankan Proyek
 
-### Validation Rules
+Untuk menjalankan proyek ini secara lokal, ikuti langkah-langkah berikut:
 
-1. **User must have at least one survey session** before creating an evaluation
-2. **Survey session can be either IN_PROGRESS or COMPLETED** - both are acceptable
-3. **If session_id is provided**, it must:
-   - Exist in the database
-   - Belong to the authenticated user
-4. **If no session_id is provided**, the system checks if the user has any survey sessions at all
+### 1. Prasyarat
 
-### API Response Examples
+- [Node.js](https://nodejs.org/) (versi 18 atau lebih tinggi)
+- [NPM](https://www.npmjs.com/) atau [Yarn](https://yarnpkg.com/)
+- Akses ke instance [MongoDB](https://www.mongodb.com/)
 
-#### Success (201 Created)
-```json
-{
-  "success": true,
-  "data": {
-    "_id": "evaluation_id",
-    "user_id": "user_id",
-    "session_id": "session_id",
-    "answers": {},
-    "completed": false,
-    "created_at": "2024-01-01T00:00:00.000Z"
-  }
-}
+### 2. Clone Repositori
+
+```bash
+git clone https://github.com/your-username/backend-conversational-survey.git
+cd backend-conversational-survey
 ```
 
-#### Error - No Survey Sessions (400 Bad Request)
-```json
-{
-  "success": false,
-  "message": "Cannot create evaluation: User must have at least one survey session before creating an evaluation",
-  "error": "Cannot create evaluation: User must have at least one survey session before creating an evaluation"
-}
+### 3. Instal Dependensi
+
+```bash
+npm install
 ```
 
-#### Error - Survey Session Not Found (404 Not Found)
-```json
-{
-  "success": false,
-  "message": "Survey session not found",
-  "error": "Survey session not found"
-}
+### 4. Konfigurasi Environment
+
+Buat file `.env` di direktori root proyek dengan menyalin dari `.env.example` (jika ada) atau membuatnya dari awal. Isi variabel yang dibutuhkan:
+
+```env
+# Konfigurasi Server
+PORT=3000
+
+# Koneksi Database
+MONGO_URI=mongodb://user:password@host:port/database_name
+
+# Konfigurasi Otentikasi
+JWT_SECRET=rahasia_super_aman_untuk_jwt
+JWT_EXPIRES_IN=1d
+
+# Kunci API untuk Layanan Eksternal
+GEMINI_API_KEY=kunci_api_google_gemini_anda
 ```
 
-#### Error - Unauthorized Session (403 Forbidden)
-```json
-{
-  "success": false,
-  "message": "Survey session does not belong to this user",
-  "error": "Survey session does not belong to this user"
-}
+### 5. Menjalankan Aplikasi
+
+- **Mode Pengembangan (dengan auto-reload):**
+  ```bash
+  npm run dev
+  ```
+  Server akan berjalan di `http://localhost:3000` dan otomatis me-restart jika ada perubahan pada kode.
+
+- **Mode Produksi:**
+  Pertama, build kode TypeScript menjadi JavaScript:
+  ```bash
+  npm run build
+  ```
+  Kemudian, jalankan aplikasi yang sudah di-build:
+  ```bash
+  npm start
+  ```
+
+### 6. Menjalankan Tes
+
+Untuk memastikan semua fungsi berjalan dengan baik, jalankan unit test:
+
+```bash
+npm test
 ```
 
-### Testing the Changes
+## API Endpoints
 
-To test the new validation:
+Proyek ini menyediakan beberapa endpoint utama untuk fungsionalitas survei dan evaluasi. Semua endpoint memerlukan otentikasi (token JWT).
 
-1. **Test with user who has no survey sessions:**
-   - Should return 400 error
+- `POST /api/auth/register`: Registrasi pengguna baru.
+- `POST /api/auth/login`: Login pengguna.
+- `GET /api/survey/start`: Memulai sesi survei baru.
+- `POST /api/survey/answer`: Mengirimkan jawaban untuk pertanyaan saat ini.
+- `GET /api/survey/progress/:session_id`: Mendapatkan progres survei.
+- `GET /api/survey/accurate-progress/:session_id`: Mendapatkan kalkulasi progres yang lebih akurat.
+- `POST /api/evaluation/initialize`: Memulai sesi evaluasi baru berdasarkan hasil survei.
 
-2. **Test with user who has survey sessions:**
-   - Should allow evaluation creation
+*Untuk detail lengkap mengenai request body dan response, silakan merujuk ke kode di direktori `src/routes`.*
 
-3. **Test with invalid session_id:**
-   - Should return 404 error
+## 🏛️ Struktur Proyek
 
-4. **Test with session_id belonging to different user:**
-   - Should return 403 error
-
-### Migration Notes
-
-- Existing evaluations are not affected
-- Users who already have evaluations can continue using them
-- New evaluations require the validation to pass
-
----
-
-## New Feature - Accurate Survey Progress Calculation
-
-### Overview
-Added a new endpoint to calculate survey progress with high accuracy by considering skipping logic and N/A answers.
-
-### New Endpoint
-
-#### GET `/api/survey/accurate-progress/:session_id`
-Calculates accurate survey progress considering:
-- Skipping logic based on previous answers
-- Auto-filled N/A answers
-- Question applicability for each user
-
-**Authentication:** Required (Private)
-
-**Parameters:**
-- `session_id` (path parameter): The survey session ID
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "session_id": "session_id",
-    "status": "IN_PROGRESS",
-    "current_question_index": 47,
-    "current_question": {
-      "code": "S029",
-      "text": "Berapa rupiah total pengeluaran Anda setelah perjalanan ini?",
-      // ... other question properties
-    },
-    
-    // Progress metrics
-    "total_questions": 48,
-    "total_applicable_questions": 45,
-    "answered_questions": 47,
-    "actually_answered_questions": 46,
-    "skipped_questions": 2,
-    "na_questions": 1,
-    
-    // Progress percentages
-    "basic_progress_percentage": 98,
-    "accurate_progress_percentage": 100,
-    
-    // Detailed breakdown
-    "skipped_questions_detail": [
-      {
-        "questionCode": "S009",
-        "reason": "Skipped karena S008 = Ya (pulang-pergi di hari yang sama)"
-      }
-    ],
-    "na_questions_detail": [
-      {
-        "questionCode": "KR005",
-        "reason": "Auto-filled N/A karena KR004 = Tidak Bekerja"
-      }
-    ],
-    "question_status": [
-      {
-        "question_code": "KR001",
-        "question_text": "Apa jenis kelamin Anda?",
-        "index": 0,
-        "is_applicable": true,
-        "is_answered": true,
-        "is_skipped": false,
-        "is_na": false,
-        "answer": "Laki-laki",
-        "skip_reason": null,
-        "na_reason": null
-      }
-      // ... more questions
-    ],
-    
-    // Additional metrics
-    "responses_count": 47,
-    "metrics": {
-      "is_breakoff": true,
-      "avg_response_time": 216082.26,
-      "item_nonresponse": 0,
-      "dont_know_response": 2
-    }
-  }
-}
+```
+src/
+├── app.ts                # Entry point aplikasi Express
+├── config/               # Konfigurasi (misal: database)
+├── controllers/          # Logika untuk menangani request dan response
+├── middlewares/          # Middleware Express (misal: otentikasi)
+├── models/               # Skema data Mongoose
+├── routes/               # Definisi endpoint API
+├── services/             # Logika bisnis utama
+└── utils/                # Fungsi-fungsi bantuan
 ```
 
-### Skipping Logic Implemented
+## 📄 Lisensi
 
-1. **S008 Logic (Pulang-Pergi di Hari yang Sama):**
-   - If S008 = "Ya", skip questions: S009, S010, S011, S013A, S013B, S013C, S013D, S013E, S013F, S014
-   - Jump to question index 14
-
-2. **S012 Logic (Paket Perjalanan):**
-   - If S012 = "Tidak", skip questions: S013A, S013B, S013C, S013D, S013E, S013F, S014
-   - Jump to question index 25
-
-3. **KR005 Auto-fill Logic:**
-   - If KR004 = "Tidak Bekerja", KR005 is auto-filled with "N/A"
-   - Skip KR006 (next question)
-
-### Progress Calculation
-
-- **Basic Progress:** `(answered_questions / total_questions) * 100`
-- **Accurate Progress:** `(actually_answered_questions / total_applicable_questions) * 100`
-
-The accurate progress excludes:
-- Questions that are skipped due to logic
-- Auto-filled N/A answers (not counted as user progress)
-
-### Use Cases
-
-1. **Display accurate progress bar** in the frontend
-2. **Show detailed question status** for debugging
-3. **Track survey completion** more precisely
-4. **Analyze survey flow** and skipping patterns
-
-### Error Responses
-
-#### 400 Bad Request
-```json
-{
-  "success": false,
-  "message": "Session ID is required"
-}
-```
-
-#### 403 Forbidden
-```json
-{
-  "success": false,
-  "message": "Unauthorized: This survey session does not belong to the authenticated user"
-}
-```
-
-#### 500 Internal Server Error
-```json
-{
-  "success": false,
-  "message": "Survey session not found"
-}
-```
-
-### Practical Example
-
-Using the provided session data with `current_question_index: 47` and 47 responses:
-
-**Request:**
-```
-GET /api/survey/accurate-progress/6873a94d2e43e00fe4f2d23c
-```
-
-**Expected Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "session_id": "6873a94d2e43e00fe4f2d23c",
-    "status": "IN_PROGRESS",
-    "current_question_index": 47,
-    "current_question": {
-      "code": "S029",
-      "text": "Berapa rupiah total pengeluaran Anda setelah perjalanan ini? Contohnya, biaya laundry pakaian atau perawatan kendaraan."
-    },
-    
-    // Progress metrics
-    "total_questions": 48,
-    "total_applicable_questions": 47,
-    "answered_questions": 47,
-    "actually_answered_questions": 46,
-    "skipped_questions": 0,
-    "na_questions": 1,
-    
-    // Progress percentages
-    "basic_progress_percentage": 98,
-    "accurate_progress_percentage": 98,
-    
-    // Detailed breakdown
-    "skipped_questions_detail": [],
-    "na_questions_detail": [
-      {
-        "questionCode": "KR005",
-        "reason": "Auto-filled N/A karena KR004 = Tidak Bekerja"
-      }
-    ],
-    "question_status": [
-      {
-        "question_code": "KR001",
-        "question_text": "Apa jenis kelamin Anda?",
-        "index": 0,
-        "is_applicable": true,
-        "is_answered": true,
-        "is_skipped": false,
-        "is_na": false,
-        "answer": "Laki-laki",
-        "skip_reason": null,
-        "na_reason": null
-      },
-      {
-        "question_code": "KR004",
-        "question_text": "Apa pekerjaan utama atau aktivitas utama Anda?",
-        "index": 3,
-        "is_applicable": true,
-        "is_answered": true,
-        "is_skipped": false,
-        "is_na": false,
-        "answer": "Tidak Bekerja",
-        "skip_reason": null,
-        "na_reason": null
-      },
-      {
-        "question_code": "KR005",
-        "question_text": "Deskripsikan pekerjaan Anda",
-        "index": 4,
-        "is_applicable": true,
-        "is_answered": true,
-        "is_skipped": false,
-        "is_na": true,
-        "answer": "N/A",
-        "skip_reason": null,
-        "na_reason": "Auto-filled N/A karena KR004 = Tidak Bekerja"
-      }
-      // ... more questions
-    ],
-    
-    // Additional metrics
-    "responses_count": 47,
-    "metrics": {
-      "is_breakoff": true,
-      "avg_response_time": 216082.26,
-      "item_nonresponse": 0,
-      "dont_know_response": 2
-    }
-  }
-}
-```
-
-**Analysis:**
-- User has answered 47 out of 48 total questions (98% basic progress)
-- KR005 was auto-filled with "N/A" due to KR004 = "Tidak Bekerja"
-- No questions were skipped due to S008/S012 logic
-- Accurate progress is 98% (46 actually answered / 47 applicable questions)
-- User is on the final question (S029) 
+Proyek ini dilisensikan di bawah Lisensi [ISC](LICENSE).
